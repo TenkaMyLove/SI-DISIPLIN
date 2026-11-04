@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "skills": {
+    "add-lang": {
+      "source": "colbymchenry/codegraph",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/add-lang/SKILL.md",
+      "computedHash": "be85c19e76ab30d6e7ffdbd759989b7b20e69d7a7543a6e8c7ec12897a54b24e"
+    },
+    "agent-eval": {
+      "source": "colbymchenry/codegraph",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/agent-eval/SKILL.md",
+      "computedHash": "d9e8d091172def0e26d5aa199b9dde23a08f8cd1bbd00e53dfd434130f768e98"
+    },
+    "caveman": {
+      "source": "juliusbrussee/caveman",
+      "sourceType": "github",
+      "skillPath": "skills/caveman/SKILL.md",
+      "computedHash": "71b600c88c8d1d36f18c4875db23b53c5d6cb9ba3195e19451d6b1bb67db07c4"
+    },
+    "design-taste-frontend": {
+      "source": "leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-skill/SKILL.md",
+      "computedHash": "53590ee9325bee34d7888bf0d81bd3941a108b1e7850df46802d93104e3f2b90"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "106acf230014cbb43ca34e6410371321b56ca742f9ee0442e8ec05bf02eb0384"
+    },
+    "impeccable": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/impeccable/SKILL.md",
+      "computedHash": "eef936aef13445db0b0580af1aca1bea7c3ac562ce88d456d41b9ed03550d5ad"
+    },
+    "laravel-best-practices": {
+      "source": "asyrafhussin/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/laravel-best-practices/SKILL.md",
+      "computedHash": "3f2351dc1821d430b6b58ce24175e0af11f5c11b234198bfc76a6702c05fe3ef"
+    },
+    "vue-best-practices": {
+      "source": "vuejs-ai/skills",
+      "sourceType": "github",
+      "skillPath": "skills/vue-best-practices/SKILL.md",
+      "computedHash": "dc4e09f71772f07102e470451812a74cb7193b019b5a02e738e29951451b24cc"
+    }
+  }
+}

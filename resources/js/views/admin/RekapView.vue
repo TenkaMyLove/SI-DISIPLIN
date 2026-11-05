@@ -185,23 +185,23 @@
                 <td class="py-2 px-3 text-neutral-700 border-r border-neutral-border">{{ r.alasan }}</td>
                 <td class="py-2 px-3 text-right font-medium text-red-700">{{ r.durasi_formatted }}</td>
               </tr>
-              <tr class="bg-neutral-100 font-semibold border-b border-neutral-300">
-                <td colspan="8" class="py-2.5 px-4 text-right text-navy border-r border-neutral-border">
-                  Total Kekurangan Jam Kerja &mdash; <span class="font-bold">{{ p.nama }}</span>:
+              <!-- Subtotal Pegawai: HANYA tampil jika pegawai memiliki lebih dari 1 catatan -->
+              <tr
+                v-if="p.rincian.length > 1"
+                class="bg-neutral-100/70 border-b border-neutral-300 font-medium text-xs text-neutral-700"
+              >
+                <td colspan="8" class="py-1.5 px-4 text-right text-neutral-600 border-r border-neutral-200">
+                  <span class="inline-flex items-center space-x-1.5">
+                    <span class="text-neutral-500 text-[11px]">Subtotal akumulasi</span>
+                    <span class="font-semibold text-navy">{{ p.nama }}</span>
+                    <span class="text-[11px] text-neutral-400">({{ p.rincian.length }} catatan)</span>:
+                  </span>
                 </td>
-                <td class="py-2.5 px-3 text-right text-red-800 font-bold whitespace-nowrap">
+                <td class="py-1.5 px-3 text-right text-red-800 font-bold whitespace-nowrap text-xs">
                   {{ p.total_durasi_formatted }}
                 </td>
               </tr>
             </template>
-            <tr class="bg-neutral-200 font-bold text-navy border-t-2 border-navy">
-              <td colspan="8" class="py-3 px-4 text-right uppercase tracking-wider text-xs">
-                GRAND TOTAL AKUMULASI KEKURANGAN JAM KERJA:
-              </td>
-              <td class="py-3 px-3 text-right text-red-900 text-sm whitespace-nowrap">
-                {{ rekapData.ringkasan.grand_total_formatted }}
-              </td>
-            </tr>
           </tbody>
         </table>
       </div>

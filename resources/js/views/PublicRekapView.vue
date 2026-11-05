@@ -1,44 +1,47 @@
 <template>
-  <div class="min-h-screen flex flex-col bg-neutral-surface pt-20 pb-16 print:pt-0 print:pb-0 overflow-x-hidden">
+  <div class="min-h-screen flex flex-col bg-neutral-surface pt-20 print:pt-0 overflow-x-hidden">
     <Navbar />
 
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 min-w-0 max-w-full">
-      <!-- Title Section without pill/emoji -->
-      <div class="mb-6 border-b border-neutral-border pb-5">
-        <h1 class="text-2xl sm:text-3xl font-bold text-navy tracking-tight">
-          Rekapitulasi Kehadiran Bermasalah
-        </h1>
-        <p class="text-sm text-neutral-muted mt-1">
-          Kementerian Hukum Kalimantan Selatan &bull; Zona Waktu WITA
-        </p>
-      </div>
-
-      <!-- Filter Section (No card-in-card, clean solid panel) -->
-      <div class="bg-white border border-neutral-border p-5 mb-6 no-print">
-        <div class="flex items-center justify-between border-b border-neutral-border pb-3 mb-4">
-          <h2 class="text-sm font-bold text-navy uppercase tracking-wider flex items-center space-x-2">
-            <Filter class="w-4 h-4 text-navy" />
-            <span>Filter Rekapitulasi</span>
-          </h2>
-          <button
-            @click="resetFilter"
-            class="text-xs text-neutral-muted hover:text-navy underline focus:outline-none"
-          >
-            Reset Filter
-          </button>
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col min-w-0 max-w-full">
+      <!-- Top Header & Live Metric Badges (Single Compact Line) -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-neutral-border pb-2.5 mb-2.5 gap-2">
+        <div>
+          <h1 class="text-lg sm:text-xl font-bold text-navy tracking-tight">
+            Rekapitulasi Kehadiran Bermasalah
+          </h1>
+          <p class="text-xs text-neutral-muted">
+            Kementerian Hukum Kalimantan Selatan &bull; Zona Waktu WITA
+          </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <!-- 1. Mode Periode Selector -->
-          <div>
-            <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1.5">
-              Mode Periode
-            </label>
-            <div class="grid grid-cols-3 border border-neutral-border p-1 bg-neutral-50 gap-1">
+        <!-- Inline Metric Summary Badges -->
+        <div v-if="!loading && rekapData?.ringkasan" class="flex items-center space-x-2 text-xs no-print flex-wrap gap-y-1">
+          <div class="px-2.5 py-1 bg-white border border-neutral-border text-navy flex items-center space-x-1.5 shadow-2xs">
+            <span class="text-neutral-muted text-[11px] uppercase tracking-wider">Pegawai:</span>
+            <span class="font-bold text-navy">{{ rekapData.ringkasan.total_pegawai_bermasalah || 0 }} orang</span>
+          </div>
+          <div class="px-2.5 py-1 bg-white border border-neutral-border text-navy flex items-center space-x-1.5 shadow-2xs">
+            <span class="text-neutral-muted text-[11px] uppercase tracking-wider">Pelanggaran:</span>
+            <span class="font-bold text-navy">{{ rekapData.ringkasan.total_catatan_absensi || 0 }} kali</span>
+          </div>
+          <div class="px-2.5 py-1 bg-red-50 border border-red-300 text-red-900 flex items-center space-x-1.5 shadow-2xs">
+            <span class="font-medium text-[11px] uppercase tracking-wider text-red-700">Akumulasi Kekurangan:</span>
+            <span class="font-bold text-red-900">{{ rekapData.ringkasan.grand_total_formatted || '0 menit' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Compact Unified Filter & Export Toolbar (Single Sleek Bar) -->
+      <div class="bg-white border border-neutral-border p-2.5 mb-3 shadow-2xs no-print">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5">
+          <!-- Filters Group -->
+          <div class="flex flex-wrap items-center gap-2 flex-1">
+            <!-- Mode Selector (Harian / Mingguan / Bulanan) -->
+            <div class="inline-flex border border-neutral-border p-0.5 bg-neutral-100 flex-shrink-0">
               <button
                 type="button"
                 @click="setMode('tanggal')"
-                class="py-1.5 text-xs font-medium text-center transition-colors"
+                class="px-2 py-1 text-xs font-medium transition-colors"
                 :class="filters.mode === 'tanggal' ? 'bg-navy text-white font-semibold' : 'text-neutral-700 hover:bg-neutral-200'"
               >
                 Harian
@@ -46,7 +49,7 @@
               <button
                 type="button"
                 @click="setMode('minggu')"
-                class="py-1.5 text-xs font-medium text-center transition-colors"
+                class="px-2 py-1 text-xs font-medium transition-colors"
                 :class="filters.mode === 'minggu' ? 'bg-navy text-white font-semibold' : 'text-neutral-700 hover:bg-neutral-200'"
               >
                 Mingguan
@@ -54,145 +57,143 @@
               <button
                 type="button"
                 @click="setMode('bulan')"
-                class="py-1.5 text-xs font-medium text-center transition-colors"
+                class="px-2 py-1 text-xs font-medium transition-colors"
                 :class="filters.mode === 'bulan' ? 'bg-navy text-white font-semibold' : 'text-neutral-700 hover:bg-neutral-200'"
               >
                 Bulanan
               </button>
             </div>
 
-            <!-- Value input based on active mode -->
-            <div class="mt-2.5">
+            <!-- Date / Month Picker -->
+            <div class="w-36 flex-shrink-0">
               <input
                 v-if="filters.mode === 'tanggal'"
                 v-model="filters.tanggal"
                 type="date"
-                class="w-full text-sm border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy"
+                class="w-full text-xs border border-neutral-border px-2 py-1 bg-white focus:outline-none focus:border-navy"
                 @change="fetchRekap"
               />
-              <div v-else-if="filters.mode === 'minggu'" class="space-y-1">
-                <input
-                  v-model="filters.minggu"
-                  type="date"
-                  class="w-full text-sm border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy"
-                  @change="fetchRekap"
-                />
-                <p class="text-[11px] text-neutral-muted">Minggu dihitung dari hari Senin sampai Jumat.</p>
-              </div>
+              <input
+                v-else-if="filters.mode === 'minggu'"
+                v-model="filters.minggu"
+                type="date"
+                class="w-full text-xs border border-neutral-border px-2 py-1 bg-white focus:outline-none focus:border-navy"
+                @change="fetchRekap"
+              />
               <input
                 v-else
                 v-model="filters.bulan"
                 type="month"
-                class="w-full text-sm border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy"
+                class="w-full text-xs border border-neutral-border px-2 py-1 bg-white focus:outline-none focus:border-navy"
                 @change="fetchRekap"
               />
             </div>
-          </div>
 
-          <!-- 2. Pegawai Autocomplete Filter -->
-          <div class="relative">
-            <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1.5">
-              Pegawai (Nama / NIP)
-            </label>
-            <div class="relative">
+            <!-- Pegawai Search Autocomplete -->
+            <div class="relative w-56 flex-shrink-0">
               <input
                 v-model="pegawaiSearch"
                 type="text"
-                placeholder="Semua Pegawai (Ketik untuk cari)..."
-                class="w-full text-sm border border-neutral-border pl-9 pr-8 py-2 bg-white focus:outline-none focus:border-navy"
+                placeholder="Cari NIP / Nama Pegawai..."
+                class="w-full text-xs border border-neutral-border pl-7 pr-6 py-1 bg-white focus:outline-none focus:border-navy"
                 @focus="showPegawaiDropdown = true"
                 @input="handlePegawaiSearchInput"
               />
-              <Search class="w-4 h-4 text-neutral-400 absolute left-3 top-2.5" />
+              <Search class="w-3.5 h-3.5 text-neutral-400 absolute left-2 top-1.5" />
               <button
                 v-if="selectedPegawai"
                 @click="clearSelectedPegawai"
                 type="button"
-                class="absolute right-2.5 top-2.5 text-neutral-400 hover:text-navy"
+                class="absolute right-2 top-1 text-neutral-400 hover:text-navy"
               >
-                <X class="w-4 h-4" />
+                <X class="w-3.5 h-3.5" />
               </button>
-            </div>
 
-            <!-- Autocomplete Results Dropdown -->
-            <div
-              v-if="showPegawaiDropdown"
-              class="absolute z-20 w-full mt-1 bg-white border border-neutral-border shadow-lg max-h-60 overflow-y-auto divide-y divide-neutral-100"
-            >
+              <!-- Dropdown List -->
               <div
-                @click="selectPegawai(null)"
-                class="p-2.5 text-xs hover:bg-neutral-50 cursor-pointer font-semibold text-navy flex justify-between items-center"
+                v-if="showPegawaiDropdown"
+                class="absolute z-30 w-72 mt-1 bg-white border border-neutral-border shadow-lg max-h-60 overflow-y-auto divide-y divide-neutral-100 left-0"
               >
-                <span>Tampilkan Semua Pegawai</span>
-                <Check v-if="!filters.nip" class="w-3.5 h-3.5 text-navy" />
-              </div>
-              <div
-                v-for="p in filteredPegawaiOptions"
-                :key="p.nip"
-                @click="selectPegawai(p)"
-                class="p-2.5 text-xs hover:bg-neutral-50 cursor-pointer flex justify-between items-center"
-              >
-                <div>
-                  <p class="font-medium text-navy">{{ p.nama }}</p>
-                  <p class="text-[11px] text-neutral-muted">NIP: {{ p.nip }} &bull; {{ p.divisi }}</p>
+                <div
+                  @click="selectPegawai(null)"
+                  class="p-2 text-xs hover:bg-neutral-50 cursor-pointer font-semibold text-navy flex justify-between items-center"
+                >
+                  <span>Tampilkan Semua Pegawai</span>
+                  <Check v-if="!filters.nip" class="w-3.5 h-3.5 text-navy" />
                 </div>
-                <Check v-if="filters.nip === p.nip" class="w-3.5 h-3.5 text-navy" />
-              </div>
-              <div v-if="filteredPegawaiOptions.length === 0" class="p-3 text-xs text-neutral-muted text-center">
-                Pegawai tidak ditemukan.
+                <div
+                  v-for="p in filteredPegawaiOptions"
+                  :key="p.nip"
+                  @click="selectPegawai(p)"
+                  class="p-2 text-xs hover:bg-neutral-50 cursor-pointer flex justify-between items-center"
+                >
+                  <div>
+                    <p class="font-medium text-navy">{{ p.nama }}</p>
+                    <p class="text-[11px] text-neutral-muted">NIP: {{ p.nip }} &bull; {{ p.divisi }}</p>
+                  </div>
+                  <Check v-if="filters.nip === p.nip" class="w-3.5 h-3.5 text-navy" />
+                </div>
+                <div v-if="filteredPegawaiOptions.length === 0" class="p-2.5 text-xs text-neutral-muted text-center">
+                  Pegawai tidak ditemukan.
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- 3. Divisi Filter -->
-          <div>
-            <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1.5">
-              Divisi / Unit Kerja
-            </label>
-            <select
-              v-model="filters.divisi"
-              class="w-full text-sm border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy"
-              @change="fetchRekap"
+            <!-- Divisi Dropdown -->
+            <div class="w-44 flex-shrink-0">
+              <select
+                v-model="filters.divisi"
+                class="w-full text-xs border border-neutral-border px-2 py-1 bg-white focus:outline-none focus:border-navy"
+                @change="fetchRekap"
+              >
+                <option value="">Semua Divisi</option>
+                <option v-for="d in divisiOptions" :key="d" :value="d">
+                  {{ d }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Reset Button -->
+            <button
+              @click="resetFilter"
+              type="button"
+              class="text-xs text-neutral-500 hover:text-navy px-1.5 py-1 underline whitespace-nowrap"
+              title="Reset semua filter ke default"
             >
-              <option value="">Semua Divisi</option>
-              <option v-for="d in divisiOptions" :key="d" :value="d">
-                {{ d }}
-              </option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Action Buttons: Apply, Export Excel, Export PDF, Print -->
-        <div class="mt-5 pt-4 border-t border-neutral-border flex flex-wrap items-center justify-between gap-3">
-          <div class="text-xs text-neutral-600">
-            <strong>Periode Terpilih:</strong> {{ rekapData?.filter?.periode_label || '-' }}
+              Reset
+            </button>
           </div>
 
-          <div class="flex items-center space-x-2">
+          <!-- Actions: Export Excel, PDF, Print -->
+          <div class="flex items-center space-x-1.5 flex-shrink-0 border-t lg:border-t-0 pt-2 lg:pt-0 border-neutral-border">
+            <span class="text-[11px] text-neutral-500 mr-1 hidden xl:inline">
+              {{ rekapData?.filter?.periode_label || '-' }}
+            </span>
+
             <button
               @click="exportExcel"
-              class="inline-flex items-center space-x-1.5 px-3 py-2 border border-neutral-border text-xs font-medium text-navy bg-white hover:bg-neutral-50 transition-colors"
+              class="inline-flex items-center space-x-1 px-2.5 py-1 border border-neutral-border text-xs font-medium text-navy bg-white hover:bg-neutral-50 transition-colors"
               title="Unduh format spreadsheet Excel"
             >
-              <FileSpreadsheet class="w-4 h-4 text-emerald-700" />
-              <span>Ekspor Excel</span>
+              <FileSpreadsheet class="w-3.5 h-3.5 text-emerald-700" />
+              <span>Excel</span>
             </button>
 
             <button
               @click="exportPdf"
-              class="inline-flex items-center space-x-1.5 px-3 py-2 border border-neutral-border text-xs font-medium text-navy bg-white hover:bg-neutral-50 transition-colors"
+              class="inline-flex items-center space-x-1 px-2.5 py-1 border border-neutral-border text-xs font-medium text-navy bg-white hover:bg-neutral-50 transition-colors"
               title="Unduh format dokumen PDF"
             >
-              <FileDown class="w-4 h-4 text-red-700" />
-              <span>Ekspor PDF</span>
+              <FileDown class="w-3.5 h-3.5 text-red-700" />
+              <span>PDF</span>
             </button>
 
             <button
               @click="printRekap"
-              class="inline-flex items-center space-x-1.5 px-3 py-2 border border-neutral-border text-xs font-medium text-navy bg-white hover:bg-neutral-50 transition-colors"
+              class="inline-flex items-center space-x-1 px-2.5 py-1 border border-neutral-border text-xs font-medium text-navy bg-white hover:bg-neutral-50 transition-colors"
               title="Cetak halaman rekap"
             >
-              <Printer class="w-4 h-4 text-navy" />
+              <Printer class="w-3.5 h-3.5 text-navy" />
               <span>Cetak</span>
             </button>
           </div>
@@ -206,39 +207,13 @@
         <p class="text-xs text-neutral-600 mt-1">Laporan Rekapitulasi Kehadiran Bermasalah &bull; {{ rekapData?.filter?.periode_label }}</p>
       </div>
 
-      <!-- Loading State: SKELETON LOADER (PRD requirement) -->
+      <!-- Loading State: SKELETON LOADER -->
       <div v-if="loading" class="space-y-4">
-        <SkeletonLoader type="stat" :rows="4" />
         <SkeletonLoader type="table" :rows="8" :cols="10" />
       </div>
 
       <!-- Data Loaded Content -->
-      <div v-else class="space-y-6">
-        <!-- Summary Stats Strip (Solid borders, no card in card) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 no-print">
-          <div class="bg-white border border-neutral-border p-4">
-            <p class="text-xs font-semibold text-neutral-muted uppercase tracking-wider">Pegawai Bermasalah</p>
-            <p class="text-2xl font-bold text-navy mt-1">
-              {{ rekapData?.ringkasan?.total_pegawai_bermasalah || 0 }}
-              <span class="text-xs font-normal text-neutral-muted">orang</span>
-            </p>
-          </div>
-          <div class="bg-white border border-neutral-border p-4">
-            <p class="text-xs font-semibold text-neutral-muted uppercase tracking-wider">Total Catatan</p>
-            <p class="text-2xl font-bold text-navy mt-1">
-              {{ rekapData?.ringkasan?.total_catatan_absensi || 0 }}
-              <span class="text-xs font-normal text-neutral-muted">kali pelanggaran</span>
-            </p>
-          </div>
-          <div class="bg-white border border-neutral-border p-4 sm:col-span-2">
-            <p class="text-xs font-semibold text-neutral-muted uppercase tracking-wider">Akumulasi Kekurangan Jam Kerja</p>
-            <p class="text-2xl font-bold text-navy mt-1 text-red-700">
-              {{ rekapData?.ringkasan?.grand_total_formatted || '0 menit' }}
-            </p>
-            <p class="text-[11px] text-neutral-muted mt-0.5">Konversi bertingkat: 60 menit = 1 jam, 24 jam = 1 hari</p>
-          </div>
-        </div>
-
+      <div v-else class="space-y-3 min-w-0 max-w-full">
         <!-- Empty State -->
         <div
           v-if="!rekapData?.pegawai || rekapData.pegawai.length === 0"
@@ -253,22 +228,22 @@
           </p>
         </div>
 
-        <!-- Table View of Problematic Attendance -->
-        <div v-else class="space-y-6 min-w-0 max-w-full">
-          <div class="bg-white border border-neutral-border overflow-x-auto shadow-sm max-w-full">
+        <!-- Table View of Problematic Attendance: Appears immediately in view without vertical scrolling -->
+        <div v-else class="space-y-3 min-w-0 max-w-full">
+          <div class="bg-white border border-neutral-border overflow-x-auto shadow-2xs max-w-full">
             <table class="w-full text-left border-collapse text-xs">
               <thead>
                 <tr class="bg-navy text-white border-b border-navy">
-                  <th class="py-3 px-3 font-semibold text-center w-12 border-r border-navy-800">No</th>
-                  <th class="py-3 px-3 font-semibold w-28 border-r border-navy-800">Tanggal</th>
-                  <th class="py-3 px-3 font-semibold w-44 border-r border-navy-800">NIP</th>
-                  <th class="py-3 px-3 font-semibold border-r border-navy-800">Nama Pegawai</th>
-                  <th class="py-3 px-3 font-semibold w-40 border-r border-navy-800">Divisi</th>
-                  <th class="py-3 px-2 font-semibold text-center w-20 border-r border-navy-800">Masuk</th>
-                  <th class="py-3 px-2 font-semibold text-center w-20 border-r border-navy-800">Pulang</th>
-                  <th class="py-3 px-3 font-semibold w-36 border-r border-navy-800">Status</th>
-                  <th class="py-3 px-3 font-semibold border-r border-navy-800">Alasan</th>
-                  <th class="py-3 px-3 font-semibold text-right w-36">Kekurangan</th>
+                  <th class="py-2.5 px-3 font-semibold text-center w-12 border-r border-navy-800">No</th>
+                  <th class="py-2.5 px-3 font-semibold w-28 border-r border-navy-800">Tanggal</th>
+                  <th class="py-2.5 px-3 font-semibold w-44 border-r border-navy-800">NIP</th>
+                  <th class="py-2.5 px-3 font-semibold border-r border-navy-800">Nama Pegawai</th>
+                  <th class="py-2.5 px-3 font-semibold w-40 border-r border-navy-800">Divisi</th>
+                  <th class="py-2.5 px-2 font-semibold text-center w-20 border-r border-navy-800">Masuk</th>
+                  <th class="py-2.5 px-2 font-semibold text-center w-20 border-r border-navy-800">Pulang</th>
+                  <th class="py-2.5 px-3 font-semibold w-36 border-r border-navy-800">Status</th>
+                  <th class="py-2.5 px-3 font-semibold border-r border-navy-800">Alasan</th>
+                  <th class="py-2.5 px-3 font-semibold text-right w-36">Kekurangan</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-neutral-border">
@@ -279,28 +254,28 @@
                     :key="r.id"
                     class="hover:bg-neutral-50 transition-colors"
                   >
-                    <td class="py-2.5 px-3 text-center text-neutral-500 border-r border-neutral-border">
+                    <td class="py-2 px-3 text-center text-neutral-500 border-r border-neutral-border">
                       {{ getGlobalRowNumber(pIdx, rIdx) }}
                     </td>
-                    <td class="py-2.5 px-3 font-medium text-neutral-800 border-r border-neutral-border whitespace-nowrap">
+                    <td class="py-2 px-3 font-medium text-neutral-800 border-r border-neutral-border whitespace-nowrap">
                       {{ r.periode_formatted }}
                     </td>
-                    <td class="py-2.5 px-3 font-mono text-neutral-700 border-r border-neutral-border whitespace-nowrap">
+                    <td class="py-2 px-3 font-mono text-neutral-700 border-r border-neutral-border whitespace-nowrap">
                       {{ p.nip }}
                     </td>
-                    <td class="py-2.5 px-3 font-semibold text-navy border-r border-neutral-border">
+                    <td class="py-2 px-3 font-semibold text-navy border-r border-neutral-border">
                       {{ p.nama }}
                     </td>
-                    <td class="py-2.5 px-3 text-neutral-700 border-r border-neutral-border">
+                    <td class="py-2 px-3 text-neutral-700 border-r border-neutral-border">
                       {{ p.divisi }}
                     </td>
-                    <td class="py-2.5 px-2 text-center text-neutral-800 border-r border-neutral-border whitespace-nowrap">
+                    <td class="py-2 px-2 text-center text-neutral-800 border-r border-neutral-border whitespace-nowrap">
                       {{ r.jam_masuk }}
                     </td>
-                    <td class="py-2.5 px-2 text-center text-neutral-800 border-r border-neutral-border whitespace-nowrap">
+                    <td class="py-2 px-2 text-center text-neutral-800 border-r border-neutral-border whitespace-nowrap">
                       {{ r.jam_pulang }}
                     </td>
-                    <td class="py-2.5 px-3 border-r border-neutral-border">
+                    <td class="py-2 px-3 border-r border-neutral-border">
                       <span
                         class="px-2 py-0.5 text-[11px] font-semibold border"
                         :class="getStatusBadgeClass(r.status)"
@@ -308,20 +283,20 @@
                         {{ r.status }}
                       </span>
                     </td>
-                    <td class="py-2.5 px-3 text-neutral-700 border-r border-neutral-border">
+                    <td class="py-2 px-3 text-neutral-700 border-r border-neutral-border">
                       {{ r.alasan }}
                     </td>
-                    <td class="py-2.5 px-3 text-right font-medium text-red-700 whitespace-nowrap">
+                    <td class="py-2 px-3 text-right font-medium text-red-700 whitespace-nowrap">
                       {{ r.durasi_formatted }}
                     </td>
                   </tr>
 
                   <!-- Employee Subtotal Row (REK-7, REK-8, REK-9) -->
                   <tr class="bg-neutral-100 font-semibold border-b border-neutral-300">
-                    <td colspan="9" class="py-2.5 px-4 text-right text-navy border-r border-neutral-border">
+                    <td colspan="9" class="py-2 px-4 text-right text-navy border-r border-neutral-border text-xs">
                       Total Kekurangan Jam Kerja &mdash; <span class="font-bold">{{ p.nama }}</span>:
                     </td>
-                    <td class="py-2.5 px-3 text-right text-red-800 font-bold whitespace-nowrap">
+                    <td class="py-2 px-3 text-right text-red-800 font-bold whitespace-nowrap text-xs">
                       {{ p.total_durasi_formatted }}
                     </td>
                   </tr>
@@ -329,10 +304,10 @@
 
                 <!-- Grand Total Row -->
                 <tr class="bg-neutral-200 font-bold text-navy border-t-2 border-navy">
-                  <td colspan="9" class="py-3 px-4 text-right uppercase tracking-wider text-xs">
+                  <td colspan="9" class="py-2.5 px-4 text-right uppercase tracking-wider text-xs">
                     GRAND TOTAL AKUMULASI KEKURANGAN JAM KERJA:
                   </td>
-                  <td class="py-3 px-3 text-right text-red-900 text-sm whitespace-nowrap">
+                  <td class="py-2.5 px-3 text-right text-red-900 text-sm whitespace-nowrap">
                     {{ rekapData.ringkasan.grand_total_formatted }}
                   </td>
                 </tr>
@@ -343,11 +318,11 @@
       </div>
     </main>
 
-    <!-- Footer: Anchored to the bottom of the viewport -->
-    <footer class="fixed bottom-0 left-0 right-0 bg-navy text-neutral-300 py-3 text-xs text-center border-t-2 border-accent no-print z-40">
-      <div class="max-w-7xl mx-auto px-4">
-        <p class="font-medium text-white">SIDISIPLIN &bull; Sistem Informasi Disiplin Pegawai</p>
-        <p class="mt-0.5 text-[11px] text-neutral-300">Kementerian Hukum Kalimantan Selatan &bull; Jam Kerja Standar: 08:00 &ndash; 16:00 WITA</p>
+    <!-- Clean, Slim Footer in Natural Document Flow (No Fixed Overlay) -->
+    <footer class="py-2.5 text-center text-xs text-neutral-400 border-t border-neutral-border no-print mt-auto">
+      <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between text-[11px] text-neutral-400 gap-1">
+        <span>SIDISIPLIN &bull; Sistem Informasi Disiplin Pegawai Kanwil Kemenkumham Kalsel</span>
+        <span>Jam Kerja Standar: 08:00 &ndash; 16:00 WITA</span>
       </div>
     </footer>
   </div>

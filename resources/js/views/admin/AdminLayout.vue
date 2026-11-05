@@ -1,19 +1,20 @@
 <template>
-  <div class="h-screen flex flex-col bg-neutral-surface overflow-hidden print:h-auto print:overflow-visible">
-    <!-- Header / Navbar: Anchored firmly at the top -->
-    <Navbar :full-width="true" class="flex-shrink-0 z-30" />
+  <div class="min-h-screen bg-neutral-surface">
+    <!-- Navbar: FIXED at the top of the viewport -->
+    <Navbar :full-width="true" />
 
-    <!-- Main Workspace: Anchored Sidebar on left, Independent scrollable content on right -->
-    <div class="flex-1 flex w-full overflow-hidden print:overflow-visible">
-      <Sidebar class="flex-shrink-0" />
+    <!-- Sidebar: FIXED on the left of the viewport below Navbar -->
+    <Sidebar />
 
-      <main
-        ref="mainContentRef"
-        class="flex-1 p-6 lg:p-8 min-w-0 overflow-y-auto print:overflow-visible print:p-0"
-      >
+    <!-- Main Workspace: Offset by pl-64 (sidebar) and pt-20 (navbar) -->
+    <main
+      ref="mainContentRef"
+      class="pt-20 pl-64 min-h-screen flex flex-col print:pt-0 print:pl-0"
+    >
+      <div class="flex-1 p-6 lg:p-8 min-w-0">
         <router-view />
-      </main>
-    </div>
+      </div>
+    </main>
   </div>
 </template>
 
@@ -30,9 +31,7 @@ const mainContentRef = ref(null)
 watch(
   () => route.path,
   () => {
-    if (mainContentRef.value) {
-      mainContentRef.value.scrollTop = 0
-    }
+    window.scrollTo({ top: 0, behavior: 'instant' })
   }
 )
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-navy text-white border-b-2 border-accent no-print sticky top-0 z-30 w-full flex-shrink-0">
+  <header class="fixed top-0 left-0 right-0 h-20 bg-navy text-white border-b-2 border-accent no-print z-40">
     <div :class="fullWidth ? 'w-full px-4 sm:px-6 lg:px-8' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'">
       <div class="flex items-center justify-between h-20">
         <!-- Brand & Logo -->

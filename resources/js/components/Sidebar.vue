@@ -1,5 +1,5 @@
 <template>
-  <aside class="w-64 bg-navy text-white h-full flex flex-col justify-between border-r border-navy-800 no-print flex-shrink-0 select-none overflow-hidden">
+  <aside class="fixed top-20 left-0 bottom-0 w-64 bg-navy text-white z-30 border-r border-navy-800 no-print flex flex-col justify-between select-none">
     <!-- Top Nav Links with internal smooth scrolling if window height is small -->
     <div class="py-4 flex-1 overflow-y-auto">
       <div class="px-5 mb-4 pb-3 border-b border-navy-800">

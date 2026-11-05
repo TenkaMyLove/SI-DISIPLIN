@@ -291,19 +291,12 @@
                     </td>
                   </tr>
 
-                  <!-- Subtotal Pegawai: HANYA tampil jika pegawai memiliki lebih dari 1 catatan (tidak dobel untuk 1 catatan) -->
-                  <tr
-                    v-if="p.rincian.length > 1"
-                    class="bg-neutral-100/70 border-b border-neutral-300 font-medium text-xs text-neutral-700"
-                  >
-                    <td colspan="9" class="py-1.5 px-4 text-right text-neutral-600 border-r border-neutral-200">
-                      <span class="inline-flex items-center space-x-1.5">
-                        <span class="text-neutral-500 text-[11px]">Subtotal akumulasi</span>
-                        <span class="font-semibold text-navy">{{ p.nama }}</span>
-                        <span class="text-[11px] text-neutral-400">({{ p.rincian.length }} catatan)</span>:
-                      </span>
+                  <!-- Employee Subtotal Row (REK-7, REK-8, REK-9) -->
+                  <tr class="bg-neutral-100 font-semibold border-b border-neutral-300">
+                    <td colspan="9" class="py-2 px-4 text-right text-navy border-r border-neutral-border text-xs">
+                      Total Kekurangan Jam Kerja &mdash; <span class="font-bold">{{ p.nama }}</span>:
                     </td>
-                    <td class="py-1.5 px-3 text-right text-red-800 font-bold whitespace-nowrap text-xs">
+                    <td class="py-2 px-3 text-right text-red-800 font-bold whitespace-nowrap text-xs">
                       {{ p.total_durasi_formatted }}
                     </td>
                   </tr>

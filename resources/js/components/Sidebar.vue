@@ -1,6 +1,7 @@
 <template>
-  <aside class="w-64 bg-navy text-white min-h-[calc(100vh-80px)] flex flex-col justify-between border-r border-navy-800 no-print flex-shrink-0">
-    <div class="py-4">
+  <aside class="w-64 bg-navy text-white h-full flex flex-col justify-between border-r border-navy-800 no-print flex-shrink-0 select-none overflow-hidden">
+    <!-- Top Nav Links with internal smooth scrolling if window height is small -->
+    <div class="py-4 flex-1 overflow-y-auto">
       <div class="px-5 mb-4 pb-3 border-b border-navy-800">
         <p class="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Menu Pengelolaan</p>
       </div>
@@ -77,16 +78,16 @@
       </div>
     </div>
 
-    <!-- Admin User Info & Logout -->
-    <div class="p-4 border-t border-navy-800 bg-navy-950">
+    <!-- Admin User Info & Logout: Anchored at bottom -->
+    <div class="p-4 border-t border-navy-800 bg-navy-950 flex-shrink-0">
       <div class="flex items-center justify-between">
-        <div>
+        <div class="min-w-0 mr-2">
           <p class="text-xs font-semibold text-white truncate">{{ user?.name || 'Administrator' }}</p>
           <p class="text-xs text-neutral-400 truncate">@{{ user?.username || 'admin' }}</p>
         </div>
         <button
           @click="handleLogout"
-          class="p-1.5 text-neutral-400 hover:text-accent transition-colors"
+          class="p-1.5 text-neutral-400 hover:text-accent transition-colors flex-shrink-0"
           title="Keluar (Logout)"
         >
           <LogOut class="w-4 h-4" />

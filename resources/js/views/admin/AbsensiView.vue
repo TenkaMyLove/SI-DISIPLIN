@@ -60,9 +60,9 @@
     </div>
 
     <!-- Absensi Table -->
-    <div v-else class="bg-white border border-neutral-border overflow-x-auto">
+    <div v-else class="bg-white border border-neutral-border overflow-x-auto shadow-sm">
       <table class="w-full text-left border-collapse text-xs">
-        <thead>
+        <thead class="sticky top-0 z-10">
           <tr class="bg-navy text-white">
             <th class="py-3 px-3 font-semibold text-center w-12 border-r border-navy-800">No</th>
             <th class="py-3 px-3 font-semibold w-28 border-r border-navy-800">Tanggal</th>

@@ -76,6 +76,21 @@ class DatabaseSeeder extends Seeder
                 'nama' => 'Ferry Gunawan, S.H.',
                 'divisi' => 'Analis Hukum',
             ],
+            [
+                'nip' => '199401152021031001',
+                'nama' => 'Bambang Wijaya, S.H.',
+                'divisi' => 'Pelayanan Hukum',
+            ],
+            [
+                'nip' => '199505202022022002',
+                'nama' => 'Rina Kusuma, S.E.',
+                'divisi' => 'Perencanaan',
+            ],
+            [
+                'nip' => '199612102023011003',
+                'nama' => 'Dedi Saputra, S.Kom.',
+                'divisi' => 'Tata Usaha dan Umum',
+            ],
         ];
 
         foreach ($samplePegawai as $data) {

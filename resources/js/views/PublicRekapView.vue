@@ -37,11 +37,11 @@
           <!-- Filters Group -->
           <div class="flex flex-wrap items-center gap-2 flex-1">
             <!-- Mode Selector (Harian / Mingguan / Bulanan) -->
-            <div class="inline-flex border border-neutral-border p-0.5 bg-neutral-100 flex-shrink-0">
+            <div class="inline-flex rounded-lg border border-neutral-300 p-0.5 bg-neutral-100 h-[38px] items-center shadow-2xs flex-shrink-0">
               <button
                 type="button"
                 @click="setMode('tanggal')"
-                class="px-2 py-1 text-xs font-medium transition-colors"
+                class="px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors"
                 :class="filters.mode === 'tanggal' ? 'bg-navy text-white font-semibold' : 'text-neutral-700 hover:bg-neutral-200'"
               >
                 Harian
@@ -49,7 +49,7 @@
               <button
                 type="button"
                 @click="setMode('minggu')"
-                class="px-2 py-1 text-xs font-medium transition-colors"
+                class="px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors"
                 :class="filters.mode === 'minggu' ? 'bg-navy text-white font-semibold' : 'text-neutral-700 hover:bg-neutral-200'"
               >
                 Mingguan
@@ -57,7 +57,7 @@
               <button
                 type="button"
                 @click="setMode('bulan')"
-                class="px-2 py-1 text-xs font-medium transition-colors"
+                class="px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors"
                 :class="filters.mode === 'bulan' ? 'bg-navy text-white font-semibold' : 'text-neutral-700 hover:bg-neutral-200'"
               >
                 Bulanan
@@ -70,73 +70,99 @@
                 v-if="filters.mode === 'tanggal'"
                 v-model="filters.tanggal"
                 type="date"
-                class="w-full text-xs border border-neutral-border px-2 py-1 bg-white focus:outline-none focus:border-navy"
+                class="w-full h-[38px] text-xs border border-neutral-300 rounded-lg px-2.5 bg-white focus:outline-none focus:border-navy focus:ring-1 focus:ring-navy shadow-2xs"
                 @change="fetchRekap"
               />
               <input
                 v-else-if="filters.mode === 'minggu'"
                 v-model="filters.minggu"
                 type="date"
-                class="w-full text-xs border border-neutral-border px-2 py-1 bg-white focus:outline-none focus:border-navy"
+                class="w-full h-[38px] text-xs border border-neutral-300 rounded-lg px-2.5 bg-white focus:outline-none focus:border-navy focus:ring-1 focus:ring-navy shadow-2xs"
                 @change="fetchRekap"
               />
               <input
                 v-else
                 v-model="filters.bulan"
                 type="month"
-                class="w-full text-xs border border-neutral-border px-2 py-1 bg-white focus:outline-none focus:border-navy"
+                class="w-full h-[38px] text-xs border border-neutral-300 rounded-lg px-2.5 bg-white focus:outline-none focus:border-navy focus:ring-1 focus:ring-navy shadow-2xs"
                 @change="fetchRekap"
               />
             </div>
 
-            <!-- Pegawai Search Autocomplete -->
-            <div class="relative w-56 flex-shrink-0">
-              <input
-                v-model="pegawaiSearch"
-                type="text"
-                placeholder="Cari NIP / Nama Pegawai..."
-                class="w-full text-xs border border-neutral-border pl-7 pr-6 py-1 bg-white focus:outline-none focus:border-navy"
-                @focus="showPegawaiDropdown = true"
-                @input="handlePegawaiSearchInput"
-              />
-              <Search class="w-3.5 h-3.5 text-neutral-400 absolute left-2 top-1.5" />
-              <button
-                v-if="selectedPegawai"
-                @click="clearSelectedPegawai"
-                type="button"
-                class="absolute right-2 top-1 text-neutral-400 hover:text-navy"
-              >
-                <X class="w-3.5 h-3.5" />
-              </button>
-
-              <!-- Dropdown List -->
-              <div
-                v-if="showPegawaiDropdown"
-                class="absolute z-30 w-72 mt-1 bg-white border border-neutral-border shadow-lg max-h-60 overflow-y-auto divide-y divide-neutral-100 left-0"
-              >
-                <div
-                  @click="selectPegawai(null)"
-                  class="p-2 text-xs hover:bg-neutral-50 cursor-pointer font-semibold text-navy flex justify-between items-center"
+            <!-- Pegawai Search Autocomplete (Figma-styled with click-outside & Escape key support) -->
+            <div ref="pegawaiDropdownRef" class="relative w-64 flex-shrink-0">
+              <div class="relative">
+                <input
+                  v-model="pegawaiSearch"
+                  type="text"
+                  placeholder="Cari NIP / Nama Pegawai..."
+                  class="w-full h-[38px] text-xs border border-neutral-300 rounded-lg pl-8 pr-7 py-2 bg-white focus:outline-none focus:border-navy focus:ring-1 focus:ring-navy shadow-2xs transition-all placeholder:text-neutral-400"
+                  @focus="showPegawaiDropdown = true"
+                  @input="handlePegawaiSearchInput"
+                />
+                <Search class="w-3.5 h-3.5 text-neutral-400 absolute left-2.5 top-3 pointer-events-none" />
+                <button
+                  v-if="selectedPegawai || pegawaiSearch"
+                  @click="clearSelectedPegawai"
+                  type="button"
+                  class="w-5 h-5 absolute right-2 top-2.5 flex items-center justify-center text-neutral-400 hover:text-navy hover:bg-neutral-100 rounded transition-colors"
+                  title="Bersihkan pilihan"
                 >
-                  <span>Tampilkan Semua Pegawai</span>
-                  <Check v-if="!filters.nip" class="w-3.5 h-3.5 text-navy" />
-                </div>
-                <div
-                  v-for="p in filteredPegawaiOptions"
-                  :key="p.nip"
-                  @click="selectPegawai(p)"
-                  class="p-2 text-xs hover:bg-neutral-50 cursor-pointer flex justify-between items-center"
-                >
-                  <div>
-                    <p class="font-medium text-navy">{{ p.nama }}</p>
-                    <p class="text-[11px] text-neutral-muted">NIP: {{ p.nip }} &bull; {{ p.divisi }}</p>
-                  </div>
-                  <Check v-if="filters.nip === p.nip" class="w-3.5 h-3.5 text-navy" />
-                </div>
-                <div v-if="filteredPegawaiOptions.length === 0" class="p-2.5 text-xs text-neutral-muted text-center">
-                  Pegawai tidak ditemukan.
-                </div>
+                  <X class="w-3.5 h-3.5" />
+                </button>
               </div>
+
+              <!-- Dropdown List Styled like CustomDropdown -->
+              <transition
+                enter-active-class="transition duration-100 ease-out"
+                enter-from-class="transform scale-95 opacity-0"
+                enter-to-class="transform scale-100 opacity-100"
+                leave-active-class="transition duration-75 ease-in"
+                leave-from-class="transform scale-100 opacity-100"
+                leave-to-class="transform scale-95 opacity-0"
+              >
+                <div
+                  v-if="showPegawaiDropdown"
+                  class="absolute z-50 w-80 mt-1.5 bg-white rounded-lg border border-neutral-200 shadow-xl overflow-hidden py-1 max-h-60 overflow-y-auto left-0"
+                >
+                  <div
+                    @click="selectPegawai(null)"
+                    class="px-3 py-2 text-xs cursor-pointer flex items-center space-x-2.5 transition-colors select-none"
+                    :class="!filters.nip ? 'bg-neutral-100 text-navy font-semibold' : 'text-neutral-700 hover:bg-neutral-50'"
+                  >
+                    <span
+                      class="w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-colors"
+                      :class="!filters.nip ? 'border-navy bg-navy text-white' : 'border-neutral-300 bg-white'"
+                    >
+                      <Check v-if="!filters.nip" class="w-2.5 h-2.5 stroke-[3]" />
+                    </span>
+                    <span class="truncate font-medium">Tampilkan Semua Pegawai</span>
+                  </div>
+
+                  <div
+                    v-for="p in filteredPegawaiOptions"
+                    :key="p.nip"
+                    @click="selectPegawai(p)"
+                    class="px-3 py-2 text-xs cursor-pointer flex items-center space-x-2.5 transition-colors select-none"
+                    :class="filters.nip === p.nip ? 'bg-neutral-100 text-navy font-semibold' : 'text-neutral-700 hover:bg-neutral-50'"
+                  >
+                    <span
+                      class="w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-colors"
+                      :class="filters.nip === p.nip ? 'border-navy bg-navy text-white' : 'border-neutral-300 bg-white'"
+                    >
+                      <Check v-if="filters.nip === p.nip" class="w-2.5 h-2.5 stroke-[3]" />
+                    </span>
+                    <div class="truncate">
+                      <p class="font-medium text-navy truncate">{{ p.nama }}</p>
+                      <p class="text-[11px] text-neutral-500 truncate">NIP: {{ p.nip }} &bull; {{ p.divisi }}</p>
+                    </div>
+                  </div>
+
+                  <div v-if="filteredPegawaiOptions.length === 0" class="px-3 py-3 text-xs text-neutral-400 text-center">
+                    Pegawai tidak ditemukan.
+                  </div>
+                </div>
+              </transition>
             </div>
 
             <!-- Divisi Dropdown -->
@@ -290,13 +316,11 @@
                     </td>
                   </tr>
 
-                  <!-- Employee Subtotal Row (REK-7, REK-8, REK-9) -->
+                  <!-- Employee Subtotal Row (Merged into 1 column to eliminate excessive gap) -->
                   <tr class="bg-neutral-100 font-semibold border-b border-neutral-300">
-                    <td colspan="9" class="py-2 px-4 text-right text-navy border-r border-neutral-border text-xs">
-                      Total Kekurangan Jam Kerja:
-                    </td>
-                    <td class="py-2 px-3 text-right text-red-800 font-bold whitespace-nowrap text-xs">
-                      {{ p.total_durasi_formatted }}
+                    <td colspan="10" class="py-2.5 px-4 text-right text-xs">
+                      <span class="text-navy font-semibold mr-1.5">Total Kekurangan Jam Kerja:</span>
+                      <span class="text-red-800 font-bold whitespace-nowrap">{{ p.total_durasi_formatted }}</span>
                     </td>
                   </tr>
                 </template>
@@ -318,7 +342,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, onBeforeUnmount } from 'vue'
 import Navbar from '@/components/Navbar.vue'
 import CustomDropdown from '@/components/CustomDropdown.vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
@@ -349,7 +373,20 @@ const filters = reactive({
 const pegawaiSearch = ref('')
 const selectedPegawai = ref(null)
 const showPegawaiDropdown = ref(false)
+const pegawaiDropdownRef = ref(null)
 const pegawaiOptions = ref([])
+
+function handleClickOutside(e) {
+  if (pegawaiDropdownRef.value && !pegawaiDropdownRef.value.contains(e.target)) {
+    showPegawaiDropdown.value = false
+  }
+}
+
+function handleKeyDown(e) {
+  if (e.key === 'Escape' && showPegawaiDropdown.value) {
+    showPegawaiDropdown.value = false
+  }
+}
 
 const divisiOptions = [
   'Pelayanan Hukum',
@@ -495,7 +532,14 @@ function printRekap() {
 }
 
 onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+  document.addEventListener('keydown', handleKeyDown)
   fetchPegawaiOptions()
   fetchRekap()
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+  document.removeEventListener('keydown', handleKeyDown)
 })
 </script>

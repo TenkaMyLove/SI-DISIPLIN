@@ -189,21 +189,18 @@
                 <td class="py-2 px-3 text-neutral-700 border-r border-neutral-border">{{ r.alasan }}</td>
                 <td class="py-2 px-3 text-right font-medium text-red-700">{{ r.durasi_formatted }}</td>
               </tr>
+              <!-- Employee Subtotal Row: Merged into 1 column to eliminate excessive gap -->
               <tr class="bg-neutral-100 font-semibold border-b border-neutral-300">
-                <td colspan="8" class="py-2.5 px-4 text-right text-navy border-r border-neutral-border">
-                  Total Kekurangan Jam Kerja:
-                </td>
-                <td class="py-2.5 px-3 text-right text-red-800 font-bold whitespace-nowrap">
-                  {{ p.total_durasi_formatted }}
+                <td colspan="9" class="py-2.5 px-4 text-right text-xs">
+                  <span class="text-navy font-semibold mr-1.5">Total Kekurangan Jam Kerja:</span>
+                  <span class="text-red-800 font-bold whitespace-nowrap">{{ p.total_durasi_formatted }}</span>
                 </td>
               </tr>
             </template>
             <tr class="bg-neutral-200 font-bold text-navy border-t-2 border-navy">
-              <td colspan="8" class="py-3 px-4 text-right uppercase tracking-wider text-xs">
-                GRAND TOTAL AKUMULASI KEKURANGAN JAM KERJA:
-              </td>
-              <td class="py-3 px-3 text-right text-red-900 text-sm whitespace-nowrap">
-                {{ rekapData.ringkasan.grand_total_formatted }}
+              <td colspan="9" class="py-2.5 px-4 text-right text-xs">
+                <span class="uppercase tracking-wider text-navy mr-2 font-bold">GRAND TOTAL AKUMULASI KEKURANGAN JAM KERJA:</span>
+                <span class="text-red-900 font-extrabold text-sm whitespace-nowrap">{{ rekapData.ringkasan.grand_total_formatted }}</span>
               </td>
             </tr>
           </tbody>

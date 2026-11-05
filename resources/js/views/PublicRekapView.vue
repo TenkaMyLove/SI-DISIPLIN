@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex flex-col bg-neutral-surface pt-20 print:pt-0 overflow-x-hidden">
+  <div class="min-h-screen flex flex-col bg-neutral-surface pt-20 pb-16 print:pt-0 print:pb-0 overflow-x-hidden">
     <Navbar />
 
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col min-w-0 max-w-full">
@@ -301,16 +301,6 @@
                     </td>
                   </tr>
                 </template>
-
-                <!-- Grand Total Row -->
-                <tr class="bg-neutral-200 font-bold text-navy border-t-2 border-navy">
-                  <td colspan="9" class="py-2.5 px-4 text-right uppercase tracking-wider text-xs">
-                    GRAND TOTAL AKUMULASI KEKURANGAN JAM KERJA:
-                  </td>
-                  <td class="py-2.5 px-3 text-right text-red-900 text-sm whitespace-nowrap">
-                    {{ rekapData.ringkasan.grand_total_formatted }}
-                  </td>
-                </tr>
               </tbody>
             </table>
           </div>
@@ -318,11 +308,11 @@
       </div>
     </main>
 
-    <!-- Clean, Slim Footer in Natural Document Flow (No Fixed Overlay) -->
-    <footer class="py-2.5 text-center text-xs text-neutral-400 border-t border-neutral-border no-print mt-auto">
-      <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between text-[11px] text-neutral-400 gap-1">
-        <span>SIDISIPLIN &bull; Sistem Informasi Disiplin Pegawai Kanwil Kemenkumham Kalsel</span>
-        <span>Jam Kerja Standar: 08:00 &ndash; 16:00 WITA</span>
+    <!-- Footer: Dikembalikan seperti awal dan di-anchor di dasar layar -->
+    <footer class="fixed bottom-0 left-0 right-0 bg-navy text-neutral-300 py-2.5 text-xs text-center border-t-2 border-accent no-print z-40">
+      <div class="max-w-7xl mx-auto px-4">
+        <p class="font-medium text-white">SIDISIPLIN &bull; Sistem Informasi Disiplin Pegawai</p>
+        <p class="mt-0.5 text-[11px] text-neutral-300">Kementerian Hukum Kalimantan Selatan &bull; Jam Kerja Standar: 08:00 &ndash; 16:00 WITA</p>
       </div>
     </footer>
   </div>

@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen flex flex-col bg-neutral-surface pt-20 print:pt-0">
+  <div class="min-h-screen flex flex-col bg-neutral-surface pt-20 pb-16 print:pt-0 print:pb-0 overflow-x-hidden">
     <Navbar />
 
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 min-w-0 max-w-full">
       <!-- Title Section without pill/emoji -->
       <div class="mb-6 border-b border-neutral-border pb-5">
         <h1 class="text-2xl sm:text-3xl font-bold text-navy tracking-tight">
@@ -254,8 +254,8 @@
         </div>
 
         <!-- Table View of Problematic Attendance -->
-        <div v-else class="space-y-6">
-          <div class="bg-white border border-neutral-border overflow-x-auto shadow-sm">
+        <div v-else class="space-y-6 min-w-0 max-w-full">
+          <div class="bg-white border border-neutral-border overflow-x-auto shadow-sm max-w-full">
             <table class="w-full text-left border-collapse text-xs">
               <thead class="sticky top-20 z-10">
                 <tr class="bg-navy text-white border-b border-navy">
@@ -343,11 +343,11 @@
       </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-navy text-neutral-400 py-6 text-xs text-center border-t-2 border-accent no-print mt-auto">
+    <!-- Footer: Anchored to the bottom of the viewport -->
+    <footer class="fixed bottom-0 left-0 right-0 bg-navy text-neutral-300 py-3 text-xs text-center border-t-2 border-accent no-print z-40">
       <div class="max-w-7xl mx-auto px-4">
         <p class="font-medium text-white">SIDISIPLIN &bull; Sistem Informasi Disiplin Pegawai</p>
-        <p class="mt-1">Kementerian Hukum Kalimantan Selatan &bull; Jam Kerja Standar: 08:00 &ndash; 16:00 WITA</p>
+        <p class="mt-0.5 text-[11px] text-neutral-300">Kementerian Hukum Kalimantan Selatan &bull; Jam Kerja Standar: 08:00 &ndash; 16:00 WITA</p>
       </div>
     </footer>
   </div>

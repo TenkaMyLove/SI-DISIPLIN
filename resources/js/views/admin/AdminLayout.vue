@@ -9,9 +9,9 @@
     <!-- Main Workspace: Offset by pl-64 (sidebar) and pt-20 (navbar) -->
     <main
       ref="mainContentRef"
-      class="pt-20 pl-64 min-h-screen flex flex-col print:pt-0 print:pl-0"
+      class="pt-20 pl-64 min-h-screen flex flex-col print:pt-0 print:pl-0 min-w-0 overflow-x-hidden"
     >
-      <div class="flex-1 p-6 lg:p-8 min-w-0">
+      <div class="flex-1 p-6 lg:p-8 min-w-0 max-w-full">
         <router-view />
       </div>
     </main>

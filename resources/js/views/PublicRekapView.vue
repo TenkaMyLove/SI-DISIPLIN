@@ -140,17 +140,16 @@
             </div>
 
             <!-- Divisi Dropdown -->
-            <div class="w-44 flex-shrink-0">
-              <select
+            <div class="w-48 flex-shrink-0">
+              <CustomDropdown
                 v-model="filters.divisi"
-                class="w-full text-xs border border-neutral-border px-2 py-1 bg-white focus:outline-none focus:border-navy"
+                :options="[
+                  { value: '', label: 'Semua Divisi' },
+                  ...divisiOptions.map(d => ({ value: d, label: d }))
+                ]"
+                placeholder="Semua Divisi"
                 @change="fetchRekap"
-              >
-                <option value="">Semua Divisi</option>
-                <option v-for="d in divisiOptions" :key="d" :value="d">
-                  {{ d }}
-                </option>
-              </select>
+              />
             </div>
 
             <!-- Reset Button -->
@@ -321,6 +320,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import Navbar from '@/components/Navbar.vue'
+import CustomDropdown from '@/components/CustomDropdown.vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import api from '@/composables/useApi'
 import {

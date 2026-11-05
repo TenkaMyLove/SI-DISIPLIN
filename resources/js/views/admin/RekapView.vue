@@ -95,30 +95,34 @@
         <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
           Pegawai
         </label>
-        <select
-          v-model="filters.nip"
-          class="w-full text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy mt-8"
-          @change="fetchRekap"
-        >
-          <option value="">Tampilkan Semua Pegawai</option>
-          <option v-for="p in pegawaiList" :key="p.nip" :value="p.nip">
-            {{ p.nama }} ({{ p.nip }})
-          </option>
-        </select>
+        <div class="mt-8">
+          <CustomDropdown
+            v-model="filters.nip"
+            :options="[
+              { value: '', label: 'Tampilkan Semua Pegawai' },
+              ...pegawaiList.map(p => ({ value: p.nip, label: `${p.nama} (${p.nip})` }))
+            ]"
+            placeholder="Tampilkan Semua Pegawai"
+            @change="fetchRekap"
+          />
+        </div>
       </div>
 
       <div>
         <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
           Divisi / Unit Kerja
         </label>
-        <select
-          v-model="filters.divisi"
-          class="w-full text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy mt-8"
-          @change="fetchRekap"
-        >
-          <option value="">Semua Divisi</option>
-          <option v-for="d in divisiOptions" :key="d" :value="d">{{ d }}</option>
-        </select>
+        <div class="mt-8">
+          <CustomDropdown
+            v-model="filters.divisi"
+            :options="[
+              { value: '', label: 'Semua Divisi' },
+              ...divisiOptions.map(d => ({ value: d, label: d }))
+            ]"
+            placeholder="Semua Divisi"
+            @change="fetchRekap"
+          />
+        </div>
       </div>
     </div>
 
@@ -212,6 +216,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
+import CustomDropdown from '@/components/CustomDropdown.vue'
 import api from '@/composables/useApi'
 import { FileSpreadsheet, FileDown, Printer } from 'lucide-vue-next'
 

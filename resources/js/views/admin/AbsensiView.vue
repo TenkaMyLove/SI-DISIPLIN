@@ -32,16 +32,17 @@
       </div>
 
       <div>
-        <select
+        <CustomDropdown
           v-model="filterStatus"
-          class="w-full text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy"
+          :options="[
+            { value: '', label: 'Semua Status' },
+            { value: 'Tanpa Keterangan', label: 'Tanpa Keterangan' },
+            { value: 'Terlambat', label: 'Terlambat' },
+            { value: 'Pulang Duluan', label: 'Pulang Duluan' }
+          ]"
+          placeholder="Semua Status"
           @change="fetchAbsensi(1)"
-        >
-          <option value="">Semua Status</option>
-          <option value="Tanpa Keterangan">Tanpa Keterangan</option>
-          <option value="Terlambat">Terlambat</option>
-          <option value="Pulang Duluan">Pulang Duluan</option>
-        </select>
+        />
       </div>
 
       <div>
@@ -244,16 +245,16 @@
           <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
             Status Kehadiran Bermasalah <span class="text-red-500">*</span>
           </label>
-          <select
+          <CustomDropdown
             v-model="form.status"
-            required
-            class="w-full text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy text-neutral-900 font-medium"
+            :options="[
+              { value: 'Tanpa Keterangan', label: 'Tanpa Keterangan (Sanksi 7,5 Jam Kerja)' },
+              { value: 'Terlambat', label: 'Terlambat' },
+              { value: 'Pulang Duluan', label: 'Pulang Duluan' }
+            ]"
+            placeholder="Pilih Status"
             @change="triggerAutoCalculate"
-          >
-            <option value="Tanpa Keterangan">Tanpa Keterangan (Sanksi 7,5 Jam Kerja)</option>
-            <option value="Terlambat">Terlambat</option>
-            <option value="Pulang Duluan">Pulang Duluan</option>
-          </select>
+          />
         </div>
 
         <!-- Jam Masuk & Jam Pulang (ABS-14: Mandatory on all statuses including Tanpa Keterangan) -->
@@ -405,6 +406,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import Modal from '@/components/Modal.vue'
+import CustomDropdown from '@/components/CustomDropdown.vue'
 import Toast from '@/components/Toast.vue'
 import api from '@/composables/useApi'
 import { Plus, Search, Edit3, Trash2, X, Check } from 'lucide-vue-next'

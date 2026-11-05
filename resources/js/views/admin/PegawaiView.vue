@@ -33,14 +33,17 @@
 
       <div class="flex items-center space-x-2 w-full sm:w-auto">
         <label class="text-xs text-neutral-600 font-medium whitespace-nowrap">Filter Divisi:</label>
-        <select
-          v-model="filterDivisi"
-          class="text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy"
-          @change="fetchPegawai(1)"
-        >
-          <option value="">Semua Divisi</option>
-          <option v-for="d in divisiList" :key="d" :value="d">{{ d }}</option>
-        </select>
+        <div class="w-56">
+          <CustomDropdown
+            v-model="filterDivisi"
+            :options="[
+              { value: '', label: 'Semua Divisi' },
+              ...divisiList.map(d => ({ value: d, label: d }))
+            ]"
+            placeholder="Semua Divisi"
+            @change="fetchPegawai(1)"
+          />
+        </div>
       </div>
     </div>
 
@@ -187,14 +190,11 @@
           <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
             Divisi / Unit Kerja <span class="text-red-500">*</span>
           </label>
-          <select
+          <CustomDropdown
             v-model="form.divisi"
-            required
-            class="w-full text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy text-neutral-900"
-          >
-            <option value="" disabled>Pilih Divisi</option>
-            <option v-for="d in divisiList" :key="d" :value="d">{{ d }}</option>
-          </select>
+            :options="divisiList"
+            placeholder="-- Pilih Divisi --"
+          />
         </div>
 
         <div class="pt-4 border-t border-neutral-border flex justify-end space-x-2">
@@ -270,6 +270,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import Modal from '@/components/Modal.vue'
+import CustomDropdown from '@/components/CustomDropdown.vue'
 import Toast from '@/components/Toast.vue'
 import api from '@/composables/useApi'
 import { UserPlus, Search, Edit3, Trash2 } from 'lucide-vue-next'

@@ -187,7 +187,7 @@
               </tr>
               <tr class="bg-neutral-100 font-semibold border-b border-neutral-300">
                 <td colspan="8" class="py-2.5 px-4 text-right text-navy border-r border-neutral-border">
-                  Total Kekurangan Jam Kerja &mdash; <span class="font-bold">{{ p.nama }}</span>:
+                  Total Kekurangan Jam Kerja:
                 </td>
                 <td class="py-2.5 px-3 text-right text-red-800 font-bold whitespace-nowrap">
                   {{ p.total_durasi_formatted }}

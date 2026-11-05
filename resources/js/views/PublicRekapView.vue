@@ -294,7 +294,7 @@
                   <!-- Employee Subtotal Row (REK-7, REK-8, REK-9) -->
                   <tr class="bg-neutral-100 font-semibold border-b border-neutral-300">
                     <td colspan="9" class="py-2 px-4 text-right text-navy border-r border-neutral-border text-xs">
-                      Total Kekurangan Jam Kerja &mdash; <span class="font-bold">{{ p.nama }}</span>:
+                      Total Kekurangan Jam Kerja:
                     </td>
                     <td class="py-2 px-3 text-right text-red-800 font-bold whitespace-nowrap text-xs">
                       {{ p.total_durasi_formatted }}

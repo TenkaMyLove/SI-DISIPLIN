@@ -177,12 +177,12 @@ class RekapController extends Controller
         $sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         $sheet->mergeCells('A3:I3');
-        $sheet->setCellValue('A3', 'Periode: ' . $data['filter']['periode_label'] . ($data['filter']['divisi'] ? ' | Divisi: ' . $data['filter']['divisi'] : ''));
+        $sheet->setCellValue('A3', 'Periode: ' . $data['filter']['periode_label'] . ($data['filter']['divisi'] ? ' | Divisi / Bagian: ' . $data['filter']['divisi'] : ''));
         $sheet->getStyle('A3')->getFont()->setSize(10)->getColor()->setRGB('4B5563');
         $sheet->getStyle('A3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         $row = 5;
-        $headers = ['No', 'Tanggal', 'NIP', 'Nama Pegawai', 'Divisi', 'Jam Masuk', 'Jam Pulang', 'Status', 'Alasan', 'Kekurangan'];
+        $headers = ['No', 'Tanggal', 'NIP', 'Nama Pegawai', 'Divisi / Bagian', 'Jam Masuk', 'Jam Pulang', 'Status', 'Alasan', 'Kekurangan'];
         // Let's output columns A to J
         $cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 

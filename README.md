@@ -29,23 +29,24 @@ Aplikasi ini dirancang untuk memudahkan Bagian Kepegawaian dan Tata Usaha dalam 
 3. **Manajemen Data Pegawai (CRUD)**
    - NIP validasi ketat 18 digit angka unik.
    - Nama lengkap beserta gelar.
-   - Divisi / Subbag di lingkungan Kanwil.
+   - Divisi / Bagian di lingkungan Kanwil (Pelayanan Hukum, P3H, dan Tata Usaha dan Umum).
    - Proteksi integritas data: pegawai dengan riwayat absensi tidak dapat dihapus sembarangan.
 4. **Pencatatan Presensi & Pelanggaran**
    - Pencatatan jenis status: `Terlambat`, `Pulang Duluan`, dan `Tanpa Keterangan`.
-   - Perhitungan otomatis durasi menit:
-     - Terlambat: selisih `jam_masuk` terhadap `jam_masuk_standar` (default 08:00).
-     - Pulang Duluan: selisih `jam_pulang_standar` (default 16:00) terhadap `jam_pulang`.
-     - Tanpa Keterangan: otomatis dihitung penuh 450 menit (7.5 jam kerja efektif).
+   - Perhitungan otomatis durasi menit kekurangan jam kerja sesuai hari kerja operasional:
+     - **Senin**: 07:30 - 16:00 (Non-Flex).
+     - **Selasa - Kamis**: 07:30 - 16:00 (Flex Time, kompensasi jam kepulangan misal datang 07:36 maka target pulang 16:06 untuk memenuhi jam kerja).
+     - **Jumat**: 07:30 - 16:30 (Non-Flex).
+     - **Tanpa Keterangan**: otomatis dihitung penuh 450 menit (7,5 jam kerja efektif).
    - Validasi integritas waktu: `jam_pulang` tidak boleh lebih awal dari `jam_masuk`.
 5. **Rekapitulasi Disiplin Pegawai (Publik & Admin)**
-   - Rekapitulasi per pegawai: NIP, nama, divisi, jumlah terlambat, jumlah pulang duluan, jumlah tanpa keterangan, dan total menit defisit (diformat dalam `... Jam ... Menit`).
+   - Rekapitulasi per pegawai: NIP, nama, divisi / bagian, jumlah terlambat, jumlah pulang duluan, jumlah tanpa keterangan, dan total menit defisit (diformat dalam `... Jam ... Menit`).
    - Filter rentang tanggal awal dan akhir (`start_date` & `end_date`).
-   - Pencarian berdasarkan nama / NIP / divisi.
+   - Pencarian berdasarkan nama / NIP / divisi / bagian.
    - Modal detail riwayat pelanggaran setiap pegawai.
-   - Export laporan ke format **Excel (.xlsx)** dan **CSV**.
-6. **Pengaturan Jam Kerja Standar**
-   - Penyesuaian `jam_masuk_standar` dan `jam_pulang_standar` yang tersimpan di database.
+   - Export laporan ke format **Excel (.xlsx)** dan **PDF**.
+6. **Pengaturan Jam Kerja**
+   - Konfigurasi jadwal jam masuk & pulang serta ketentuan Flex yang tersimpan di database.
 
 ---
 

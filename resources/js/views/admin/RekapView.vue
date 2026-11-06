@@ -110,16 +110,16 @@
 
       <div>
         <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
-          Divisi / Unit Kerja
+          Divisi / Bagian
         </label>
         <div class="mt-8">
           <CustomDropdown
             v-model="filters.divisi"
             :options="[
-              { value: '', label: 'Semua Divisi' },
+              { value: '', label: 'Semua Divisi / Bagian' },
               ...divisiOptions.map(d => ({ value: d, label: d }))
             ]"
-            placeholder="Semua Divisi"
+            placeholder="Semua Divisi / Bagian"
             @change="fetchRekap"
           />
         </div>
@@ -161,7 +161,7 @@
               <th class="py-2.5 px-3 font-semibold w-28 border-r border-navy-800">Tanggal</th>
               <th class="py-2.5 px-3 font-semibold w-44 border-r border-navy-800">NIP</th>
               <th class="py-2.5 px-3 font-semibold border-r border-navy-800">Nama Pegawai</th>
-              <th class="py-2.5 px-3 font-semibold w-36 border-r border-navy-800">Divisi</th>
+              <th class="py-2.5 px-3 font-semibold w-40 border-r border-navy-800">Divisi / Bagian</th>
               <th class="py-2.5 px-2 font-semibold text-center w-24 border-r border-navy-800">Masuk-Pulang</th>
               <th class="py-2.5 px-3 font-semibold w-32 border-r border-navy-800">Status</th>
               <th class="py-2.5 px-3 font-semibold border-r border-navy-800">Alasan</th>
@@ -225,12 +225,6 @@ const divisiOptions = [
   'Pelayanan Hukum',
   'P3H',
   'Tata Usaha dan Umum',
-  'Kekayaan Intelektual',
-  'Administrasi Hukum Umum',
-  'Humas',
-  'SDM',
-  'Perencanaan',
-  'Analis Hukum',
 ]
 
 const filters = reactive({

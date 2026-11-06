@@ -71,18 +71,18 @@ class AbsensiController extends Controller
     public function hitungDurasi(Request $request): JsonResponse
     {
         $status = $request->input('status', Absensi::STATUS_TERLAMBAT);
-        $jamMasuk = $request->input('jam_masuk', '08:00');
+        $jamMasuk = $request->input('jam_masuk', '07:30');
         $jamPulang = $request->input('jam_pulang', '16:00');
+        $periode = $request->input('periode') ?? $request->input('tanggal') ?? date('Y-m-d');
 
-        $stdMasuk = Pengaturan::get('jam_masuk_standar', '08:00');
-        $stdPulang = Pengaturan::get('jam_pulang_standar', '16:00');
-
-        $durasiMenit = Absensi::hitungOtomatisDurasi($status, $jamMasuk, $jamPulang, $stdMasuk, $stdPulang);
+        $durasiMenit = Absensi::hitungOtomatisDurasi($status, $jamMasuk, $jamPulang, $periode);
+        $jadwal = Pengaturan::getJadwalByTanggal($periode);
 
         return response()->json([
             'success' => true,
             'durasi_menit' => $durasiMenit,
             'durasi_formatted' => Absensi::formatMenit($durasiMenit),
+            'jadwal' => $jadwal,
         ]);
     }
 
@@ -95,14 +95,11 @@ class AbsensiController extends Controller
 
         // If manual duration is not provided or null, calculate automatically
         if (! isset($data['durasi_menit']) || $data['durasi_menit'] === null) {
-            $stdMasuk = Pengaturan::get('jam_masuk_standar', '08:00');
-            $stdPulang = Pengaturan::get('jam_pulang_standar', '16:00');
             $data['durasi_menit'] = Absensi::hitungOtomatisDurasi(
                 $data['status'],
                 $data['jam_masuk'],
                 $data['jam_pulang'],
-                $stdMasuk,
-                $stdPulang
+                $data['periode']
             );
         }
 
@@ -139,14 +136,11 @@ class AbsensiController extends Controller
 
         // If duration is not explicitly provided, recalculate
         if (! isset($data['durasi_menit']) || $data['durasi_menit'] === null) {
-            $stdMasuk = Pengaturan::get('jam_masuk_standar', '08:00');
-            $stdPulang = Pengaturan::get('jam_pulang_standar', '16:00');
             $data['durasi_menit'] = Absensi::hitungOtomatisDurasi(
                 $data['status'],
                 $data['jam_masuk'],
                 $data['jam_pulang'],
-                $stdMasuk,
-                $stdPulang
+                $data['periode']
             );
         }
 

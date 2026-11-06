@@ -18,12 +18,6 @@ return new class extends Migration
                 'Pelayanan Hukum',
                 'P3H',
                 'Tata Usaha dan Umum',
-                'Kekayaan Intelektual',
-                'Administrasi Hukum Umum',
-                'Humas',
-                'SDM',
-                'Perencanaan',
-                'Analis Hukum',
             ]);
             $table->timestamps();
         });

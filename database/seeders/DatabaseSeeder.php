@@ -25,11 +25,20 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // 2. Default standard working hours
-        Pengaturan::set('jam_masuk_standar', '08:00', 'Jam Masuk Standar');
+        // 2. Default standard working hours & schedule
+        Pengaturan::set('jam_masuk_standar', '07:30', 'Jam Masuk Standar');
         Pengaturan::set('jam_pulang_standar', '16:00', 'Jam Pulang Standar');
+        Pengaturan::set('senin_masuk', '07:30', 'Jam Masuk Senin');
+        Pengaturan::set('senin_pulang', '16:00', 'Jam Pulang Senin');
+        Pengaturan::set('senin_flex', '0', 'Flex Senin');
+        Pengaturan::set('selasa_kamis_masuk', '07:30', 'Jam Masuk Selasa-Kamis');
+        Pengaturan::set('selasa_kamis_pulang', '16:00', 'Jam Pulang Selasa-Kamis');
+        Pengaturan::set('selasa_kamis_flex', '1', 'Flex Selasa-Kamis');
+        Pengaturan::set('jumat_masuk', '07:30', 'Jam Masuk Jumat');
+        Pengaturan::set('jumat_pulang', '16:30', 'Jam Pulang Jumat');
+        Pengaturan::set('jumat_flex', '0', 'Flex Jumat');
 
-        // 3. Sample Pegawai from Kemenkumham Kalsel
+        // 3. Sample Pegawai from Kemenkumham Kalsel (Pelayanan Hukum, P3H, Tata Usaha dan Umum)
         $samplePegawai = [
             [
                 'nip' => '198503152010121001',
@@ -39,7 +48,7 @@ class DatabaseSeeder extends Seeder
             [
                 'nip' => '199008222015032002',
                 'nama' => 'Siti Rahmawati, S.Sos.',
-                'divisi' => 'Humas',
+                'divisi' => 'Tata Usaha dan Umum',
             ],
             [
                 'nip' => '198811052012121003',
@@ -49,17 +58,17 @@ class DatabaseSeeder extends Seeder
             [
                 'nip' => '199204182019012004',
                 'nama' => 'Dewi Anggraini, S.H., M.H.',
-                'divisi' => 'Kekayaan Intelektual',
+                'divisi' => 'Pelayanan Hukum',
             ],
             [
                 'nip' => '198706302011011005',
                 'nama' => 'Muhammad Rizky, S.E.',
-                'divisi' => 'Perencanaan',
+                'divisi' => 'P3H',
             ],
             [
                 'nip' => '199309142020121006',
                 'nama' => 'Nurul Hidayah, S.Tr.A.P.',
-                'divisi' => 'SDM',
+                'divisi' => 'Tata Usaha dan Umum',
             ],
             [
                 'nip' => '198602102009031007',
@@ -69,12 +78,12 @@ class DatabaseSeeder extends Seeder
             [
                 'nip' => '199105252014022008',
                 'nama' => 'Kartika Sari, S.H.',
-                'divisi' => 'Administrasi Hukum Umum',
+                'divisi' => 'Pelayanan Hukum',
             ],
             [
                 'nip' => '198907122013011009',
                 'nama' => 'Ferry Gunawan, S.H.',
-                'divisi' => 'Analis Hukum',
+                'divisi' => 'P3H',
             ],
             [
                 'nip' => '199401152021031001',
@@ -84,7 +93,7 @@ class DatabaseSeeder extends Seeder
             [
                 'nip' => '199505202022022002',
                 'nama' => 'Rina Kusuma, S.E.',
-                'divisi' => 'Perencanaan',
+                'divisi' => 'Tata Usaha dan Umum',
             ],
             [
                 'nip' => '199612102023011003',

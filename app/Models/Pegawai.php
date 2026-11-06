@@ -19,12 +19,6 @@ class Pegawai extends Model
         'Pelayanan Hukum',
         'P3H',
         'Tata Usaha dan Umum',
-        'Kekayaan Intelektual',
-        'Administrasi Hukum Umum',
-        'Humas',
-        'SDM',
-        'Perencanaan',
-        'Analis Hukum',
     ];
 
     protected $fillable = [

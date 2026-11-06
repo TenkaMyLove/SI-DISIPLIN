@@ -49,7 +49,7 @@
           :class="isActive('/admin/pengaturan') ? 'bg-navy-800 text-white border-accent' : 'text-neutral-300 hover:bg-navy-800 hover:text-white border-transparent'"
         >
           <Clock class="w-4 h-4 flex-shrink-0" :class="isActive('/admin/pengaturan') ? 'text-accent' : ''" />
-          <span>Jam Kerja Standar</span>
+          <span>Jam Kerja</span>
         </router-link>
 
         <router-link

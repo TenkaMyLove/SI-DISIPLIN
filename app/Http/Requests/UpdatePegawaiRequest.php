@@ -38,8 +38,8 @@ class UpdatePegawaiRequest extends FormRequest
         return [
             'nama.required' => 'Nama pegawai wajib diisi.',
             'nama.max' => 'Nama tidak boleh melebihi 255 karakter.',
-            'divisi.required' => 'Divisi wajib dipilih.',
-            'divisi.in' => 'Pilihan divisi tidak valid.',
+            'divisi.required' => 'Divisi / Bagian wajib dipilih.',
+            'divisi.in' => 'Pilihan Divisi / Bagian tidak valid.',
         ];
     }
 }

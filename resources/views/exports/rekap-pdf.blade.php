@@ -111,7 +111,7 @@
     <div class="info-bar">
         <strong>Filter Aktif:</strong> {{ $data['filter']['periode_label'] }}
         @if(!empty($data['filter']['divisi']))
-            | <strong>Divisi:</strong> {{ $data['filter']['divisi'] }}
+            | <strong>Divisi / Bagian:</strong> {{ $data['filter']['divisi'] }}
         @endif
         | <strong>Total Pegawai:</strong> {{ $data['ringkasan']['total_pegawai_bermasalah'] }} orang
         | <strong>Total Catatan:</strong> {{ $data['ringkasan']['total_catatan_absensi'] }} kali
@@ -124,7 +124,7 @@
                 <th class="text-center" style="width: 65px;">Tanggal</th>
                 <th style="width: 120px;">NIP</th>
                 <th style="width: 130px;">Nama Pegawai</th>
-                <th style="width: 110px;">Divisi</th>
+                <th style="width: 110px;">Divisi / Bagian</th>
                 <th class="text-center" style="width: 50px;">Masuk</th>
                 <th class="text-center" style="width: 50px;">Pulang</th>
                 <th style="width: 90px;">Status</th>

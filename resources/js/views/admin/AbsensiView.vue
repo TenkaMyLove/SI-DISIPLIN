@@ -237,7 +237,25 @@
             type="date"
             required
             class="w-full text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy text-neutral-900"
+            @change="handlePeriodeChange"
           />
+        </div>
+
+        <!-- Schedule Hint & Flex info badge -->
+        <div
+          v-if="scheduleHint"
+          class="p-2.5 border text-xs space-y-1"
+          :class="scheduleHint.isFlex ? 'bg-emerald-50/70 border-emerald-300 text-emerald-950' : 'bg-neutral-50 border-neutral-border text-neutral-700'"
+        >
+          <div class="flex items-center justify-between">
+            <span class="font-bold flex items-center space-x-1.5">
+              <Zap v-if="scheduleHint.isFlex" class="w-3.5 h-3.5 text-emerald-600 inline" />
+              <Clock v-else class="w-3.5 h-3.5 text-navy inline" />
+              <span>Hari {{ scheduleHint.hari }} ({{ scheduleHint.isFlex ? 'Flex Time' : 'Non-Flex' }})</span>
+            </span>
+            <span class="text-[11px] font-mono font-medium">{{ scheduleHint.std }}</span>
+          </div>
+          <p class="text-[11px] leading-relaxed">{{ scheduleHint.desc }}</p>
         </div>
 
         <!-- Status Absensi (ABS-4) -->
@@ -270,7 +288,7 @@
               class="w-full text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy text-neutral-900"
               @change="triggerAutoCalculate"
             />
-            <p class="text-[10px] text-neutral-muted mt-0.5">Standar: 08:00 WITA</p>
+            <p class="text-[10px] text-neutral-muted mt-0.5">Standar: 07:30 WITA</p>
           </div>
 
           <div>
@@ -284,7 +302,9 @@
               class="w-full text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy text-neutral-900"
               @change="triggerAutoCalculate"
             />
-            <p class="text-[10px] text-neutral-muted mt-0.5">Standar: 16:00 WITA</p>
+            <p class="text-[10px] text-neutral-muted mt-0.5">
+              Standar: {{ isFriday ? '16:30' : '16:00' }} WITA
+            </p>
           </div>
         </div>
 
@@ -409,7 +429,7 @@ import Modal from '@/components/Modal.vue'
 import CustomDropdown from '@/components/CustomDropdown.vue'
 import Toast from '@/components/Toast.vue'
 import api from '@/composables/useApi'
-import { Plus, Search, Edit3, Trash2, X, Check } from 'lucide-vue-next'
+import { Plus, Search, Edit3, Trash2, X, Check, Zap, Clock } from 'lucide-vue-next'
 
 const loading = ref(true)
 const absensiList = ref([])
@@ -436,11 +456,65 @@ const formError = ref('')
 const form = reactive({
   nip: '',
   periode: new Date().toISOString().substring(0, 10),
-  jam_masuk: '08:00',
+  jam_masuk: '07:30',
   jam_pulang: '16:00',
   status: 'Tanpa Keterangan',
   alasan: '',
   durasi_menit: 450,
+})
+
+const isFriday = computed(() => {
+  if (!form.periode) return false
+  const parts = form.periode.split('-').map(Number)
+  const dateObj = new Date(parts[0], parts[1] - 1, parts[2])
+  return dateObj.getDay() === 5
+})
+
+const scheduleHint = computed(() => {
+  if (!form.periode) return null
+  const parts = form.periode.split('-').map(Number)
+  const dateObj = new Date(parts[0], parts[1] - 1, parts[2])
+  const dayOfWeek = dateObj.getDay()
+
+  if (dayOfWeek === 1) {
+    return {
+      hari: 'Senin',
+      isFlex: false,
+      std: '07:30 - 16:00 WITA',
+      desc: 'Non-Flex: Jam standar 07:30 - 16:00. Keterlambatan masuk langsung dihitung sebagai kekurangan.',
+    }
+  } else if (dayOfWeek >= 2 && dayOfWeek <= 4) {
+    const hariNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
+    const [masukH, masukM] = (form.jam_masuk || '07:30').split(':').map(Number)
+    const masukTotalMin = masukH * 60 + masukM
+    const stdMasukTotalMin = 7 * 60 + 30
+    const effectiveMasukMin = Math.max(stdMasukTotalMin, masukTotalMin)
+    const targetPulangMin = effectiveMasukMin + 510 // 8.5 jam kehadiran
+    const targetH = String(Math.floor(targetPulangMin / 60)).padStart(2, '0')
+    const targetM = String(targetPulangMin % 60).padStart(2, '0')
+
+    return {
+      hari: hariNames[dayOfWeek],
+      isFlex: true,
+      std: '07:30 - 16:00 WITA',
+      targetPulang: `${targetH}:${targetM}`,
+      desc: `Flex: Datang ${form.jam_masuk || '07:30'} -> Target pulang minimal ${targetH}:${targetM} agar jam kerja terpenuhi.`,
+    }
+  } else if (dayOfWeek === 5) {
+    return {
+      hari: 'Jumat',
+      isFlex: false,
+      std: '07:30 - 16:30 WITA',
+      desc: 'Non-Flex: Jam standar 07:30 - 16:30 WITA (penyesuaian istirahat ibadah Jumat).',
+    }
+  } else {
+    return {
+      hari: 'Akhir Pekan',
+      isFlex: false,
+      std: '07:30 - 16:00 WITA',
+      desc: 'Akhir Pekan (Sabtu / Minggu).',
+    }
+  }
 })
 
 // Autocomplete State
@@ -555,6 +629,15 @@ function clearSelectedPegawai() {
   pegawaiInputText.value = ''
 }
 
+function handlePeriodeChange() {
+  if (isFriday.value && form.jam_pulang === '16:00') {
+    form.jam_pulang = '16:30'
+  } else if (!isFriday.value && form.jam_pulang === '16:30') {
+    form.jam_pulang = '16:00'
+  }
+  triggerAutoCalculate()
+}
+
 function triggerAutoCalculate() {
   recalculateDuration()
 }
@@ -565,20 +648,54 @@ function recalculateDuration() {
     return
   }
 
-  // Calculate against standard 08:00 - 16:00
-  const [masukH, masukM] = (form.jam_masuk || '08:00').split(':').map(Number)
+  if (!form.periode) return
+
+  // Determine day of week
+  const parts = form.periode.split('-').map(Number)
+  const dateObj = new Date(parts[0], parts[1] - 1, parts[2])
+  const dayOfWeek = dateObj.getDay() // 0 = Sun, 1 = Mon, 2 = Tue, 3 = Wed, 4 = Thu, 5 = Fri, 6 = Sat
+
+  const [masukH, masukM] = (form.jam_masuk || '07:30').split(':').map(Number)
   const [pulangH, pulangM] = (form.jam_pulang || '16:00').split(':').map(Number)
 
   const masukTotalMin = masukH * 60 + masukM
   const pulangTotalMin = pulangH * 60 + pulangM
 
-  const stdMasukTotalMin = 8 * 60 // 08:00
-  const stdPulangTotalMin = 16 * 60 // 16:00
+  let stdMasukTotalMin = 7 * 60 + 30 // 07:30
+  let stdPulangTotalMin = 16 * 60 // 16:00
+  let isFlex = false
 
-  const selisihMasuk = Math.max(0, masukTotalMin - stdMasukTotalMin)
-  const selisihPulang = Math.max(0, stdPulangTotalMin - pulangTotalMin)
+  if (dayOfWeek === 1) {
+    // Senin
+    stdMasukTotalMin = 7 * 60 + 30
+    stdPulangTotalMin = 16 * 60
+    isFlex = false
+  } else if (dayOfWeek >= 2 && dayOfWeek <= 4) {
+    // Selasa - Kamis (Flex)
+    stdMasukTotalMin = 7 * 60 + 30
+    stdPulangTotalMin = 16 * 60
+    isFlex = true
+  } else if (dayOfWeek === 5) {
+    // Jumat
+    stdMasukTotalMin = 7 * 60 + 30
+    stdPulangTotalMin = 16 * 60 + 30
+    isFlex = false
+  }
 
-  form.durasi_menit = selisihMasuk + selisihPulang
+  if (isFlex) {
+    // Flex: Required total presence
+    const stdDurationMin = Math.max(0, stdPulangTotalMin - stdMasukTotalMin) // 510 minutes
+    const effectiveMasukMin = Math.max(stdMasukTotalMin, masukTotalMin)
+    const targetPulangMin = effectiveMasukMin + stdDurationMin
+
+    const kekuranganMin = Math.max(0, targetPulangMin - pulangTotalMin)
+    form.durasi_menit = kekuranganMin
+  } else {
+    // Non-Flex
+    const selisihMasuk = Math.max(0, masukTotalMin - stdMasukTotalMin)
+    const selisihPulang = Math.max(0, stdPulangTotalMin - pulangTotalMin)
+    form.durasi_menit = selisihMasuk + selisihPulang
+  }
 }
 
 function openAddModal() {
@@ -588,8 +705,12 @@ function openAddModal() {
   form.nip = ''
   pegawaiInputText.value = ''
   form.periode = new Date().toISOString().substring(0, 10)
-  form.jam_masuk = '08:00'
-  form.jam_pulang = '16:00'
+  form.jam_masuk = '07:30'
+
+  const parts = form.periode.split('-').map(Number)
+  const dateObj = new Date(parts[0], parts[1] - 1, parts[2])
+  form.jam_pulang = dateObj.getDay() === 5 ? '16:30' : '16:00'
+
   form.status = 'Tanpa Keterangan'
   form.alasan = ''
   form.durasi_menit = 450
@@ -603,7 +724,7 @@ function openEditModal(rec) {
   form.nip = rec.nip
   pegawaiInputText.value = `${rec.pegawai?.nama || ''} (${rec.nip})`
   form.periode = rec.periode
-  form.jam_masuk = rec.jam_masuk?.substring(0, 5) || '08:00'
+  form.jam_masuk = rec.jam_masuk?.substring(0, 5) || '07:30'
   form.jam_pulang = rec.jam_pulang?.substring(0, 5) || '16:00'
   form.status = rec.status
   form.alasan = rec.alasan || ''

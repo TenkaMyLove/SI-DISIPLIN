@@ -166,14 +166,14 @@
             </div>
 
             <!-- Divisi Dropdown -->
-            <div class="w-48 flex-shrink-0">
+            <div class="w-52 flex-shrink-0">
               <CustomDropdown
                 v-model="filters.divisi"
                 :options="[
-                  { value: '', label: 'Semua Divisi' },
+                  { value: '', label: 'Semua Divisi / Bagian' },
                   ...divisiOptions.map(d => ({ value: d, label: d }))
                 ]"
-                placeholder="Semua Divisi"
+                placeholder="Semua Divisi / Bagian"
                 @change="fetchRekap"
               />
             </div>
@@ -263,7 +263,7 @@
                   <th class="py-2.5 px-3 font-semibold w-28 border-r border-navy-800">Tanggal</th>
                   <th class="py-2.5 px-3 font-semibold w-44 border-r border-navy-800">NIP</th>
                   <th class="py-2.5 px-3 font-semibold border-r border-navy-800">Nama Pegawai</th>
-                  <th class="py-2.5 px-3 font-semibold w-40 border-r border-navy-800">Divisi</th>
+                  <th class="py-2.5 px-3 font-semibold w-40 border-r border-navy-800">Divisi / Bagian</th>
                   <th class="py-2.5 px-2 font-semibold text-center w-20 border-r border-navy-800">Masuk</th>
                   <th class="py-2.5 px-2 font-semibold text-center w-20 border-r border-navy-800">Pulang</th>
                   <th class="py-2.5 px-3 font-semibold w-36 border-r border-navy-800">Status</th>
@@ -392,12 +392,6 @@ const divisiOptions = [
   'Pelayanan Hukum',
   'P3H',
   'Tata Usaha dan Umum',
-  'Kekayaan Intelektual',
-  'Administrasi Hukum Umum',
-  'Humas',
-  'SDM',
-  'Perencanaan',
-  'Analis Hukum',
 ]
 
 const filteredPegawaiOptions = computed(() => {

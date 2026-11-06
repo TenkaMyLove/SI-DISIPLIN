@@ -42,7 +42,7 @@
             <Users class="w-5 h-5 text-navy" />
           </div>
           <p class="text-3xl font-bold text-navy mt-2">{{ stats.totalPegawai }}</p>
-          <p class="text-xs text-neutral-muted mt-1">Terdaftar di 9 unit kerja / divisi</p>
+          <p class="text-xs text-neutral-muted mt-1">Terdaftar di 3 Divisi / Bagian</p>
         </div>
 
         <div class="bg-white border border-neutral-border p-5">
@@ -65,13 +65,13 @@
 
         <div class="bg-white border border-neutral-border p-5">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold text-neutral-muted uppercase tracking-wider">Jam Standar</span>
+            <span class="text-xs font-semibold text-neutral-muted uppercase tracking-wider">Jam Kerja</span>
             <Settings class="w-5 h-5 text-navy" />
           </div>
-          <p class="text-xl font-bold text-navy mt-2">
+          <p class="text-lg font-bold text-navy mt-2">
             {{ settings.jam_masuk_standar }} &ndash; {{ settings.jam_pulang_standar }}
           </p>
-          <p class="text-xs text-neutral-muted mt-1">WITA &bull; Senin &ndash; Jumat</p>
+          <p class="text-xs text-neutral-muted mt-1">WITA &bull; Flex (Sel &ndash; Kam)</p>
         </div>
       </div>
 

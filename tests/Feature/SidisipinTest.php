@@ -126,10 +126,37 @@ class SidisipinTest extends TestCase
             ->postJson('/api/pegawai', [
                 'nip' => '12345', // Not 18 digits
                 'nama' => 'Testing',
-                'divisi' => 'SDM',
+                'divisi' => 'Tata Usaha dan Umum',
             ]);
 
         $response->assertStatus(422)->assertJsonValidationErrors(['nip']);
+    }
+
+    public function test_pegawai_divisi_must_be_one_of_the_three_categories(): void
+    {
+        $token = $this->admin->createToken('test_token')->plainTextToken;
+
+        // Invalid category
+        $response = $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson('/api/pegawai', [
+                'nip' => '199001012020011088',
+                'nama' => 'Invalid Divisi',
+                'divisi' => 'Keuangan',
+            ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors(['divisi']);
+
+        // Valid categories
+        foreach (['Pelayanan Hukum', 'P3H', 'Tata Usaha dan Umum'] as $validDivisi) {
+            $nip = '19900101202001108' . rand(1, 9);
+            $res = $this->withHeader('Authorization', "Bearer {$token}")
+                ->postJson('/api/pegawai', [
+                    'nip' => $nip,
+                    'nama' => "Pegawai {$validDivisi}",
+                    'divisi' => $validDivisi,
+                ]);
+            $res->assertCreated();
+        }
     }
 
     /**
@@ -172,14 +199,14 @@ class SidisipinTest extends TestCase
         $pegawai = Pegawai::create([
             'nip' => '199001012020011002',
             'nama' => 'Siti',
-            'divisi' => 'Humas',
+            'divisi' => 'Pelayanan Hukum',
         ]);
 
         $response = $this->withHeader('Authorization', "Bearer {$token}")
             ->postJson('/api/absensi', [
                 'nip' => $pegawai->nip,
                 'periode' => '2026-11-04',
-                'jam_masuk' => '08:00',
+                'jam_masuk' => '07:30',
                 'jam_pulang' => '16:00',
                 'status' => 'Tanpa Keterangan',
                 'alasan' => 'Tidak masuk',
@@ -190,31 +217,75 @@ class SidisipinTest extends TestCase
     }
 
     /**
-     * ABS-6: Terlambat dihitung dari selisih jam standar (08:00 - 16:00).
+     * Jadwal Kerja & Flex:
+     * Senin: 07:30 - 16:00 (non flex)
+     * Selasa - Kamis: 07:30 - 16:00 (flex) -> datang 07:36, pulang 16:06 memenuhi jam kerja (0 menit), pulang 16:00 defisit 6 menit
+     * Jumat: 07:30 - 16:30 (non flex)
      */
-    public function test_terlambat_calculates_duration_from_standard_hours(): void
+    public function test_jadwal_kerja_dan_flex_logic(): void
     {
         $token = $this->admin->createToken('test_token')->plainTextToken;
 
         $pegawai = Pegawai::create([
             'nip' => '199001012020011003',
             'nama' => 'Dewi',
-            'divisi' => 'Perencanaan',
+            'divisi' => 'P3H',
         ]);
 
-        // Masuk 08:35, Pulang 16:00 -> 35 menit
-        $response = $this->withHeader('Authorization', "Bearer {$token}")
+        // 1. SENIN (2026-11-02, Non-Flex, Std: 07:30 - 16:00)
+        // Datang 07:36, Pulang 16:06 -> Keterlambatan masuk 6 menit tetap dihitung
+        $resSenin = $this->withHeader('Authorization', "Bearer {$token}")
             ->postJson('/api/absensi', [
                 'nip' => $pegawai->nip,
-                'periode' => '2026-11-04',
-                'jam_masuk' => '08:35',
-                'jam_pulang' => '16:00',
+                'periode' => '2026-11-02',
+                'jam_masuk' => '07:36',
+                'jam_pulang' => '16:06',
                 'status' => 'Terlambat',
                 'alasan' => 'Macet',
             ]);
+        $resSenin->assertCreated();
+        $this->assertEquals(6, $resSenin->json('data.durasi_menit'));
 
-        $response->assertCreated();
-        $this->assertEquals(35, $response->json('data.durasi_menit'));
+        // 2. SELASA (2026-11-03, Flex, Std: 07:30 - 16:00)
+        // Skenario User: Datang 07:36, Pulang 16:06 -> Memenuhi jam kerja (0 menit)
+        $resSelasaMemenuhi = $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson('/api/absensi', [
+                'nip' => $pegawai->nip,
+                'periode' => '2026-11-03',
+                'jam_masuk' => '07:36',
+                'jam_pulang' => '16:06',
+                'status' => 'Terlambat',
+                'alasan' => 'Flex time dipenuhi',
+            ]);
+        $resSelasaMemenuhi->assertCreated();
+        $this->assertEquals(0, $resSelasaMemenuhi->json('data.durasi_menit'));
+
+        // Skenario User: Datang 07:36, Pulang 16:00 -> Defisit 6 menit
+        $resSelasaDefisit = $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson('/api/absensi', [
+                'nip' => $pegawai->nip,
+                'periode' => '2026-11-03',
+                'jam_masuk' => '07:36',
+                'jam_pulang' => '16:00',
+                'status' => 'Terlambat',
+                'alasan' => 'Pulang jam 16:00 defisit 6 menit',
+            ]);
+        $resSelasaDefisit->assertCreated();
+        $this->assertEquals(6, $resSelasaDefisit->json('data.durasi_menit'));
+
+        // 3. JUMAT (2026-11-06, Non-Flex, Std: 07:30 - 16:30)
+        // Datang 07:30, Pulang 16:15 -> Pulang duluan 15 menit
+        $resJumat = $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson('/api/absensi', [
+                'nip' => $pegawai->nip,
+                'periode' => '2026-11-06',
+                'jam_masuk' => '07:30',
+                'jam_pulang' => '16:15',
+                'status' => 'Pulang Duluan',
+                'alasan' => 'Izin',
+            ]);
+        $resJumat->assertCreated();
+        $this->assertEquals(15, $resJumat->json('data.durasi_menit'));
     }
 
     /**
@@ -227,7 +298,7 @@ class SidisipinTest extends TestCase
         $pegawai = Pegawai::create([
             'nip' => '199001012020011004',
             'nama' => 'Rizky',
-            'divisi' => 'Kekayaan Intelektual',
+            'divisi' => 'Tata Usaha dan Umum',
         ]);
 
         $response = $this->withHeader('Authorization', "Bearer {$token}")
@@ -264,8 +335,8 @@ class SidisipinTest extends TestCase
      */
     public function test_public_rekap_is_accessible_and_filters_correctly(): void
     {
-        $pegawai1 = Pegawai::create(['nip' => '199001012020011005', 'nama' => 'Pegawai Bermasalah', 'divisi' => 'SDM']);
-        $pegawai2 = Pegawai::create(['nip' => '199001012020011006', 'nama' => 'Pegawai Rajin', 'divisi' => 'SDM']);
+        $pegawai1 = Pegawai::create(['nip' => '199001012020011005', 'nama' => 'Pegawai Bermasalah', 'divisi' => 'Tata Usaha dan Umum']);
+        $pegawai2 = Pegawai::create(['nip' => '199001012020011006', 'nama' => 'Pegawai Rajin', 'divisi' => 'Tata Usaha dan Umum']);
 
         // Only pegawai1 has problem
         Absensi::create([
@@ -311,8 +382,10 @@ class SidisipinTest extends TestCase
             ->assertHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
         // PDF Export
-        $pdfResponse = $this->get('/api/rekap/export-pdf?mode=bulan&bulan=2026-11');
-        $pdfResponse->assertOk()
-            ->assertHeader('content-type', 'application/pdf');
+        if (extension_loaded('gd')) {
+            $pdfResponse = $this->get('/api/rekap/export-pdf?mode=bulan&bulan=2026-11');
+            $pdfResponse->assertOk()
+                ->assertHeader('content-type', 'application/pdf');
+        }
     }
 }

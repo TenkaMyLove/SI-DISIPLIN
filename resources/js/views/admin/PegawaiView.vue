@@ -5,7 +5,7 @@
       <div>
         <h1 class="text-2xl font-bold text-navy tracking-tight">Manajemen Data Pegawai</h1>
         <p class="text-sm text-neutral-muted mt-0.5">
-          Kelola master data pegawai Kementerian Hukum Kalimantan Selatan (NIP 18 Digit, Nama, Divisi).
+          Kelola master data pegawai Kementerian Hukum Kalimantan Selatan (NIP 18 Digit, Nama, Divisi / Bagian).
         </p>
       </div>
 
@@ -32,15 +32,15 @@
       </div>
 
       <div class="flex items-center space-x-2 w-full sm:w-auto">
-        <label class="text-xs text-neutral-600 font-medium whitespace-nowrap">Filter Divisi:</label>
+        <label class="text-xs text-neutral-600 font-medium whitespace-nowrap">Filter Divisi / Bagian:</label>
         <div class="w-56">
           <CustomDropdown
             v-model="filterDivisi"
             :options="[
-              { value: '', label: 'Semua Divisi' },
+              { value: '', label: 'Semua Divisi / Bagian' },
               ...divisiList.map(d => ({ value: d, label: d }))
             ]"
-            placeholder="Semua Divisi"
+            placeholder="Semua Divisi / Bagian"
             @change="fetchPegawai(1)"
           />
         </div>
@@ -60,7 +60,7 @@
             <th class="py-3 px-3 font-semibold text-center w-12 border-r border-navy-800">No</th>
             <th class="py-3 px-3 font-semibold w-48 border-r border-navy-800">NIP (18 Digit)</th>
             <th class="py-3 px-3 font-semibold border-r border-navy-800">Nama Lengkap</th>
-            <th class="py-3 px-3 font-semibold w-52 border-r border-navy-800">Divisi / Unit Kerja</th>
+            <th class="py-3 px-3 font-semibold w-52 border-r border-navy-800">Divisi / Bagian</th>
             <th class="py-3 px-3 font-semibold text-center w-28 border-r border-navy-800">Catatan Absensi</th>
             <th class="py-3 px-3 font-semibold text-center w-28">Aksi</th>
           </tr>
@@ -188,12 +188,12 @@
 
         <div>
           <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
-            Divisi / Unit Kerja <span class="text-red-500">*</span>
+            Divisi / Bagian <span class="text-red-500">*</span>
           </label>
           <CustomDropdown
             v-model="form.divisi"
             :options="divisiList"
-            placeholder="-- Pilih Divisi --"
+            placeholder="-- Pilih Divisi / Bagian --"
           />
         </div>
 
@@ -230,7 +230,7 @@
         <div class="p-3 bg-neutral-50 border border-neutral-border text-xs">
           <p class="font-bold text-navy">{{ selectedToDelete?.nama }}</p>
           <p class="font-mono text-neutral-600">NIP: {{ selectedToDelete?.nip }}</p>
-          <p class="text-neutral-600">Divisi: {{ selectedToDelete?.divisi }}</p>
+          <p class="text-neutral-600">Divisi / Bagian: {{ selectedToDelete?.divisi }}</p>
         </div>
         <p class="text-[11px] text-amber-800">
           * Catatan: Penghapusan akan ditolak otomatis jika pegawai masih memiliki catatan absensi bermasalah.
@@ -284,12 +284,6 @@ const divisiList = [
   'Pelayanan Hukum',
   'P3H',
   'Tata Usaha dan Umum',
-  'Kekayaan Intelektual',
-  'Administrasi Hukum Umum',
-  'Humas',
-  'SDM',
-  'Perencanaan',
-  'Analis Hukum',
 ]
 
 const pagination = reactive({

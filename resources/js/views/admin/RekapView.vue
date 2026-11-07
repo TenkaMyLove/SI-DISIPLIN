@@ -149,22 +149,24 @@
         Tidak ada data absensi bermasalah pada filter yang dipilih.
       </div>
 
-      <div v-else class="bg-white border border-neutral-border overflow-x-auto shadow-sm">
-        <table class="w-full text-left border-collapse text-xs">
-          <thead class="sticky top-0 z-10">
-            <tr class="bg-navy text-white">
-              <th class="py-2.5 px-3 font-semibold text-center w-12 border-r border-navy-800">No</th>
-              <th class="py-2.5 px-3 font-semibold w-28 border-r border-navy-800">Tanggal</th>
-              <th class="py-2.5 px-3 font-semibold w-44 border-r border-navy-800">NIP</th>
-              <th class="py-2.5 px-3 font-semibold border-r border-navy-800">Nama Pegawai</th>
-              <th class="py-2.5 px-3 font-semibold w-40 border-r border-navy-800">Divisi / Bagian</th>
-              <th class="py-2.5 px-2 font-semibold text-center w-24 border-r border-navy-800">Masuk-Pulang</th>
-              <th class="py-2.5 px-3 font-semibold w-40 whitespace-nowrap border-r border-navy-800">Status</th>
-              <th class="py-2.5 px-3 font-semibold border-r border-navy-800">Alasan</th>
-              <th class="py-2.5 px-3 font-semibold text-right w-32">Kekurangan</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-neutral-border">
+      <!-- Rekap Table Card Container -->
+      <div v-else class="bg-white border border-neutral-border shadow-sm flex flex-col">
+        <div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh-280px)] min-h-[350px]">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead class="sticky top-0 z-10 bg-navy text-white">
+              <tr class="bg-navy text-white">
+                <th class="py-2.5 px-3 font-semibold text-center w-12 border-r border-navy-800 sticky top-0 bg-navy">No</th>
+                <th class="py-2.5 px-3 font-semibold w-28 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">Tanggal</th>
+                <th class="py-2.5 px-3 font-semibold w-44 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">NIP</th>
+                <th class="py-2.5 px-3 font-semibold border-r border-navy-800 sticky top-0 bg-navy">Nama Pegawai</th>
+                <th class="py-2.5 px-3 font-semibold w-40 border-r border-navy-800 sticky top-0 bg-navy">Divisi / Bagian</th>
+                <th class="py-2.5 px-2 font-semibold text-center w-24 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">Masuk-Pulang</th>
+                <th class="py-2.5 px-3 font-semibold w-40 whitespace-nowrap border-r border-navy-800 sticky top-0 bg-navy">Status</th>
+                <th class="py-2.5 px-3 font-semibold border-r border-navy-800 sticky top-0 bg-navy">Alasan</th>
+                <th class="py-2.5 px-3 font-semibold text-right w-32 sticky top-0 bg-navy whitespace-nowrap">Kekurangan</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-border">
             <template v-for="(p, pIdx) in rekapData.pegawai" :key="p.nip">
               <tr v-for="(r, rIdx) in p.rincian" :key="r.id" class="hover:bg-neutral-50">
                 <td class="py-2 px-3 text-center text-neutral-500 border-r border-neutral-border">
@@ -198,6 +200,7 @@
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script setup>

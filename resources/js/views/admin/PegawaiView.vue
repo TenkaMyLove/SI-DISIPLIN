@@ -52,76 +52,78 @@
       <SkeletonLoader type="table" :rows="8" :cols="5" />
     </div>
 
-    <!-- Pegawai Table -->
-    <div v-else class="bg-white border border-neutral-border overflow-x-auto shadow-sm">
-      <table class="w-full text-left border-collapse text-xs">
-        <thead class="sticky top-0 z-10">
-          <tr class="bg-navy text-white">
-            <th class="py-3 px-3 font-semibold text-center w-12 border-r border-navy-800">No</th>
-            <th class="py-3 px-3 font-semibold w-48 border-r border-navy-800">NIP (18 Digit)</th>
-            <th class="py-3 px-3 font-semibold border-r border-navy-800">Nama Lengkap</th>
-            <th class="py-3 px-3 font-semibold w-52 border-r border-navy-800">Divisi / Bagian</th>
-            <th class="py-3 px-3 font-semibold text-center w-28 border-r border-navy-800">Catatan Absensi</th>
-            <th class="py-3 px-3 font-semibold text-center w-28">Aksi</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-neutral-border">
-          <tr
-            v-for="(p, index) in pegawaiList"
-            :key="p.nip"
-            class="hover:bg-neutral-50 transition-colors"
-          >
-            <td class="py-2.5 px-3 text-center text-neutral-500 border-r border-neutral-border">
-              {{ (pagination.current_page - 1) * pagination.per_page + index + 1 }}
-            </td>
-            <td class="py-2.5 px-3 font-mono font-medium text-neutral-800 border-r border-neutral-border whitespace-nowrap">
-              {{ p.nip }}
-            </td>
-            <td class="py-2.5 px-3 font-semibold text-navy border-r border-neutral-border">
-              {{ p.nama }}
-            </td>
-            <td class="py-2.5 px-3 text-neutral-700 border-r border-neutral-border">
-              {{ p.divisi }}
-            </td>
-            <td class="py-2.5 px-3 text-center border-r border-neutral-border">
-              <span
-                class="px-2 py-0.5 text-[11px] font-semibold border"
-                :class="p.absensi_count > 0 ? 'bg-amber-50 text-amber-800 border-amber-300' : 'bg-neutral-100 text-neutral-600 border-neutral-300'"
-              >
-                {{ p.absensi_count }} kali
-              </span>
-            </td>
-            <td class="py-2.5 px-3 text-center space-x-2">
-              <button
-                @click="openEditModal(p)"
-                class="p-1 text-navy hover:text-blue-700 focus:outline-none"
-                title="Ubah Pegawai"
-              >
-                <Edit3 class="w-4 h-4 inline" />
-              </button>
-              <button
-                @click="confirmDelete(p)"
-                class="p-1 text-red-600 hover:text-red-800 focus:outline-none"
-                title="Hapus Pegawai"
-              >
-                <Trash2 class="w-4 h-4 inline" />
-              </button>
-            </td>
-          </tr>
-          <tr v-if="pegawaiList.length === 0">
-            <td colspan="6" class="py-10 text-center text-neutral-muted">
-              Tidak ada data pegawai yang sesuai dengan filter pencarian.
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Pegawai Table Card Container -->
+    <div v-else class="bg-white border border-neutral-border shadow-sm flex flex-col">
+      <div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh-280px)] min-h-[350px]">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead class="sticky top-0 z-10 bg-navy text-white">
+            <tr class="bg-navy text-white">
+              <th class="py-3 px-3 font-semibold text-center w-12 border-r border-navy-800 sticky top-0 bg-navy">No</th>
+              <th class="py-3 px-3 font-semibold w-48 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">NIP (18 Digit)</th>
+              <th class="py-3 px-3 font-semibold border-r border-navy-800 sticky top-0 bg-navy">Nama Lengkap</th>
+              <th class="py-3 px-3 font-semibold w-52 border-r border-navy-800 sticky top-0 bg-navy">Divisi / Bagian</th>
+              <th class="py-3 px-3 font-semibold text-center w-28 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">Catatan Absensi</th>
+              <th class="py-3 px-3 font-semibold text-center w-28 sticky top-0 bg-navy whitespace-nowrap">Aksi</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-neutral-border">
+            <tr
+              v-for="(p, index) in pegawaiList"
+              :key="p.nip"
+              class="hover:bg-neutral-50 transition-colors"
+            >
+              <td class="py-2.5 px-3 text-center text-neutral-500 border-r border-neutral-border">
+                {{ (pagination.current_page - 1) * pagination.per_page + index + 1 }}
+              </td>
+              <td class="py-2.5 px-3 font-mono font-medium text-neutral-800 border-r border-neutral-border whitespace-nowrap">
+                {{ p.nip }}
+              </td>
+              <td class="py-2.5 px-3 font-semibold text-navy border-r border-neutral-border">
+                {{ p.nama }}
+              </td>
+              <td class="py-2.5 px-3 text-neutral-700 border-r border-neutral-border">
+                {{ p.divisi }}
+              </td>
+              <td class="py-2.5 px-3 text-center border-r border-neutral-border whitespace-nowrap">
+                <span
+                  class="inline-flex items-center justify-center px-2 py-0.5 text-[11px] font-semibold border whitespace-nowrap"
+                  :class="p.absensi_count > 0 ? 'bg-amber-50 text-amber-800 border-amber-300' : 'bg-neutral-100 text-neutral-600 border-neutral-300'"
+                >
+                  {{ p.absensi_count }} kali
+                </span>
+              </td>
+              <td class="py-2.5 px-3 text-center space-x-2 whitespace-nowrap">
+                <button
+                  @click="openEditModal(p)"
+                  class="p-1 text-navy hover:text-blue-700 focus:outline-none"
+                  title="Ubah Pegawai"
+                >
+                  <Edit3 class="w-4 h-4 inline" />
+                </button>
+                <button
+                  @click="confirmDelete(p)"
+                  class="p-1 text-red-600 hover:text-red-800 focus:outline-none"
+                  title="Hapus Pegawai"
+                >
+                  <Trash2 class="w-4 h-4 inline" />
+                </button>
+              </td>
+            </tr>
+            <tr v-if="pegawaiList.length === 0">
+              <td colspan="6" class="py-10 text-center text-neutral-muted">
+                Tidak ada data pegawai yang sesuai dengan filter pencarian.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-      <!-- Pagination -->
-      <div v-if="pagination.total > pagination.per_page" class="p-4 border-t border-neutral-border flex items-center justify-between text-xs text-neutral-600">
+      <!-- Pagination / Footer -->
+      <div class="p-3.5 border-t border-neutral-border flex flex-col sm:flex-row items-center justify-between text-xs text-neutral-600 bg-white gap-2">
         <div>
-          Menampilkan {{ (pagination.current_page - 1) * pagination.per_page + 1 }} - {{ Math.min(pagination.current_page * pagination.per_page, pagination.total) }} dari {{ pagination.total }} pegawai
+          Menampilkan <span class="font-semibold text-navy">{{ pegawaiList.length > 0 ? (pagination.current_page - 1) * pagination.per_page + 1 : 0 }}</span> - <span class="font-semibold text-navy">{{ Math.min(pagination.current_page * pagination.per_page, pagination.total) }}</span> dari <span class="font-semibold text-navy">{{ pagination.total }}</span> data pegawai
         </div>
-        <div class="flex items-center space-x-1">
+        <div v-if="pagination.total > pagination.per_page" class="flex items-center space-x-1">
           <button
             :disabled="pagination.current_page <= 1"
             @click="fetchPegawai(pagination.current_page - 1)"

@@ -255,22 +255,23 @@
 
         <!-- Table View of Problematic Attendance: Appears immediately in view without vertical scrolling -->
         <div v-else class="space-y-3 min-w-0 max-w-full">
-          <div class="bg-white border border-neutral-border overflow-x-auto shadow-2xs max-w-full">
-            <table class="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr class="bg-navy text-white border-b border-navy">
-                  <th class="py-2.5 px-3 font-semibold text-center w-12 border-r border-navy-800">No</th>
-                  <th class="py-2.5 px-3 font-semibold w-28 border-r border-navy-800">Tanggal</th>
-                  <th class="py-2.5 px-3 font-semibold w-44 border-r border-navy-800">NIP</th>
-                  <th class="py-2.5 px-3 font-semibold border-r border-navy-800">Nama Pegawai</th>
-                  <th class="py-2.5 px-3 font-semibold w-40 border-r border-navy-800">Divisi / Bagian</th>
-                  <th class="py-2.5 px-2 font-semibold text-center w-20 border-r border-navy-800">Masuk</th>
-                  <th class="py-2.5 px-2 font-semibold text-center w-20 border-r border-navy-800">Pulang</th>
-                  <th class="py-2.5 px-3 font-semibold w-40 whitespace-nowrap border-r border-navy-800">Status</th>
-                  <th class="py-2.5 px-3 font-semibold border-r border-navy-800">Alasan</th>
-                  <th class="py-2.5 px-3 font-semibold text-right w-36">Kekurangan</th>
-                </tr>
-              </thead>
+          <div class="bg-white border border-neutral-border shadow-2xs max-w-full flex flex-col">
+            <div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh-280px)] min-h-[350px]">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead class="sticky top-0 z-10 bg-navy text-white">
+                  <tr class="bg-navy text-white border-b border-navy">
+                    <th class="py-2.5 px-3 font-semibold text-center w-12 border-r border-navy-800 sticky top-0 bg-navy">No</th>
+                    <th class="py-2.5 px-3 font-semibold w-28 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">Tanggal</th>
+                    <th class="py-2.5 px-3 font-semibold w-44 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">NIP</th>
+                    <th class="py-2.5 px-3 font-semibold border-r border-navy-800 sticky top-0 bg-navy">Nama Pegawai</th>
+                    <th class="py-2.5 px-3 font-semibold w-40 border-r border-navy-800 sticky top-0 bg-navy">Divisi / Bagian</th>
+                    <th class="py-2.5 px-2 font-semibold text-center w-20 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">Masuk</th>
+                    <th class="py-2.5 px-2 font-semibold text-center w-20 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">Pulang</th>
+                    <th class="py-2.5 px-3 font-semibold w-40 whitespace-nowrap border-r border-navy-800 sticky top-0 bg-navy">Status</th>
+                    <th class="py-2.5 px-3 font-semibold border-r border-navy-800 sticky top-0 bg-navy">Alasan</th>
+                    <th class="py-2.5 px-3 font-semibold text-right w-36 sticky top-0 bg-navy whitespace-nowrap">Kekurangan</th>
+                  </tr>
+                </thead>
               <tbody class="divide-y divide-neutral-border">
                 <template v-for="(p, pIdx) in rekapData.pegawai" :key="p.nip">
                   <!-- Row(s) for each attendance record of this employee -->
@@ -329,7 +330,8 @@
           </div>
         </div>
       </div>
-    </main>
+    </div>
+  </main>
 
     <!-- Footer: Dikembalikan seperti awal dan di-anchor di dasar layar -->
     <footer class="fixed bottom-0 left-0 right-0 bg-navy text-neutral-300 py-2.5 text-xs text-center border-t-2 border-accent no-print z-40">

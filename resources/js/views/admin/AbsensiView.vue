@@ -60,89 +60,91 @@
       <SkeletonLoader type="table" :rows="8" :cols="8" />
     </div>
 
-    <!-- Absensi Table -->
-    <div v-else class="bg-white border border-neutral-border overflow-x-auto shadow-sm">
-      <table class="w-full text-left border-collapse text-xs">
-        <thead class="sticky top-0 z-10">
-          <tr class="bg-navy text-white">
-            <th class="py-3 px-3 font-semibold text-center w-12 border-r border-navy-800">No</th>
-            <th class="py-3 px-3 font-semibold w-28 border-r border-navy-800">Tanggal</th>
-            <th class="py-3 px-3 font-semibold w-44 border-r border-navy-800">NIP</th>
-            <th class="py-3 px-3 font-semibold border-r border-navy-800">Nama Pegawai</th>
-            <th class="py-3 px-2 font-semibold text-center w-28 border-r border-navy-800">Masuk - Pulang</th>
-            <th class="py-3 px-3 font-semibold w-40 whitespace-nowrap border-r border-navy-800">Status</th>
-            <th class="py-3 px-3 font-semibold border-r border-navy-800">Alasan</th>
-            <th class="py-3 px-3 font-semibold text-right w-32 border-r border-navy-800">Kekurangan</th>
-            <th class="py-3 px-3 font-semibold text-center w-24">Aksi</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-neutral-border">
-          <tr
-            v-for="(rec, index) in absensiList"
-            :key="rec.id"
-            class="hover:bg-neutral-50 transition-colors"
-          >
-            <td class="py-2.5 px-3 text-center text-neutral-500 border-r border-neutral-border">
-              {{ (pagination.current_page - 1) * pagination.per_page + index + 1 }}
-            </td>
-            <td class="py-2.5 px-3 font-medium text-neutral-800 border-r border-neutral-border whitespace-nowrap">
-              {{ rec.periode_formatted }}
-            </td>
-            <td class="py-2.5 px-3 font-mono text-neutral-700 border-r border-neutral-border whitespace-nowrap">
-              {{ rec.nip }}
-            </td>
-            <td class="py-2.5 px-3 font-semibold text-navy border-r border-neutral-border">
-              {{ rec.pegawai?.nama }}
-            </td>
-            <td class="py-2.5 px-2 text-center text-neutral-800 border-r border-neutral-border whitespace-nowrap">
-              {{ rec.jam_masuk?.substring(0, 5) }} &ndash; {{ rec.jam_pulang?.substring(0, 5) }}
-            </td>
-            <td class="py-2.5 px-3 border-r border-neutral-border whitespace-nowrap">
-              <span
-                class="inline-flex items-center justify-center px-2.5 py-0.5 text-[11px] font-semibold border whitespace-nowrap"
-                :class="getStatusBadgeClass(rec.status)"
-              >
-                {{ rec.status }}
-              </span>
-            </td>
-            <td class="py-2.5 px-3 text-neutral-700 border-r border-neutral-border">
-              {{ rec.alasan || '-' }}
-            </td>
-            <td class="py-2.5 px-3 text-right font-medium text-red-700 border-r border-neutral-border whitespace-nowrap">
-              {{ rec.durasi_formatted }}
-              <span class="text-[10px] text-neutral-400 block">({{ rec.durasi_menit }} mnt)</span>
-            </td>
-            <td class="py-2.5 px-3 text-center space-x-2">
-              <button
-                @click="openEditModal(rec)"
-                class="p-1 text-navy hover:text-blue-700 focus:outline-none"
-                title="Ubah Catatan"
-              >
-                <Edit3 class="w-4 h-4 inline" />
-              </button>
-              <button
-                @click="confirmDelete(rec)"
-                class="p-1 text-red-600 hover:text-red-800 focus:outline-none"
-                title="Hapus Catatan"
-              >
-                <Trash2 class="w-4 h-4 inline" />
-              </button>
-            </td>
-          </tr>
-          <tr v-if="absensiList.length === 0">
-            <td colspan="9" class="py-10 text-center text-neutral-muted">
-              Tidak ada catatan absensi yang sesuai filter.
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Absensi Table Card Container -->
+    <div v-else class="bg-white border border-neutral-border shadow-sm flex flex-col">
+      <div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh-280px)] min-h-[350px]">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead class="sticky top-0 z-10 bg-navy text-white">
+            <tr class="bg-navy text-white">
+              <th class="py-3 px-3 font-semibold text-center w-12 border-r border-navy-800 sticky top-0 bg-navy">No</th>
+              <th class="py-3 px-3 font-semibold w-28 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">Tanggal</th>
+              <th class="py-3 px-3 font-semibold w-44 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">NIP</th>
+              <th class="py-3 px-3 font-semibold border-r border-navy-800 sticky top-0 bg-navy">Nama Pegawai</th>
+              <th class="py-3 px-2 font-semibold text-center w-28 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">Masuk - Pulang</th>
+              <th class="py-3 px-3 font-semibold w-40 whitespace-nowrap border-r border-navy-800 sticky top-0 bg-navy">Status</th>
+              <th class="py-3 px-3 font-semibold border-r border-navy-800 sticky top-0 bg-navy">Alasan</th>
+              <th class="py-3 px-3 font-semibold text-right w-32 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">Kekurangan</th>
+              <th class="py-3 px-3 font-semibold text-center w-24 sticky top-0 bg-navy whitespace-nowrap">Aksi</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-neutral-border">
+            <tr
+              v-for="(rec, index) in absensiList"
+              :key="rec.id"
+              class="hover:bg-neutral-50 transition-colors"
+            >
+              <td class="py-2.5 px-3 text-center text-neutral-500 border-r border-neutral-border">
+                {{ (pagination.current_page - 1) * pagination.per_page + index + 1 }}
+              </td>
+              <td class="py-2.5 px-3 font-medium text-neutral-800 border-r border-neutral-border whitespace-nowrap">
+                {{ rec.periode_formatted }}
+              </td>
+              <td class="py-2.5 px-3 font-mono text-neutral-700 border-r border-neutral-border whitespace-nowrap">
+                {{ rec.nip }}
+              </td>
+              <td class="py-2.5 px-3 font-semibold text-navy border-r border-neutral-border">
+                {{ rec.pegawai?.nama }}
+              </td>
+              <td class="py-2.5 px-2 text-center text-neutral-800 border-r border-neutral-border whitespace-nowrap">
+                {{ rec.jam_masuk?.substring(0, 5) }} &ndash; {{ rec.jam_pulang?.substring(0, 5) }}
+              </td>
+              <td class="py-2.5 px-3 border-r border-neutral-border whitespace-nowrap">
+                <span
+                  class="inline-flex items-center justify-center px-2.5 py-0.5 text-[11px] font-semibold border whitespace-nowrap"
+                  :class="getStatusBadgeClass(rec.status)"
+                >
+                  {{ rec.status }}
+                </span>
+              </td>
+              <td class="py-2.5 px-3 text-neutral-700 border-r border-neutral-border">
+                {{ rec.alasan || '-' }}
+              </td>
+              <td class="py-2.5 px-3 text-right font-medium text-red-700 border-r border-neutral-border whitespace-nowrap">
+                {{ rec.durasi_formatted }}
+                <span class="text-[10px] text-neutral-400 block">({{ rec.durasi_menit }} mnt)</span>
+              </td>
+              <td class="py-2.5 px-3 text-center space-x-2 whitespace-nowrap">
+                <button
+                  @click="openEditModal(rec)"
+                  class="p-1 text-navy hover:text-blue-700 focus:outline-none"
+                  title="Ubah Catatan"
+                >
+                  <Edit3 class="w-4 h-4 inline" />
+                </button>
+                <button
+                  @click="confirmDelete(rec)"
+                  class="p-1 text-red-600 hover:text-red-800 focus:outline-none"
+                  title="Hapus Catatan"
+                >
+                  <Trash2 class="w-4 h-4 inline" />
+                </button>
+              </td>
+            </tr>
+            <tr v-if="absensiList.length === 0">
+              <td colspan="9" class="py-10 text-center text-neutral-muted">
+                Tidak ada catatan absensi yang sesuai filter.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-      <!-- Pagination -->
-      <div v-if="pagination.total > pagination.per_page" class="p-4 border-t border-neutral-border flex items-center justify-between text-xs text-neutral-600">
+      <!-- Pagination / Footer -->
+      <div class="p-3.5 border-t border-neutral-border flex flex-col sm:flex-row items-center justify-between text-xs text-neutral-600 bg-white gap-2">
         <div>
-          Menampilkan {{ (pagination.current_page - 1) * pagination.per_page + 1 }} - {{ Math.min(pagination.current_page * pagination.per_page, pagination.total) }} dari {{ pagination.total }} catatan
+          Menampilkan <span class="font-semibold text-navy">{{ absensiList.length > 0 ? (pagination.current_page - 1) * pagination.per_page + 1 : 0 }}</span> - <span class="font-semibold text-navy">{{ Math.min(pagination.current_page * pagination.per_page, pagination.total) }}</span> dari <span class="font-semibold text-navy">{{ pagination.total }}</span> catatan
         </div>
-        <div class="flex items-center space-x-1">
+        <div v-if="pagination.total > pagination.per_page" class="flex items-center space-x-1">
           <button
             :disabled="pagination.current_page <= 1"
             @click="fetchAbsensi(pagination.current_page - 1)"

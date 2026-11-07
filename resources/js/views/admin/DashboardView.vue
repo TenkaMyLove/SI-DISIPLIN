@@ -95,16 +95,16 @@
           Belum ada catatan absensi bermasalah yang terekam.
         </div>
 
-        <div v-else class="overflow-x-auto">
+        <div v-else class="overflow-x-auto overflow-y-auto max-h-[420px]">
           <table class="w-full text-left border-collapse text-xs">
-            <thead>
+            <thead class="sticky top-0 z-10 bg-navy text-white">
               <tr class="bg-navy text-white">
-                <th class="py-2.5 px-3 font-semibold">Tanggal</th>
-                <th class="py-2.5 px-3 font-semibold">Nama Pegawai</th>
-                <th class="py-2.5 px-3 font-semibold">NIP</th>
-                <th class="py-2.5 px-3 font-semibold text-center">Masuk - Pulang</th>
-                <th class="py-2.5 px-3 font-semibold whitespace-nowrap">Status</th>
-                <th class="py-2.5 px-3 font-semibold text-right">Kekurangan</th>
+                <th class="py-2.5 px-3 font-semibold sticky top-0 bg-navy whitespace-nowrap">Tanggal</th>
+                <th class="py-2.5 px-3 font-semibold sticky top-0 bg-navy">Nama Pegawai</th>
+                <th class="py-2.5 px-3 font-semibold sticky top-0 bg-navy whitespace-nowrap">NIP</th>
+                <th class="py-2.5 px-3 font-semibold text-center sticky top-0 bg-navy whitespace-nowrap">Masuk - Pulang</th>
+                <th class="py-2.5 px-3 font-semibold whitespace-nowrap sticky top-0 bg-navy">Status</th>
+                <th class="py-2.5 px-3 font-semibold text-right sticky top-0 bg-navy whitespace-nowrap">Kekurangan</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-neutral-border">

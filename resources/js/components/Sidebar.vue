@@ -26,6 +26,15 @@
         </router-link>
 
         <router-link
+          to="/admin/divisi"
+          class="flex items-center space-x-3 px-3 py-2.5 text-sm font-medium transition-colors border-l-4"
+          :class="isActive('/admin/divisi') ? 'bg-navy-800 text-white border-accent' : 'text-neutral-300 hover:bg-navy-800 hover:text-white border-transparent'"
+        >
+          <Building2 class="w-4 h-4 flex-shrink-0" :class="isActive('/admin/divisi') ? 'text-accent' : ''" />
+          <span>Manajemen Divisi</span>
+        </router-link>
+
+        <router-link
           to="/admin/absensi"
           class="flex items-center space-x-3 px-3 py-2.5 text-sm font-medium transition-colors border-l-4"
           :class="isActive('/admin/absensi') ? 'bg-navy-800 text-white border-accent' : 'text-neutral-300 hover:bg-navy-800 hover:text-white border-transparent'"
@@ -103,6 +112,7 @@ import { useAuth } from '@/composables/useAuth'
 import {
   LayoutDashboard,
   Users,
+  Building2,
   CalendarX2,
   FileBarChart,
   Clock,

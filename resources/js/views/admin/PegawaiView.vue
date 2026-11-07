@@ -282,11 +282,11 @@ const pegawaiList = ref([])
 const searchQuery = ref('')
 const filterDivisi = ref('')
 
-const divisiList = [
+const divisiList = ref([
   'Pelayanan Hukum',
   'P3H',
   'Tata Usaha dan Umum',
-]
+])
 
 const pagination = reactive({
   current_page: 1,
@@ -428,7 +428,19 @@ async function executeDelete() {
   }
 }
 
+async function fetchDivisiList() {
+  try {
+    const res = await api.get('/pegawai/options')
+    if (res.data.divisi_list && res.data.divisi_list.length > 0) {
+      divisiList.value = res.data.divisi_list
+    }
+  } catch (err) {
+    console.error('Gagal memuat opsi divisi:', err)
+  }
+}
+
 onMounted(() => {
+  fetchDivisiList()
   fetchPegawai()
 })
 </script>

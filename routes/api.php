@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AbsensiController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DivisiBagianController;
 use App\Http\Controllers\Api\PegawaiController;
 use App\Http\Controllers\Api\PengaturanController;
 use App\Http\Controllers\Api\RekapController;
@@ -36,6 +37,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Pegawai Management (CRUD)
     Route::apiResource('pegawai', PegawaiController::class);
+
+    // Divisi / Bagian Management (CRUD)
+    Route::apiResource('divisi', DivisiBagianController::class);
 
     // Absensi Bermasalah Management (CRUD)
     Route::post('/absensi/hitung-durasi', [AbsensiController::class, 'hitungDurasi']);

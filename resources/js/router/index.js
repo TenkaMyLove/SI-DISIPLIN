@@ -4,6 +4,7 @@ import LoginView from '@/views/admin/LoginView.vue'
 import AdminLayout from '@/views/admin/AdminLayout.vue'
 import DashboardView from '@/views/admin/DashboardView.vue'
 import PegawaiView from '@/views/admin/PegawaiView.vue'
+import DivisiView from '@/views/admin/DivisiView.vue'
 import AbsensiView from '@/views/admin/AbsensiView.vue'
 import RekapView from '@/views/admin/RekapView.vue'
 import PengaturanView from '@/views/admin/PengaturanView.vue'
@@ -46,6 +47,12 @@ const routes = [
         name: 'admin-pegawai',
         component: PegawaiView,
         meta: { title: 'Data Pegawai - SIDISIPLIN' },
+      },
+      {
+        path: 'divisi',
+        name: 'admin-divisi',
+        component: DivisiView,
+        meta: { title: 'Manajemen Divisi - SIDISIPLIN' },
       },
       {
         path: 'absensi',

@@ -417,4 +417,63 @@ class SidisipinTest extends TestCase
             'divisi_bagian_id' => 1,
         ]);
     }
+
+    /**
+     * Test admin can perform CRUD on divisi_bagian.
+     */
+    public function test_admin_divisi_crud_and_deletion_protection(): void
+    {
+        $token = $this->admin->createToken('test_token')->plainTextToken;
+
+        // 1. List Divisi
+        $resList = $this->withHeader('Authorization', "Bearer {$token}")
+            ->getJson('/api/divisi');
+        $resList->assertOk()
+            ->assertJsonPath('success', true);
+
+        // 2. Create New Divisi
+        $resCreate = $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson('/api/divisi', [
+                'nama' => 'Divisi Keimigrasian Baru',
+                'kode' => 'IMIGRASI',
+                'deskripsi' => 'Unit Pelayanan Keimigrasian',
+            ]);
+        $resCreate->assertCreated()
+            ->assertJsonPath('data.nama', 'Divisi Keimigrasian Baru');
+
+        $divisiId = $resCreate->json('data.id');
+
+        // 3. Update Divisi
+        $resUpdate = $this->withHeader('Authorization', "Bearer {$token}")
+            ->putJson("/api/divisi/{$divisiId}", [
+                'nama' => 'Divisi Keimigrasian & Izin Tinggal',
+                'kode' => 'IMI_IZIN',
+                'deskripsi' => 'Deskripsi diperbarui',
+            ]);
+        $resUpdate->assertOk()
+            ->assertJsonPath('data.nama', 'Divisi Keimigrasian & Izin Tinggal');
+
+        // 4. Assign a pegawai to this divisi and try to delete (Must be rejected with 422)
+        $pegawai = Pegawai::create([
+            'nip' => '199201012020011088',
+            'nama' => 'Staf Imigrasi',
+            'divisi' => 'Divisi Keimigrasian & Izin Tinggal',
+            'divisi_bagian_id' => $divisiId,
+        ]);
+
+        $resDeleteFail = $this->withHeader('Authorization', "Bearer {$token}")
+            ->deleteJson("/api/divisi/{$divisiId}");
+        $resDeleteFail->assertStatus(422)
+            ->assertJsonPath('success', false);
+
+        // 5. Remove pegawai from divisi and delete successfully
+        $pegawai->delete();
+
+        $resDeleteSuccess = $this->withHeader('Authorization', "Bearer {$token}")
+            ->deleteJson("/api/divisi/{$divisiId}");
+        $resDeleteSuccess->assertOk()
+            ->assertJsonPath('success', true);
+
+        $this->assertDatabaseMissing('divisi_bagian', ['id' => $divisiId]);
+    }
 }

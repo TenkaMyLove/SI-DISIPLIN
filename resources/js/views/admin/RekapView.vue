@@ -99,34 +99,30 @@
         <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
           Pegawai
         </label>
-        <div class="mt-7">
-          <CustomDropdown
-            v-model="filters.nip"
-            :options="[
-              { value: '', label: 'Tampilkan Semua Pegawai' },
-              ...pegawaiList.map(p => ({ value: p.nip, label: `${p.nama} (${p.nip})` }))
-            ]"
-            placeholder="Tampilkan Semua Pegawai"
-            @change="fetchRekap"
-          />
-        </div>
+        <CustomDropdown
+          v-model="filters.nip"
+          :options="[
+            { value: '', label: 'Tampilkan Semua Pegawai' },
+            ...pegawaiList.map(p => ({ value: p.nip, label: `${p.nama} (${p.nip})` }))
+          ]"
+          placeholder="Tampilkan Semua Pegawai"
+          @change="fetchRekap"
+        />
       </div>
 
       <div>
         <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
           Divisi / Bagian
         </label>
-        <div class="mt-7">
-          <CustomDropdown
-            v-model="filters.divisi"
-            :options="[
-              { value: '', label: 'Semua Divisi / Bagian' },
-              ...divisiOptions.map(d => ({ value: d, label: d }))
-            ]"
-            placeholder="Semua Divisi / Bagian"
-            @change="fetchRekap"
-          />
-        </div>
+        <CustomDropdown
+          v-model="filters.divisi"
+          :options="[
+            { value: '', label: 'Semua Divisi / Bagian' },
+            ...divisiOptions.map(d => ({ value: d, label: d }))
+          ]"
+          placeholder="Semua Divisi / Bagian"
+          @change="fetchRekap"
+        />
       </div>
     </div>
 
@@ -241,11 +237,11 @@ const loading = ref(true)
 const rekapData = ref(null)
 const pegawaiList = ref([])
 
-const divisiOptions = [
+const divisiOptions = ref([
   'Pelayanan Hukum',
   'P3H',
   'Tata Usaha dan Umum',
-]
+])
 
 const filters = reactive({
   mode: 'bulan',
@@ -282,6 +278,9 @@ async function fetchPegawaiList() {
   try {
     const res = await api.get('/pegawai/options')
     pegawaiList.value = res.data.data
+    if (res.data.divisi_list && res.data.divisi_list.length > 0) {
+      divisiOptions.value = res.data.divisi_list
+    }
   } catch (err) {
     console.error('Gagal mengambil data pegawai:', err)
   }

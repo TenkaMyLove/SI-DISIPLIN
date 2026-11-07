@@ -29,13 +29,13 @@
 
     <!-- Skeleton during loading -->
     <div v-if="loading" class="space-y-4">
-      <SkeletonLoader type="stat" :rows="4" />
+      <SkeletonLoader type="stat" :rows="3" />
       <SkeletonLoader type="table" :rows="5" :cols="6" />
     </div>
 
     <div v-else class="space-y-3.5">
       <!-- Stat Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div class="bg-white border border-neutral-border p-4 shadow-2xs">
           <div class="flex items-center justify-between">
             <span class="text-[11px] font-semibold text-neutral-muted uppercase tracking-wider">Total Pegawai</span>
@@ -52,15 +52,6 @@
           </div>
           <p class="text-2xl font-bold text-navy mt-1">{{ stats.totalAbsensi }}</p>
           <p class="text-[11px] text-neutral-muted mt-0.5">Total seluruh catatan bermasalah</p>
-        </div>
-
-        <div class="bg-white border border-neutral-border p-4 shadow-2xs">
-          <div class="flex items-center justify-between">
-            <span class="text-[11px] font-semibold text-neutral-muted uppercase tracking-wider">Kekurangan Bulan Ini</span>
-            <Clock class="w-4 h-4 text-red-700" />
-          </div>
-          <p class="text-xl font-bold text-red-700 mt-1 truncate">{{ stats.totalKekuranganBulanIni }}</p>
-          <p class="text-[11px] text-neutral-muted mt-0.5">Akumulasi bulan {{ currentMonthLabel }}</p>
         </div>
 
         <div class="bg-white border border-neutral-border p-4 shadow-2xs">
@@ -143,7 +134,6 @@ import api from '@/composables/useApi'
 import {
   Users,
   CalendarX2,
-  Clock,
   Settings,
   Plus,
   UserPlus,
@@ -156,7 +146,6 @@ const loading = ref(true)
 const stats = ref({
   totalPegawai: 0,
   totalAbsensi: 0,
-  totalKekuranganBulanIni: '0 menit',
 })
 
 const settings = ref({
@@ -165,7 +154,6 @@ const settings = ref({
 })
 
 const recentRecords = ref([])
-const currentMonthLabel = new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
 
 function getStatusBadgeClass(status) {
   switch (status) {
@@ -183,16 +171,14 @@ function getStatusBadgeClass(status) {
 async function fetchDashboardData() {
   loading.value = true
   try {
-    const [pegawaiRes, absensiRes, rekapRes, settingRes] = await Promise.all([
+    const [pegawaiRes, absensiRes, settingRes] = await Promise.all([
       api.get('/pegawai?per_page=1'),
       api.get('/absensi?per_page=5'),
-      api.get('/rekap', { params: { mode: 'bulan', bulan: new Date().toISOString().substring(0, 7) } }),
       api.get('/pengaturan'),
     ])
 
     stats.value.totalPegawai = pegawaiRes.data.meta?.total || 0
     stats.value.totalAbsensi = absensiRes.data.meta?.total || 0
-    stats.value.totalKekuranganBulanIni = rekapRes.data.data?.ringkasan?.grand_total_formatted || '0 menit'
 
     recentRecords.value = absensiRes.data.data || []
     settings.value = settingRes.data.data

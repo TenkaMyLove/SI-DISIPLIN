@@ -235,7 +235,7 @@
         <!-- Table View of Problematic Attendance: Appears immediately in view without vertical scrolling -->
         <div v-else class="space-y-3 min-w-0 max-w-full">
           <div class="bg-white border border-neutral-border shadow-2xs max-w-full flex flex-col">
-            <div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh-280px)]">
+            <div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh-300px)]">
               <table class="w-full text-left border-separate border-spacing-0 text-xs">
                 <thead class="sticky top-0 z-20 bg-navy text-white">
                   <tr class="bg-navy text-white border-b border-navy">

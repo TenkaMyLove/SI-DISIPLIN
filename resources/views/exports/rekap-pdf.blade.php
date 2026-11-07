@@ -158,12 +158,6 @@
                     <td colspan="10" class="text-center" style="padding: 24px;">Tidak ada catatan absensi bermasalah pada periode dan filter yang dipilih.</td>
                 </tr>
             @endforelse
-            @if(count($data['pegawai']) > 0)
-                <tr class="grandtotal-row">
-                    <td colspan="9" class="text-right">GRAND TOTAL AKUMULASI KEKURANGAN JAM KERJA:</td>
-                    <td class="text-right">{{ $data['ringkasan']['grand_total_formatted'] }}</td>
-                </tr>
-            @endif
         </tbody>
     </table>
 

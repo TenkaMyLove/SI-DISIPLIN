@@ -134,7 +134,7 @@
 
     <!-- Content -->
     <div v-else class="space-y-6">
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 no-print">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 no-print">
         <div class="bg-white border border-neutral-border p-4">
           <p class="text-xs font-semibold text-neutral-muted uppercase tracking-wider">Pegawai Terkena Rekap</p>
           <p class="text-2xl font-bold text-navy mt-1">{{ rekapData?.ringkasan?.total_pegawai_bermasalah || 0 }} orang</p>
@@ -142,10 +142,6 @@
         <div class="bg-white border border-neutral-border p-4">
           <p class="text-xs font-semibold text-neutral-muted uppercase tracking-wider">Total Pelanggaran</p>
           <p class="text-2xl font-bold text-navy mt-1">{{ rekapData?.ringkasan?.total_catatan_absensi || 0 }} kali</p>
-        </div>
-        <div class="bg-white border border-neutral-border p-4">
-          <p class="text-xs font-semibold text-neutral-muted uppercase tracking-wider">Grand Total Kekurangan</p>
-          <p class="text-xl font-bold text-red-700 mt-1">{{ rekapData?.ringkasan?.grand_total_formatted || '0 menit' }}</p>
         </div>
       </div>
 
@@ -197,12 +193,6 @@
                 </td>
               </tr>
             </template>
-            <tr class="bg-neutral-200 font-bold text-navy border-t-2 border-navy">
-              <td colspan="9" class="py-2.5 px-4 text-right text-xs">
-                <span class="uppercase tracking-wider text-navy mr-2 font-bold">GRAND TOTAL AKUMULASI KEKURANGAN JAM KERJA:</span>
-                <span class="text-red-900 font-extrabold text-sm whitespace-nowrap">{{ rekapData.ringkasan.grand_total_formatted }}</span>
-              </td>
-            </tr>
           </tbody>
         </table>
       </div>

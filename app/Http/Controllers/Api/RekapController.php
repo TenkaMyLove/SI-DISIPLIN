@@ -240,22 +240,6 @@ class RekapController extends Controller
             $row++;
         }
 
-        // Grand Total row
-        $sheet->mergeCells("A{$row}:I{$row}");
-        $sheet->setCellValue("A{$row}", 'GRAND TOTAL AKUMULASI KEKURANGAN JAM KERJA');
-        $sheet->setCellValue("J{$row}", $data['ringkasan']['grand_total_formatted']);
-        $sheet->getStyle("A{$row}:J{$row}")->applyFromArray([
-            'font' => ['bold' => true, 'color' => ['rgb' => '031833']],
-            'fill' => [
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['rgb' => 'E5E7EB'],
-            ],
-            'borders' => [
-                'allBorders' => ['borderStyle' => Border::BORDER_MEDIUM],
-            ],
-        ]);
-        $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-
         // Auto width
         foreach (range('A', 'J') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);

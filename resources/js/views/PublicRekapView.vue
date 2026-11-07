@@ -335,7 +335,7 @@
     <footer class="fixed bottom-0 left-0 right-0 bg-navy text-neutral-300 py-2.5 text-xs text-center border-t-2 border-accent no-print z-40">
       <div class="max-w-7xl mx-auto px-4">
         <p class="font-medium text-white">SIDISIPLIN &bull; Sistem Informasi Disiplin Pegawai</p>
-        <p class="mt-0.5 text-[11px] text-neutral-300">Kementerian Hukum Kalimantan Selatan &bull; Jam Kerja Standar: 08:00 &ndash; 16:00 WITA</p>
+        <p class="mt-0.5 text-[11px] text-neutral-300">Kementerian Hukum Kalimantan Selatan &bull; Jam Kerja: 07:30 &ndash; 16:00 WITA (Jumat 16:30)</p>
       </div>
     </footer>
   </div>

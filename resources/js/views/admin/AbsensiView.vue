@@ -241,23 +241,6 @@
           />
         </div>
 
-        <!-- Schedule Hint & Flex info badge -->
-        <div
-          v-if="scheduleHint"
-          class="p-2.5 border text-xs space-y-1"
-          :class="scheduleHint.isFlex ? 'bg-emerald-50/70 border-emerald-300 text-emerald-950' : 'bg-neutral-50 border-neutral-border text-neutral-700'"
-        >
-          <div class="flex items-center justify-between">
-            <span class="font-bold flex items-center space-x-1.5">
-              <Zap v-if="scheduleHint.isFlex" class="w-3.5 h-3.5 text-emerald-600 inline" />
-              <Clock v-else class="w-3.5 h-3.5 text-navy inline" />
-              <span>Hari {{ scheduleHint.hari }} ({{ scheduleHint.isFlex ? 'Flex Time' : 'Non-Flex' }})</span>
-            </span>
-            <span class="text-[11px] font-mono font-medium">{{ scheduleHint.std }}</span>
-          </div>
-          <p class="text-[11px] leading-relaxed">{{ scheduleHint.desc }}</p>
-        </div>
-
         <!-- Status Absensi (ABS-4) -->
         <div>
           <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
@@ -429,7 +412,7 @@ import Modal from '@/components/Modal.vue'
 import CustomDropdown from '@/components/CustomDropdown.vue'
 import Toast from '@/components/Toast.vue'
 import api from '@/composables/useApi'
-import { Plus, Search, Edit3, Trash2, X, Check, Zap, Clock } from 'lucide-vue-next'
+import { Plus, Search, Edit3, Trash2, X, Check } from 'lucide-vue-next'
 
 const loading = ref(true)
 const absensiList = ref([])
@@ -468,53 +451,6 @@ const isFriday = computed(() => {
   const parts = form.periode.split('-').map(Number)
   const dateObj = new Date(parts[0], parts[1] - 1, parts[2])
   return dateObj.getDay() === 5
-})
-
-const scheduleHint = computed(() => {
-  if (!form.periode) return null
-  const parts = form.periode.split('-').map(Number)
-  const dateObj = new Date(parts[0], parts[1] - 1, parts[2])
-  const dayOfWeek = dateObj.getDay()
-
-  if (dayOfWeek === 1) {
-    return {
-      hari: 'Senin',
-      isFlex: false,
-      std: '07:30 - 16:00 WITA',
-      desc: 'Non-Flex: Jam standar 07:30 - 16:00. Keterlambatan masuk langsung dihitung sebagai kekurangan.',
-    }
-  } else if (dayOfWeek >= 2 && dayOfWeek <= 4) {
-    const hariNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
-    const [masukH, masukM] = (form.jam_masuk || '07:30').split(':').map(Number)
-    const masukTotalMin = masukH * 60 + masukM
-    const stdMasukTotalMin = 7 * 60 + 30
-    const effectiveMasukMin = Math.max(stdMasukTotalMin, masukTotalMin)
-    const targetPulangMin = effectiveMasukMin + 510 // 8.5 jam kehadiran
-    const targetH = String(Math.floor(targetPulangMin / 60)).padStart(2, '0')
-    const targetM = String(targetPulangMin % 60).padStart(2, '0')
-
-    return {
-      hari: hariNames[dayOfWeek],
-      isFlex: true,
-      std: '07:30 - 16:00 WITA',
-      targetPulang: `${targetH}:${targetM}`,
-      desc: `Flex: Datang ${form.jam_masuk || '07:30'} -> Target pulang minimal ${targetH}:${targetM} agar jam kerja terpenuhi.`,
-    }
-  } else if (dayOfWeek === 5) {
-    return {
-      hari: 'Jumat',
-      isFlex: false,
-      std: '07:30 - 16:30 WITA',
-      desc: 'Non-Flex: Jam standar 07:30 - 16:30 WITA (penyesuaian istirahat ibadah Jumat).',
-    }
-  } else {
-    return {
-      hari: 'Akhir Pekan',
-      isFlex: false,
-      std: '07:30 - 16:00 WITA',
-      desc: 'Akhir Pekan (Sabtu / Minggu).',
-    }
-  }
 })
 
 // Autocomplete State

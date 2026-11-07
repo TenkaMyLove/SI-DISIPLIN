@@ -71,7 +71,7 @@
           <p class="text-lg font-bold text-navy mt-2">
             {{ settings.jam_masuk_standar }} &ndash; {{ settings.jam_pulang_standar }}
           </p>
-          <p class="text-xs text-neutral-muted mt-1">WITA &bull; Flex (Sel &ndash; Kam)</p>
+          <p class="text-xs text-neutral-muted mt-1">WITA &bull; Senin &ndash; Jumat</p>
         </div>
       </div>
 

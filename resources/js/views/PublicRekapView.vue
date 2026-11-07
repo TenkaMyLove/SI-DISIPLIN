@@ -266,7 +266,7 @@
                   <th class="py-2.5 px-3 font-semibold w-40 border-r border-navy-800">Divisi / Bagian</th>
                   <th class="py-2.5 px-2 font-semibold text-center w-20 border-r border-navy-800">Masuk</th>
                   <th class="py-2.5 px-2 font-semibold text-center w-20 border-r border-navy-800">Pulang</th>
-                  <th class="py-2.5 px-3 font-semibold w-36 border-r border-navy-800">Status</th>
+                  <th class="py-2.5 px-3 font-semibold w-40 whitespace-nowrap border-r border-navy-800">Status</th>
                   <th class="py-2.5 px-3 font-semibold border-r border-navy-800">Alasan</th>
                   <th class="py-2.5 px-3 font-semibold text-right w-36">Kekurangan</th>
                 </tr>
@@ -300,9 +300,9 @@
                     <td class="py-2 px-2 text-center text-neutral-800 border-r border-neutral-border whitespace-nowrap">
                       {{ r.jam_pulang }}
                     </td>
-                    <td class="py-2 px-3 border-r border-neutral-border">
+                    <td class="py-2 px-3 border-r border-neutral-border whitespace-nowrap">
                       <span
-                        class="px-2 py-0.5 text-[11px] font-semibold border"
+                        class="inline-flex items-center justify-center px-2.5 py-0.5 text-[11px] font-semibold border whitespace-nowrap"
                         :class="getStatusBadgeClass(r.status)"
                       >
                         {{ r.status }}

@@ -70,7 +70,7 @@
             <th class="py-3 px-3 font-semibold w-44 border-r border-navy-800">NIP</th>
             <th class="py-3 px-3 font-semibold border-r border-navy-800">Nama Pegawai</th>
             <th class="py-3 px-2 font-semibold text-center w-28 border-r border-navy-800">Masuk - Pulang</th>
-            <th class="py-3 px-3 font-semibold w-36 border-r border-navy-800">Status</th>
+            <th class="py-3 px-3 font-semibold w-40 whitespace-nowrap border-r border-navy-800">Status</th>
             <th class="py-3 px-3 font-semibold border-r border-navy-800">Alasan</th>
             <th class="py-3 px-3 font-semibold text-right w-32 border-r border-navy-800">Kekurangan</th>
             <th class="py-3 px-3 font-semibold text-center w-24">Aksi</th>
@@ -97,9 +97,9 @@
             <td class="py-2.5 px-2 text-center text-neutral-800 border-r border-neutral-border whitespace-nowrap">
               {{ rec.jam_masuk?.substring(0, 5) }} &ndash; {{ rec.jam_pulang?.substring(0, 5) }}
             </td>
-            <td class="py-2.5 px-3 border-r border-neutral-border">
+            <td class="py-2.5 px-3 border-r border-neutral-border whitespace-nowrap">
               <span
-                class="px-2 py-0.5 text-[11px] font-semibold border"
+                class="inline-flex items-center justify-center px-2.5 py-0.5 text-[11px] font-semibold border whitespace-nowrap"
                 :class="getStatusBadgeClass(rec.status)"
               >
                 {{ rec.status }}
@@ -249,7 +249,7 @@
           <CustomDropdown
             v-model="form.status"
             :options="[
-              { value: 'Tanpa Keterangan', label: 'Tanpa Keterangan (Sanksi 7,5 Jam Kerja)' },
+              { value: 'Tanpa Keterangan', label: 'Tanpa Keterangan' },
               { value: 'Terlambat', label: 'Terlambat' },
               { value: 'Pulang Duluan', label: 'Pulang Duluan' }
             ]"

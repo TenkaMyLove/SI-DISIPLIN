@@ -1,11 +1,9 @@
 <template>
-  <div class="space-y-6 max-w-3xl">
-    <!-- Header -->
-    <div class="border-b border-neutral-border pb-5">
-      <div class="flex items-center space-x-2">
-        <Clock class="w-6 h-6 text-navy" />
-        <h1 class="text-2xl font-bold text-navy tracking-tight">Pengaturan Jam Kerja</h1>
-      </div>
+  <div class="space-y-3.5 max-w-3xl">
+    <!-- Header: Compact without bottom border line to prevent sinking -->
+    <div class="flex items-center space-x-2">
+      <Clock class="w-6 h-6 text-navy" />
+      <h1 class="text-xl sm:text-2xl font-bold text-navy tracking-tight">Pengaturan Jam Kerja</h1>
     </div>
 
     <!-- Alert Message -->

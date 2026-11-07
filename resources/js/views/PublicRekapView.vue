@@ -256,23 +256,23 @@
         <!-- Table View of Problematic Attendance: Appears immediately in view without vertical scrolling -->
         <div v-else class="space-y-3 min-w-0 max-w-full">
           <div class="bg-white border border-neutral-border shadow-2xs max-w-full flex flex-col">
-            <div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh-280px)] min-h-[350px]">
-              <table class="w-full text-left border-collapse text-xs">
-                <thead class="sticky top-0 z-10 bg-navy text-white">
+            <div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh-280px)]">
+              <table class="w-full text-left border-separate border-spacing-0 text-xs">
+                <thead class="sticky top-0 z-20 bg-navy text-white">
                   <tr class="bg-navy text-white border-b border-navy">
-                    <th class="py-2.5 px-3 font-semibold text-center w-12 border-r border-navy-800 sticky top-0 bg-navy">No</th>
-                    <th class="py-2.5 px-3 font-semibold w-28 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">Tanggal</th>
-                    <th class="py-2.5 px-3 font-semibold w-44 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">NIP</th>
-                    <th class="py-2.5 px-3 font-semibold border-r border-navy-800 sticky top-0 bg-navy">Nama Pegawai</th>
-                    <th class="py-2.5 px-3 font-semibold w-40 border-r border-navy-800 sticky top-0 bg-navy">Divisi / Bagian</th>
-                    <th class="py-2.5 px-2 font-semibold text-center w-20 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">Masuk</th>
-                    <th class="py-2.5 px-2 font-semibold text-center w-20 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">Pulang</th>
-                    <th class="py-2.5 px-3 font-semibold w-40 whitespace-nowrap border-r border-navy-800 sticky top-0 bg-navy">Status</th>
-                    <th class="py-2.5 px-3 font-semibold border-r border-navy-800 sticky top-0 bg-navy">Alasan</th>
-                    <th class="py-2.5 px-3 font-semibold text-right w-36 sticky top-0 bg-navy whitespace-nowrap">Kekurangan</th>
+                    <th class="py-2.5 px-3 font-semibold text-center w-12 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy whitespace-nowrap">No</th>
+                    <th class="py-2.5 px-3 font-semibold w-28 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy whitespace-nowrap">Tanggal</th>
+                    <th class="py-2.5 px-3 font-semibold w-44 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy whitespace-nowrap">NIP</th>
+                    <th class="py-2.5 px-3 font-semibold border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy">Nama Pegawai</th>
+                    <th class="py-2.5 px-3 font-semibold w-40 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy">Divisi / Bagian</th>
+                    <th class="py-2.5 px-2 font-semibold text-center w-20 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy whitespace-nowrap">Masuk</th>
+                    <th class="py-2.5 px-2 font-semibold text-center w-20 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy whitespace-nowrap">Pulang</th>
+                    <th class="py-2.5 px-3 font-semibold w-40 whitespace-nowrap border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy">Status</th>
+                    <th class="py-2.5 px-3 font-semibold border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy">Alasan</th>
+                    <th class="py-2.5 px-3 font-semibold text-right w-36 border-b-2 border-navy-800 sticky top-0 z-20 bg-navy whitespace-nowrap">Kekurangan</th>
                   </tr>
                 </thead>
-              <tbody class="divide-y divide-neutral-border">
+              <tbody class="divide-y divide-neutral-border bg-white">
                 <template v-for="(p, pIdx) in rekapData.pegawai" :key="p.nip">
                   <!-- Row(s) for each attendance record of this employee -->
                   <tr
@@ -280,28 +280,28 @@
                     :key="r.id"
                     class="hover:bg-neutral-50 transition-colors"
                   >
-                    <td class="py-2 px-3 text-center text-neutral-500 border-r border-neutral-border">
+                    <td class="py-2 px-3 text-center text-neutral-500 border-b border-r border-neutral-border bg-inherit">
                       {{ getGlobalRowNumber(pIdx, rIdx) }}
                     </td>
-                    <td class="py-2 px-3 font-medium text-neutral-800 border-r border-neutral-border whitespace-nowrap">
+                    <td class="py-2 px-3 font-medium text-neutral-800 border-b border-r border-neutral-border whitespace-nowrap bg-inherit">
                       {{ r.periode_formatted }}
                     </td>
-                    <td class="py-2 px-3 font-mono text-neutral-700 border-r border-neutral-border whitespace-nowrap">
+                    <td class="py-2 px-3 font-mono text-neutral-700 border-b border-r border-neutral-border whitespace-nowrap bg-inherit">
                       {{ p.nip }}
                     </td>
-                    <td class="py-2 px-3 font-semibold text-navy border-r border-neutral-border">
+                    <td class="py-2 px-3 font-semibold text-navy border-b border-r border-neutral-border bg-inherit">
                       {{ p.nama }}
                     </td>
-                    <td class="py-2 px-3 text-neutral-700 border-r border-neutral-border">
+                    <td class="py-2 px-3 text-neutral-700 border-b border-r border-neutral-border bg-inherit">
                       {{ p.divisi }}
                     </td>
-                    <td class="py-2 px-2 text-center text-neutral-800 border-r border-neutral-border whitespace-nowrap">
+                    <td class="py-2 px-2 text-center text-neutral-800 border-b border-r border-neutral-border whitespace-nowrap bg-inherit">
                       {{ r.jam_masuk }}
                     </td>
-                    <td class="py-2 px-2 text-center text-neutral-800 border-r border-neutral-border whitespace-nowrap">
+                    <td class="py-2 px-2 text-center text-neutral-800 border-b border-r border-neutral-border whitespace-nowrap bg-inherit">
                       {{ r.jam_pulang }}
                     </td>
-                    <td class="py-2 px-3 border-r border-neutral-border whitespace-nowrap">
+                    <td class="py-2 px-3 border-b border-r border-neutral-border whitespace-nowrap bg-inherit">
                       <span
                         class="inline-flex items-center justify-center px-2.5 py-0.5 text-[11px] font-semibold border whitespace-nowrap"
                         :class="getStatusBadgeClass(r.status)"
@@ -309,10 +309,10 @@
                         {{ r.status }}
                       </span>
                     </td>
-                    <td class="py-2 px-3 text-neutral-700 border-r border-neutral-border">
+                    <td class="py-2 px-3 text-neutral-700 border-b border-r border-neutral-border bg-inherit">
                       {{ r.alasan }}
                     </td>
-                    <td class="py-2 px-3 text-right font-medium text-red-700 whitespace-nowrap">
+                    <td class="py-2 px-3 text-right font-medium text-red-700 whitespace-nowrap border-b border-neutral-border bg-inherit">
                       {{ r.durasi_formatted }}
                     </td>
                   </tr>

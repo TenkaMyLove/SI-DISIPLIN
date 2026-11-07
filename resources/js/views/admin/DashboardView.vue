@@ -1,25 +1,25 @@
 <template>
-  <div class="space-y-6">
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-neutral-border pb-5 gap-4">
+  <div class="space-y-3.5">
+    <!-- Header: Compact without bottom border line to prevent sinking -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
       <div>
-        <h1 class="text-2xl font-bold text-navy tracking-tight">Dashboard Administrator</h1>
-        <p class="text-sm text-neutral-muted mt-0.5">
+        <h1 class="text-xl sm:text-2xl font-bold text-navy tracking-tight">Dashboard Administrator</h1>
+        <p class="text-xs sm:text-sm text-neutral-muted mt-0.5">
           Selamat datang, <strong class="text-navy">{{ user?.name || 'Admin' }}</strong>. Pantau dan kelola data disiplin kehadiran pegawai.
         </p>
       </div>
 
-      <div class="flex items-center space-x-2">
+      <div class="flex items-center space-x-2 shrink-0">
         <router-link
           to="/admin/absensi"
-          class="px-4 py-2 bg-navy text-white text-xs font-semibold hover:bg-navy-800 transition-colors flex items-center space-x-1.5"
+          class="px-3.5 py-1.5 bg-navy text-white text-xs font-semibold hover:bg-navy-800 transition-colors flex items-center space-x-1.5 shadow-2xs"
         >
           <Plus class="w-4 h-4" />
           <span>Catat Absensi</span>
         </router-link>
         <router-link
           to="/admin/pegawai"
-          class="px-4 py-2 border border-neutral-border bg-white text-navy text-xs font-semibold hover:bg-neutral-50 transition-colors flex items-center space-x-1.5"
+          class="px-3.5 py-1.5 border border-neutral-border bg-white text-navy text-xs font-semibold hover:bg-neutral-50 transition-colors flex items-center space-x-1.5 shadow-2xs"
         >
           <UserPlus class="w-4 h-4" />
           <span>Tambah Pegawai</span>
@@ -28,59 +28,59 @@
     </div>
 
     <!-- Skeleton during loading -->
-    <div v-if="loading" class="space-y-6">
+    <div v-if="loading" class="space-y-4">
       <SkeletonLoader type="stat" :rows="4" />
       <SkeletonLoader type="table" :rows="5" :cols="6" />
     </div>
 
-    <div v-else class="space-y-6">
-      <!-- Stat Cards (No card-in-card, clean solid borders) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white border border-neutral-border p-5">
+    <div v-else class="space-y-3.5">
+      <!-- Stat Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div class="bg-white border border-neutral-border p-4 shadow-2xs">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold text-neutral-muted uppercase tracking-wider">Total Pegawai</span>
-            <Users class="w-5 h-5 text-navy" />
+            <span class="text-[11px] font-semibold text-neutral-muted uppercase tracking-wider">Total Pegawai</span>
+            <Users class="w-4 h-4 text-navy" />
           </div>
-          <p class="text-3xl font-bold text-navy mt-2">{{ stats.totalPegawai }}</p>
-          <p class="text-xs text-neutral-muted mt-1">Terdaftar di 3 Divisi / Bagian</p>
+          <p class="text-2xl font-bold text-navy mt-1">{{ stats.totalPegawai }}</p>
+          <p class="text-[11px] text-neutral-muted mt-0.5">Terdaftar di 3 Divisi / Bagian</p>
         </div>
 
-        <div class="bg-white border border-neutral-border p-5">
+        <div class="bg-white border border-neutral-border p-4 shadow-2xs">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold text-neutral-muted uppercase tracking-wider">Catatan Absensi</span>
-            <CalendarX2 class="w-5 h-5 text-navy" />
+            <span class="text-[11px] font-semibold text-neutral-muted uppercase tracking-wider">Catatan Absensi</span>
+            <CalendarX2 class="w-4 h-4 text-navy" />
           </div>
-          <p class="text-3xl font-bold text-navy mt-2">{{ stats.totalAbsensi }}</p>
-          <p class="text-xs text-neutral-muted mt-1">Total seluruh catatan bermasalah</p>
+          <p class="text-2xl font-bold text-navy mt-1">{{ stats.totalAbsensi }}</p>
+          <p class="text-[11px] text-neutral-muted mt-0.5">Total seluruh catatan bermasalah</p>
         </div>
 
-        <div class="bg-white border border-neutral-border p-5">
+        <div class="bg-white border border-neutral-border p-4 shadow-2xs">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold text-neutral-muted uppercase tracking-wider">Kekurangan Bulan Ini</span>
-            <Clock class="w-5 h-5 text-red-700" />
+            <span class="text-[11px] font-semibold text-neutral-muted uppercase tracking-wider">Kekurangan Bulan Ini</span>
+            <Clock class="w-4 h-4 text-red-700" />
           </div>
-          <p class="text-2xl font-bold text-red-700 mt-2 truncate">{{ stats.totalKekuranganBulanIni }}</p>
-          <p class="text-xs text-neutral-muted mt-1">Akumulasi bulan {{ currentMonthLabel }}</p>
+          <p class="text-xl font-bold text-red-700 mt-1 truncate">{{ stats.totalKekuranganBulanIni }}</p>
+          <p class="text-[11px] text-neutral-muted mt-0.5">Akumulasi bulan {{ currentMonthLabel }}</p>
         </div>
 
-        <div class="bg-white border border-neutral-border p-5">
+        <div class="bg-white border border-neutral-border p-4 shadow-2xs">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold text-neutral-muted uppercase tracking-wider">Jam Kerja</span>
-            <Settings class="w-5 h-5 text-navy" />
+            <span class="text-[11px] font-semibold text-neutral-muted uppercase tracking-wider">Jam Kerja</span>
+            <Settings class="w-4 h-4 text-navy" />
           </div>
-          <p class="text-lg font-bold text-navy mt-2">
+          <p class="text-base font-bold text-navy mt-1">
             {{ settings.jam_masuk_standar }} &ndash; {{ settings.jam_pulang_standar }}
           </p>
-          <p class="text-xs text-neutral-muted mt-1">WITA &bull; Senin &ndash; Jumat</p>
+          <p class="text-[11px] text-neutral-muted mt-0.5">WITA &bull; Senin &ndash; Jumat</p>
         </div>
       </div>
 
       <!-- Recent Attendance Records Section -->
-      <div class="bg-white border border-neutral-border p-6">
-        <div class="flex items-center justify-between border-b border-neutral-border pb-4 mb-4">
+      <div class="bg-white border border-neutral-border p-4 sm:p-5 shadow-sm">
+        <div class="flex items-center justify-between border-b border-neutral-border pb-3 mb-3">
           <div>
-            <h2 class="text-base font-bold text-navy">Catatan Absensi Bermasalah Terbaru</h2>
-            <p class="text-xs text-neutral-muted mt-0.5">Daftar kehadiran pegawai bermasalah yang terakhir dicatat</p>
+            <h2 class="text-sm font-bold text-navy">Catatan Absensi Bermasalah Terbaru</h2>
+            <p class="text-[11px] text-neutral-muted mt-0.5">Daftar kehadiran pegawai bermasalah yang terakhir dicatat</p>
           </div>
           <router-link
             to="/admin/absensi"
@@ -95,27 +95,27 @@
           Belum ada catatan absensi bermasalah yang terekam.
         </div>
 
-        <div v-else class="overflow-x-auto overflow-y-auto max-h-[420px]">
-          <table class="w-full text-left border-collapse text-xs">
-            <thead class="sticky top-0 z-10 bg-navy text-white">
+        <div v-else class="overflow-x-auto overflow-y-auto max-h-[380px]">
+          <table class="w-full text-left border-separate border-spacing-0 text-xs">
+            <thead class="sticky top-0 z-20 bg-navy text-white">
               <tr class="bg-navy text-white">
-                <th class="py-2.5 px-3 font-semibold sticky top-0 bg-navy whitespace-nowrap">Tanggal</th>
-                <th class="py-2.5 px-3 font-semibold sticky top-0 bg-navy">Nama Pegawai</th>
-                <th class="py-2.5 px-3 font-semibold sticky top-0 bg-navy whitespace-nowrap">NIP</th>
-                <th class="py-2.5 px-3 font-semibold text-center sticky top-0 bg-navy whitespace-nowrap">Masuk - Pulang</th>
-                <th class="py-2.5 px-3 font-semibold whitespace-nowrap sticky top-0 bg-navy">Status</th>
-                <th class="py-2.5 px-3 font-semibold text-right sticky top-0 bg-navy whitespace-nowrap">Kekurangan</th>
+                <th class="py-2.5 px-3 font-semibold border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white whitespace-nowrap">Tanggal</th>
+                <th class="py-2.5 px-3 font-semibold border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white">Nama Pegawai</th>
+                <th class="py-2.5 px-3 font-semibold border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white whitespace-nowrap">NIP</th>
+                <th class="py-2.5 px-3 font-semibold text-center border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white whitespace-nowrap">Masuk - Pulang</th>
+                <th class="py-2.5 px-3 font-semibold whitespace-nowrap border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white">Status</th>
+                <th class="py-2.5 px-3 font-semibold text-right border-b-2 border-navy-800 sticky top-0 z-20 bg-navy text-white whitespace-nowrap">Kekurangan</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-neutral-border">
+            <tbody class="divide-y divide-neutral-border bg-white">
               <tr v-for="rec in recentRecords" :key="rec.id" class="hover:bg-neutral-50 transition-colors">
-                <td class="py-2.5 px-3 font-medium text-neutral-800">{{ rec.periode_formatted }}</td>
-                <td class="py-2.5 px-3 font-semibold text-navy">{{ rec.pegawai?.nama }}</td>
-                <td class="py-2.5 px-3 font-mono text-neutral-600">{{ rec.nip }}</td>
-                <td class="py-2.5 px-3 text-center text-neutral-800">
+                <td class="py-2.5 px-3 font-medium text-neutral-800 border-b border-r border-neutral-border whitespace-nowrap bg-inherit">{{ rec.periode_formatted }}</td>
+                <td class="py-2.5 px-3 font-semibold text-navy border-b border-r border-neutral-border bg-inherit">{{ rec.pegawai?.nama }}</td>
+                <td class="py-2.5 px-3 font-mono text-neutral-600 border-b border-r border-neutral-border whitespace-nowrap bg-inherit">{{ rec.nip }}</td>
+                <td class="py-2.5 px-3 text-center text-neutral-800 border-b border-r border-neutral-border whitespace-nowrap bg-inherit">
                   {{ rec.jam_masuk?.substring(0, 5) }} &ndash; {{ rec.jam_pulang?.substring(0, 5) }}
                 </td>
-                <td class="py-2.5 px-3 whitespace-nowrap">
+                <td class="py-2.5 px-3 whitespace-nowrap border-b border-r border-neutral-border bg-inherit">
                   <span
                     class="inline-flex items-center justify-center px-2.5 py-0.5 text-[11px] font-semibold border whitespace-nowrap"
                     :class="getStatusBadgeClass(rec.status)"
@@ -123,7 +123,7 @@
                     {{ rec.status }}
                   </span>
                 </td>
-                <td class="py-2.5 px-3 text-right font-semibold text-red-700">
+                <td class="py-2.5 px-3 text-right font-semibold text-red-700 border-b border-neutral-border whitespace-nowrap bg-inherit">
                   {{ rec.durasi_formatted }}
                 </td>
               </tr>

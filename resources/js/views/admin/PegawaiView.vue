@@ -1,31 +1,31 @@
 <template>
-  <div class="space-y-6">
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-neutral-border pb-5 gap-4">
+  <div class="space-y-3.5">
+    <!-- Header: Compact without bottom border line to prevent sinking -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
       <div>
-        <h1 class="text-2xl font-bold text-navy tracking-tight">Manajemen Data Pegawai</h1>
-        <p class="text-sm text-neutral-muted mt-0.5">
+        <h1 class="text-xl sm:text-2xl font-bold text-navy tracking-tight">Manajemen Data Pegawai</h1>
+        <p class="text-xs sm:text-sm text-neutral-muted mt-0.5">
           Kelola master data pegawai Kementerian Hukum Kalimantan Selatan.
         </p>
       </div>
 
       <button
         @click="openAddModal"
-        class="px-4 py-2 bg-navy text-white text-xs font-semibold hover:bg-navy-800 transition-colors flex items-center space-x-1.5 self-start sm:self-auto"
+        class="px-4 py-2 bg-navy text-white text-xs font-semibold hover:bg-navy-800 transition-colors flex items-center space-x-1.5 self-start sm:self-auto shadow-xs shrink-0"
       >
         <UserPlus class="w-4 h-4" />
         <span>Tambah Pegawai</span>
       </button>
     </div>
 
-    <!-- Filter & Search Bar -->
-    <div class="bg-white border border-neutral-border p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <!-- Filter & Search Bar: Compact and seamless -->
+    <div class="bg-white border border-neutral-border p-3 sm:px-4 sm:py-2.5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xs">
       <div class="relative w-full sm:w-80">
         <input
           v-model="searchQuery"
           type="text"
           placeholder="Cari NIP atau Nama Pegawai..."
-          class="w-full text-xs border border-neutral-border pl-8 pr-3 py-2 bg-white focus:outline-none focus:border-navy"
+          class="w-full text-xs border border-neutral-border pl-8 pr-3 py-1.5 bg-white focus:outline-none focus:border-navy"
           @input="handleSearch"
         />
         <Search class="w-3.5 h-3.5 text-neutral-400 absolute left-2.5 top-2.5" />
@@ -54,37 +54,37 @@
 
     <!-- Pegawai Table Card Container -->
     <div v-else class="bg-white border border-neutral-border shadow-sm flex flex-col">
-      <div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh-280px)] min-h-[350px]">
-        <table class="w-full text-left border-collapse text-xs">
-          <thead class="sticky top-0 z-10 bg-navy text-white">
+      <div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh-250px)]">
+        <table class="w-full text-left border-separate border-spacing-0 text-xs">
+          <thead class="sticky top-0 z-20 bg-navy text-white">
             <tr class="bg-navy text-white">
-              <th class="py-3 px-3 font-semibold text-center w-12 border-r border-navy-800 sticky top-0 bg-navy">No</th>
-              <th class="py-3 px-3 font-semibold w-48 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">NIP (18 Digit)</th>
-              <th class="py-3 px-3 font-semibold border-r border-navy-800 sticky top-0 bg-navy">Nama Lengkap</th>
-              <th class="py-3 px-3 font-semibold w-52 border-r border-navy-800 sticky top-0 bg-navy">Divisi / Bagian</th>
-              <th class="py-3 px-3 font-semibold text-center w-28 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">Catatan Absensi</th>
-              <th class="py-3 px-3 font-semibold text-center w-28 sticky top-0 bg-navy whitespace-nowrap">Aksi</th>
+              <th class="py-2.5 px-3 font-semibold text-center w-12 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white">No</th>
+              <th class="py-2.5 px-3 font-semibold w-48 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white whitespace-nowrap">NIP (18 Digit)</th>
+              <th class="py-2.5 px-3 font-semibold border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white">Nama Lengkap</th>
+              <th class="py-2.5 px-3 font-semibold w-52 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white">Divisi / Bagian</th>
+              <th class="py-2.5 px-3 font-semibold text-center w-28 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white whitespace-nowrap">Catatan Absensi</th>
+              <th class="py-2.5 px-3 font-semibold text-center w-28 border-b-2 border-navy-800 sticky top-0 z-20 bg-navy text-white whitespace-nowrap">Aksi</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-neutral-border">
+          <tbody class="divide-y divide-neutral-border bg-white">
             <tr
               v-for="(p, index) in pegawaiList"
               :key="p.nip"
               class="hover:bg-neutral-50 transition-colors"
             >
-              <td class="py-2.5 px-3 text-center text-neutral-500 border-r border-neutral-border">
+              <td class="py-2.5 px-3 text-center text-neutral-500 border-b border-r border-neutral-border bg-inherit">
                 {{ (pagination.current_page - 1) * pagination.per_page + index + 1 }}
               </td>
-              <td class="py-2.5 px-3 font-mono font-medium text-neutral-800 border-r border-neutral-border whitespace-nowrap">
+              <td class="py-2.5 px-3 font-mono font-medium text-neutral-800 border-b border-r border-neutral-border whitespace-nowrap bg-inherit">
                 {{ p.nip }}
               </td>
-              <td class="py-2.5 px-3 font-semibold text-navy border-r border-neutral-border">
+              <td class="py-2.5 px-3 font-semibold text-navy border-b border-r border-neutral-border bg-inherit">
                 {{ p.nama }}
               </td>
-              <td class="py-2.5 px-3 text-neutral-700 border-r border-neutral-border">
+              <td class="py-2.5 px-3 text-neutral-700 border-b border-r border-neutral-border bg-inherit">
                 {{ p.divisi }}
               </td>
-              <td class="py-2.5 px-3 text-center border-r border-neutral-border whitespace-nowrap">
+              <td class="py-2.5 px-3 text-center border-b border-r border-neutral-border whitespace-nowrap bg-inherit">
                 <span
                   class="inline-flex items-center justify-center px-2 py-0.5 text-[11px] font-semibold border whitespace-nowrap"
                   :class="p.absensi_count > 0 ? 'bg-amber-50 text-amber-800 border-amber-300' : 'bg-neutral-100 text-neutral-600 border-neutral-300'"
@@ -92,7 +92,7 @@
                   {{ p.absensi_count }} kali
                 </span>
               </td>
-              <td class="py-2.5 px-3 text-center space-x-2 whitespace-nowrap">
+              <td class="py-2.5 px-3 text-center space-x-2 whitespace-nowrap border-b border-neutral-border bg-inherit">
                 <button
                   @click="openEditModal(p)"
                   class="p-1 text-navy hover:text-blue-700 focus:outline-none"
@@ -110,7 +110,7 @@
               </td>
             </tr>
             <tr v-if="pegawaiList.length === 0">
-              <td colspan="6" class="py-10 text-center text-neutral-muted">
+              <td colspan="6" class="py-10 text-center text-neutral-muted border-b border-neutral-border bg-inherit">
                 Tidak ada data pegawai yang sesuai dengan filter pencarian.
               </td>
             </tr>

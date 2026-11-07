@@ -1,18 +1,18 @@
 <template>
-  <div class="space-y-6">
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-neutral-border pb-5 gap-4">
+  <div class="space-y-3.5">
+    <!-- Header: Compact without bottom border line to prevent sinking -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
       <div>
-        <h1 class="text-2xl font-bold text-navy tracking-tight">Rekapitulasi Kehadiran Bermasalah</h1>
-        <p class="text-sm text-neutral-muted mt-0.5">
+        <h1 class="text-xl sm:text-2xl font-bold text-navy tracking-tight">Rekapitulasi Kehadiran Bermasalah</h1>
+        <p class="text-xs sm:text-sm text-neutral-muted mt-0.5">
           Tinjauan rekapitulasi data absensi bermasalah pegawai dan total akumulasi kekurangan jam kerja.
         </p>
       </div>
 
-      <div class="flex items-center space-x-2">
+      <div class="flex items-center space-x-2 shrink-0">
         <button
           @click="exportExcel"
-          class="inline-flex items-center space-x-1.5 px-3 py-2 border border-neutral-border text-xs font-semibold text-navy bg-white hover:bg-neutral-50 transition-colors"
+          class="inline-flex items-center space-x-1.5 px-3 py-1.5 border border-neutral-border text-xs font-semibold text-navy bg-white hover:bg-neutral-50 transition-colors shadow-2xs"
         >
           <FileSpreadsheet class="w-4 h-4 text-emerald-700" />
           <span>Ekspor Excel</span>
@@ -20,7 +20,7 @@
 
         <button
           @click="exportPdf"
-          class="inline-flex items-center space-x-1.5 px-3 py-2 border border-neutral-border text-xs font-semibold text-navy bg-white hover:bg-neutral-50 transition-colors"
+          class="inline-flex items-center space-x-1.5 px-3 py-1.5 border border-neutral-border text-xs font-semibold text-navy bg-white hover:bg-neutral-50 transition-colors shadow-2xs"
         >
           <FileDown class="w-4 h-4 text-red-700" />
           <span>Ekspor PDF</span>
@@ -28,7 +28,7 @@
 
         <button
           @click="printRekap"
-          class="inline-flex items-center space-x-1.5 px-3 py-2 bg-navy text-white text-xs font-semibold hover:bg-navy-800 transition-colors"
+          class="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-navy text-white text-xs font-semibold hover:bg-navy-800 transition-colors shadow-2xs"
         >
           <Printer class="w-4 h-4" />
           <span>Cetak</span>
@@ -36,13 +36,13 @@
       </div>
     </div>
 
-    <!-- Filter Panel -->
-    <div class="bg-white border border-neutral-border p-4 grid grid-cols-1 sm:grid-cols-3 gap-4 no-print">
+    <!-- Filter Panel: Compact -->
+    <div class="bg-white border border-neutral-border p-3 sm:px-4 sm:py-2.5 grid grid-cols-1 sm:grid-cols-3 gap-3 no-print shadow-2xs">
       <div>
         <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
           Mode Periode
         </label>
-        <div class="grid grid-cols-3 border border-neutral-border p-1 bg-neutral-50 gap-1 mb-2">
+        <div class="grid grid-cols-3 border border-neutral-border p-0.5 bg-neutral-50 gap-1 mb-1.5">
           <button
             type="button"
             @click="setMode('tanggal')"
@@ -72,21 +72,21 @@
           v-if="filters.mode === 'tanggal'"
           v-model="filters.tanggal"
           type="date"
-          class="w-full text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy"
+          class="w-full text-xs border border-neutral-border px-3 py-1.5 bg-white focus:outline-none focus:border-navy"
           @change="fetchRekap"
         />
         <input
           v-else-if="filters.mode === 'minggu'"
           v-model="filters.minggu"
           type="date"
-          class="w-full text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy"
+          class="w-full text-xs border border-neutral-border px-3 py-1.5 bg-white focus:outline-none focus:border-navy"
           @change="fetchRekap"
         />
         <input
           v-else
           v-model="filters.bulan"
           type="month"
-          class="w-full text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy"
+          class="w-full text-xs border border-neutral-border px-3 py-1.5 bg-white focus:outline-none focus:border-navy"
           @change="fetchRekap"
         />
       </div>
@@ -95,7 +95,7 @@
         <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
           Pegawai
         </label>
-        <div class="mt-8">
+        <div class="mt-7">
           <CustomDropdown
             v-model="filters.nip"
             :options="[
@@ -112,7 +112,7 @@
         <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
           Divisi / Bagian
         </label>
-        <div class="mt-8">
+        <div class="mt-7">
           <CustomDropdown
             v-model="filters.divisi"
             :options="[
@@ -133,15 +133,15 @@
     </div>
 
     <!-- Content -->
-    <div v-else class="space-y-6">
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 no-print">
-        <div class="bg-white border border-neutral-border p-4">
-          <p class="text-xs font-semibold text-neutral-muted uppercase tracking-wider">Pegawai Terkena Rekap</p>
-          <p class="text-2xl font-bold text-navy mt-1">{{ rekapData?.ringkasan?.total_pegawai_bermasalah || 0 }} orang</p>
+    <div v-else class="space-y-3.5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 no-print">
+        <div class="bg-white border border-neutral-border p-3 shadow-2xs">
+          <p class="text-[11px] font-semibold text-neutral-muted uppercase tracking-wider">Pegawai Terkena Rekap</p>
+          <p class="text-xl font-bold text-navy mt-0.5">{{ rekapData?.ringkasan?.total_pegawai_bermasalah || 0 }} orang</p>
         </div>
-        <div class="bg-white border border-neutral-border p-4">
-          <p class="text-xs font-semibold text-neutral-muted uppercase tracking-wider">Total Pelanggaran</p>
-          <p class="text-2xl font-bold text-navy mt-1">{{ rekapData?.ringkasan?.total_catatan_absensi || 0 }} kali</p>
+        <div class="bg-white border border-neutral-border p-3 shadow-2xs">
+          <p class="text-[11px] font-semibold text-neutral-muted uppercase tracking-wider">Total Pelanggaran</p>
+          <p class="text-xl font-bold text-navy mt-0.5">{{ rekapData?.ringkasan?.total_catatan_absensi || 0 }} kali</p>
         </div>
       </div>
 
@@ -151,45 +151,45 @@
 
       <!-- Rekap Table Card Container -->
       <div v-else class="bg-white border border-neutral-border shadow-sm flex flex-col">
-        <div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh-280px)] min-h-[350px]">
-          <table class="w-full text-left border-collapse text-xs">
-            <thead class="sticky top-0 z-10 bg-navy text-white">
+        <div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh-270px)]">
+          <table class="w-full text-left border-separate border-spacing-0 text-xs">
+            <thead class="sticky top-0 z-20 bg-navy text-white">
               <tr class="bg-navy text-white">
-                <th class="py-2.5 px-3 font-semibold text-center w-12 border-r border-navy-800 sticky top-0 bg-navy">No</th>
-                <th class="py-2.5 px-3 font-semibold w-28 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">Tanggal</th>
-                <th class="py-2.5 px-3 font-semibold w-44 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">NIP</th>
-                <th class="py-2.5 px-3 font-semibold border-r border-navy-800 sticky top-0 bg-navy">Nama Pegawai</th>
-                <th class="py-2.5 px-3 font-semibold w-40 border-r border-navy-800 sticky top-0 bg-navy">Divisi / Bagian</th>
-                <th class="py-2.5 px-2 font-semibold text-center w-24 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">Masuk-Pulang</th>
-                <th class="py-2.5 px-3 font-semibold w-40 whitespace-nowrap border-r border-navy-800 sticky top-0 bg-navy">Status</th>
-                <th class="py-2.5 px-3 font-semibold border-r border-navy-800 sticky top-0 bg-navy">Alasan</th>
-                <th class="py-2.5 px-3 font-semibold text-right w-32 sticky top-0 bg-navy whitespace-nowrap">Kekurangan</th>
+                <th class="py-2.5 px-3 font-semibold text-center w-12 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white">No</th>
+                <th class="py-2.5 px-3 font-semibold w-28 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white whitespace-nowrap">Tanggal</th>
+                <th class="py-2.5 px-3 font-semibold w-44 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white whitespace-nowrap">NIP</th>
+                <th class="py-2.5 px-3 font-semibold border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white">Nama Pegawai</th>
+                <th class="py-2.5 px-3 font-semibold w-40 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white">Divisi / Bagian</th>
+                <th class="py-2.5 px-2 font-semibold text-center w-24 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white whitespace-nowrap">Masuk-Pulang</th>
+                <th class="py-2.5 px-3 font-semibold w-40 whitespace-nowrap border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white">Status</th>
+                <th class="py-2.5 px-3 font-semibold border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white">Alasan</th>
+                <th class="py-2.5 px-3 font-semibold text-right w-32 border-b-2 border-navy-800 sticky top-0 z-20 bg-navy text-white whitespace-nowrap">Kekurangan</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-neutral-border">
+            <tbody class="divide-y divide-neutral-border bg-white">
             <template v-for="(p, pIdx) in rekapData.pegawai" :key="p.nip">
-              <tr v-for="(r, rIdx) in p.rincian" :key="r.id" class="hover:bg-neutral-50">
-                <td class="py-2 px-3 text-center text-neutral-500 border-r border-neutral-border">
+              <tr v-for="(r, rIdx) in p.rincian" :key="r.id" class="hover:bg-neutral-50 transition-colors">
+                <td class="py-2 px-3 text-center text-neutral-500 border-b border-r border-neutral-border bg-inherit">
                   {{ getGlobalRowNumber(pIdx, rIdx) }}
                 </td>
-                <td class="py-2 px-3 text-neutral-800 border-r border-neutral-border">{{ r.periode_formatted }}</td>
-                <td class="py-2 px-3 font-mono text-neutral-700 border-r border-neutral-border">{{ p.nip }}</td>
-                <td class="py-2 px-3 font-semibold text-navy border-r border-neutral-border">{{ p.nama }}</td>
-                <td class="py-2 px-3 text-neutral-700 border-r border-neutral-border">{{ p.divisi }}</td>
-                <td class="py-2 px-2 text-center text-neutral-800 border-r border-neutral-border">
+                <td class="py-2 px-3 text-neutral-800 border-b border-r border-neutral-border bg-inherit">{{ r.periode_formatted }}</td>
+                <td class="py-2 px-3 font-mono text-neutral-700 border-b border-r border-neutral-border bg-inherit">{{ p.nip }}</td>
+                <td class="py-2 px-3 font-semibold text-navy border-b border-r border-neutral-border bg-inherit">{{ p.nama }}</td>
+                <td class="py-2 px-3 text-neutral-700 border-b border-r border-neutral-border bg-inherit">{{ p.divisi }}</td>
+                <td class="py-2 px-2 text-center text-neutral-800 border-b border-r border-neutral-border bg-inherit">
                   {{ r.jam_masuk }} &ndash; {{ r.jam_pulang }}
                 </td>
-                <td class="py-2 px-3 border-r border-neutral-border whitespace-nowrap">
+                <td class="py-2 px-3 border-b border-r border-neutral-border whitespace-nowrap bg-inherit">
                   <span class="inline-flex items-center justify-center px-2.5 py-0.5 text-[11px] font-semibold border whitespace-nowrap" :class="getStatusBadgeClass(r.status)">
                     {{ r.status }}
                   </span>
                 </td>
-                <td class="py-2 px-3 text-neutral-700 border-r border-neutral-border">{{ r.alasan }}</td>
-                <td class="py-2 px-3 text-right font-medium text-red-700">{{ r.durasi_formatted }}</td>
+                <td class="py-2 px-3 text-neutral-700 border-b border-r border-neutral-border bg-inherit">{{ r.alasan }}</td>
+                <td class="py-2 px-3 text-right font-medium text-red-700 border-b border-neutral-border bg-inherit">{{ r.durasi_formatted }}</td>
               </tr>
               <!-- Employee Subtotal Row: Merged into 1 column to eliminate excessive gap -->
               <tr class="bg-neutral-100 font-semibold border-b border-neutral-300">
-                <td colspan="9" class="py-2.5 px-4 text-right text-xs">
+                <td colspan="9" class="py-2 px-4 text-right text-xs">
                   <span class="text-navy font-semibold mr-1.5">Total Kekurangan Jam Kerja:</span>
                   <span class="text-red-800 font-bold whitespace-nowrap">{{ p.total_durasi_formatted }}</span>
                 </td>

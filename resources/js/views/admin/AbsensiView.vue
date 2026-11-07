@@ -1,31 +1,31 @@
 <template>
-  <div class="space-y-6">
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-neutral-border pb-5 gap-4">
+  <div class="space-y-3.5">
+    <!-- Header: Compact without bottom border line to prevent sinking -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
       <div>
-        <h1 class="text-2xl font-bold text-navy tracking-tight">Manajemen Absensi Bermasalah</h1>
-        <p class="text-sm text-neutral-muted mt-0.5">
+        <h1 class="text-xl sm:text-2xl font-bold text-navy tracking-tight">Manajemen Absensi Bermasalah</h1>
+        <p class="text-xs sm:text-sm text-neutral-muted mt-0.5">
           Catat dan kelola pegawai yang tidak masuk kerja tanpa keterangan, terlambat, maupun pulang duluan.
         </p>
       </div>
 
       <button
         @click="openAddModal"
-        class="px-4 py-2 bg-navy text-white text-xs font-semibold hover:bg-navy-800 transition-colors flex items-center space-x-1.5 self-start sm:self-auto"
+        class="px-4 py-2 bg-navy text-white text-xs font-semibold hover:bg-navy-800 transition-colors flex items-center space-x-1.5 self-start sm:self-auto shadow-xs shrink-0"
       >
         <Plus class="w-4 h-4" />
         <span>Tambah Catatan Absensi</span>
       </button>
     </div>
 
-    <!-- Filter & Search Bar -->
-    <div class="bg-white border border-neutral-border p-4 grid grid-cols-1 sm:grid-cols-4 gap-4">
+    <!-- Filter & Search Bar: Compact -->
+    <div class="bg-white border border-neutral-border p-3 sm:px-4 sm:py-2.5 grid grid-cols-1 sm:grid-cols-4 gap-3 shadow-2xs">
       <div class="relative sm:col-span-2">
         <input
           v-model="searchQuery"
           type="text"
           placeholder="Cari NIP atau Nama Pegawai..."
-          class="w-full text-xs border border-neutral-border pl-8 pr-3 py-2 bg-white focus:outline-none focus:border-navy"
+          class="w-full text-xs border border-neutral-border pl-8 pr-3 py-1.5 bg-white focus:outline-none focus:border-navy"
           @input="handleSearch"
         />
         <Search class="w-3.5 h-3.5 text-neutral-400 absolute left-2.5 top-2.5" />
@@ -49,7 +49,7 @@
         <input
           v-model="filterTanggal"
           type="date"
-          class="w-full text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy"
+          class="w-full text-xs border border-neutral-border px-3 py-1.5 bg-white focus:outline-none focus:border-navy"
           @change="fetchAbsensi(1)"
         />
       </div>
@@ -62,43 +62,43 @@
 
     <!-- Absensi Table Card Container -->
     <div v-else class="bg-white border border-neutral-border shadow-sm flex flex-col">
-      <div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh-280px)] min-h-[350px]">
-        <table class="w-full text-left border-collapse text-xs">
-          <thead class="sticky top-0 z-10 bg-navy text-white">
+      <div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh-250px)]">
+        <table class="w-full text-left border-separate border-spacing-0 text-xs">
+          <thead class="sticky top-0 z-20 bg-navy text-white">
             <tr class="bg-navy text-white">
-              <th class="py-3 px-3 font-semibold text-center w-12 border-r border-navy-800 sticky top-0 bg-navy">No</th>
-              <th class="py-3 px-3 font-semibold w-28 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">Tanggal</th>
-              <th class="py-3 px-3 font-semibold w-44 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">NIP</th>
-              <th class="py-3 px-3 font-semibold border-r border-navy-800 sticky top-0 bg-navy">Nama Pegawai</th>
-              <th class="py-3 px-2 font-semibold text-center w-28 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">Masuk - Pulang</th>
-              <th class="py-3 px-3 font-semibold w-40 whitespace-nowrap border-r border-navy-800 sticky top-0 bg-navy">Status</th>
-              <th class="py-3 px-3 font-semibold border-r border-navy-800 sticky top-0 bg-navy">Alasan</th>
-              <th class="py-3 px-3 font-semibold text-right w-32 border-r border-navy-800 sticky top-0 bg-navy whitespace-nowrap">Kekurangan</th>
-              <th class="py-3 px-3 font-semibold text-center w-24 sticky top-0 bg-navy whitespace-nowrap">Aksi</th>
+              <th class="py-2.5 px-3 font-semibold text-center w-12 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white">No</th>
+              <th class="py-2.5 px-3 font-semibold w-28 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white whitespace-nowrap">Tanggal</th>
+              <th class="py-2.5 px-3 font-semibold w-44 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white whitespace-nowrap">NIP</th>
+              <th class="py-2.5 px-3 font-semibold border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white">Nama Pegawai</th>
+              <th class="py-2.5 px-2 font-semibold text-center w-28 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white whitespace-nowrap">Masuk - Pulang</th>
+              <th class="py-2.5 px-3 font-semibold w-40 whitespace-nowrap border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white">Status</th>
+              <th class="py-2.5 px-3 font-semibold border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white">Alasan</th>
+              <th class="py-2.5 px-3 font-semibold text-right w-32 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white whitespace-nowrap">Kekurangan</th>
+              <th class="py-2.5 px-3 font-semibold text-center w-24 border-b-2 border-navy-800 sticky top-0 z-20 bg-navy text-white whitespace-nowrap">Aksi</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-neutral-border">
+          <tbody class="divide-y divide-neutral-border bg-white">
             <tr
               v-for="(rec, index) in absensiList"
               :key="rec.id"
               class="hover:bg-neutral-50 transition-colors"
             >
-              <td class="py-2.5 px-3 text-center text-neutral-500 border-r border-neutral-border">
+              <td class="py-2.5 px-3 text-center text-neutral-500 border-b border-r border-neutral-border bg-inherit">
                 {{ (pagination.current_page - 1) * pagination.per_page + index + 1 }}
               </td>
-              <td class="py-2.5 px-3 font-medium text-neutral-800 border-r border-neutral-border whitespace-nowrap">
+              <td class="py-2.5 px-3 font-medium text-neutral-800 border-b border-r border-neutral-border whitespace-nowrap bg-inherit">
                 {{ rec.periode_formatted }}
               </td>
-              <td class="py-2.5 px-3 font-mono text-neutral-700 border-r border-neutral-border whitespace-nowrap">
+              <td class="py-2.5 px-3 font-mono text-neutral-700 border-b border-r border-neutral-border whitespace-nowrap bg-inherit">
                 {{ rec.nip }}
               </td>
-              <td class="py-2.5 px-3 font-semibold text-navy border-r border-neutral-border">
+              <td class="py-2.5 px-3 font-semibold text-navy border-b border-r border-neutral-border bg-inherit">
                 {{ rec.pegawai?.nama }}
               </td>
-              <td class="py-2.5 px-2 text-center text-neutral-800 border-r border-neutral-border whitespace-nowrap">
+              <td class="py-2.5 px-2 text-center text-neutral-800 border-b border-r border-neutral-border whitespace-nowrap bg-inherit">
                 {{ rec.jam_masuk?.substring(0, 5) }} &ndash; {{ rec.jam_pulang?.substring(0, 5) }}
               </td>
-              <td class="py-2.5 px-3 border-r border-neutral-border whitespace-nowrap">
+              <td class="py-2.5 px-3 border-b border-r border-neutral-border whitespace-nowrap bg-inherit">
                 <span
                   class="inline-flex items-center justify-center px-2.5 py-0.5 text-[11px] font-semibold border whitespace-nowrap"
                   :class="getStatusBadgeClass(rec.status)"
@@ -106,14 +106,14 @@
                   {{ rec.status }}
                 </span>
               </td>
-              <td class="py-2.5 px-3 text-neutral-700 border-r border-neutral-border">
+              <td class="py-2.5 px-3 text-neutral-700 border-b border-r border-neutral-border bg-inherit">
                 {{ rec.alasan || '-' }}
               </td>
-              <td class="py-2.5 px-3 text-right font-medium text-red-700 border-r border-neutral-border whitespace-nowrap">
+              <td class="py-2.5 px-3 text-right font-medium text-red-700 border-b border-r border-neutral-border whitespace-nowrap bg-inherit">
                 {{ rec.durasi_formatted }}
                 <span class="text-[10px] text-neutral-400 block">({{ rec.durasi_menit }} mnt)</span>
               </td>
-              <td class="py-2.5 px-3 text-center space-x-2 whitespace-nowrap">
+              <td class="py-2.5 px-3 text-center space-x-2 whitespace-nowrap border-b border-neutral-border bg-inherit">
                 <button
                   @click="openEditModal(rec)"
                   class="p-1 text-navy hover:text-blue-700 focus:outline-none"
@@ -131,7 +131,7 @@
               </td>
             </tr>
             <tr v-if="absensiList.length === 0">
-              <td colspan="9" class="py-10 text-center text-neutral-muted">
+              <td colspan="9" class="py-10 text-center text-neutral-muted border-b border-neutral-border bg-inherit">
                 Tidak ada catatan absensi yang sesuai filter.
               </td>
             </tr>

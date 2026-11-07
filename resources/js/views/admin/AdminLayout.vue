@@ -11,7 +11,7 @@
       ref="mainContentRef"
       class="pt-20 pl-64 min-h-screen flex flex-col print:pt-0 print:pl-0 min-w-0 overflow-x-hidden"
     >
-      <div class="flex-1 p-6 lg:p-8 min-w-0 max-w-full">
+      <div class="flex-1 p-4 sm:p-5 lg:p-6 min-w-0 max-w-full flex flex-col">
         <router-view />
       </div>
     </main>

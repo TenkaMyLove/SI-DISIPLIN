@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-3.5">
     <!-- Header: Compact without bottom border line to prevent sinking -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 no-print">
       <div>
         <h1 class="text-xl sm:text-2xl font-bold text-navy tracking-tight">Rekapitulasi Kehadiran Bermasalah</h1>
         <p class="text-xs sm:text-sm text-neutral-muted mt-0.5">
@@ -149,14 +149,21 @@
         </div>
       </div>
 
+      <!-- Print-Only Official Report Header -->
+      <div class="hidden print-only mb-5 text-center border-b-2 border-navy pb-3">
+        <h1 class="text-base font-bold uppercase tracking-wider text-navy">SIDISIPLIN &bull; SISTEM INFORMASI DISIPLIN PEGAWAI</h1>
+        <h2 class="text-xs font-bold text-neutral-800 tracking-wide uppercase">KANTOR WILAYAH KEMENTERIAN HUKUM RI PROVINSI KALIMANTAN SELATAN</h2>
+        <p class="text-xs text-neutral-600 mt-1 font-medium">Laporan Rekapitulasi Kehadiran Bermasalah &bull; {{ rekapData?.filter?.periode_label }}</p>
+      </div>
+
       <div v-if="!rekapData?.pegawai || rekapData.pegawai.length === 0" class="bg-white border border-neutral-border p-10 text-center text-xs text-neutral-muted">
         Tidak ada data absensi bermasalah pada filter yang dipilih.
       </div>
 
       <!-- Rekap Table Card Container -->
-      <div v-else class="bg-white border border-neutral-border shadow-sm flex flex-col">
-        <div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh-270px)]">
-          <table class="w-full text-left border-separate border-spacing-0 text-xs">
+      <div v-else class="bg-white border border-neutral-border shadow-sm flex flex-col print:border-none print:shadow-none">
+        <div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh-270px)] print:overflow-visible print:max-h-none print:h-auto">
+          <table class="w-full text-left border-separate border-spacing-0 text-xs print:border-collapse">
             <thead class="sticky top-0 z-20 bg-navy text-white">
               <tr class="bg-navy text-white">
                 <th class="py-2.5 px-3 font-semibold text-center w-12 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white">No</th>
@@ -202,13 +209,29 @@
           </tbody>
         </table>
       </div>
+
+      <!-- Print-Only Official Signature Block -->
+      <div class="hidden print-only mt-6 pt-2">
+        <table class="w-full text-xs" style="border: none !important;">
+          <tr style="border: none !important;">
+            <td style="border: none !important; width: 65%; vertical-align: top; color: #64748B;">
+              Dicetak secara otomatis melalui Sistem Informasi Disiplin Pegawai (SIDISIPLIN) pada {{ currentWitaTimestamp }} WITA.
+            </td>
+            <td style="border: none !important; width: 35%; text-align: center; vertical-align: top;">
+              <p>Banjarmasin, {{ currentWitaDate }}</p>
+              <p class="mt-12 font-bold underline text-navy">Administrator Disiplin</p>
+              <p class="text-neutral-600">Kantor Wilayah Kementerian Hukum RI Provinsi Kalimantan Selatan</p>
+            </td>
+          </tr>
+        </table>
+      </div>
     </div>
   </div>
 </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import CustomDropdown from '@/components/CustomDropdown.vue'
 import api from '@/composables/useApi'
@@ -304,6 +327,27 @@ function exportPdf() {
   if (filters.divisi) params.append('divisi', filters.divisi)
   window.open(`/api/rekap/export-pdf?${params.toString()}`, '_blank')
 }
+
+const currentWitaTimestamp = computed(() => {
+  return new Intl.DateTimeFormat('id-ID', {
+    timeZone: 'Asia/Makassar',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(new Date()).replace('.', ':')
+})
+
+const currentWitaDate = computed(() => {
+  return new Intl.DateTimeFormat('id-ID', {
+    timeZone: 'Asia/Makassar',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date())
+})
 
 function printRekap() {
   window.print()

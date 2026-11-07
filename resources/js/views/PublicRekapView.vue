@@ -2,9 +2,9 @@
   <div class="min-h-screen flex flex-col bg-neutral-surface pt-20 pb-16 print:pt-0 print:pb-0 overflow-x-hidden">
     <Navbar />
 
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col min-w-0 max-w-full">
-      <!-- Header: Sama seperti Header Admin -->
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+    <main class="flex-1 w-full px-4 sm:px-6 lg:px-8 py-3 flex flex-col min-w-0 max-w-full print:px-0 print:py-0">
+      <!-- Header: Sama seperti Header Admin (Disembunyikan saat cetak agar kop laporan rapi) -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3 no-print">
         <div>
           <h1 class="text-xl sm:text-2xl font-bold text-navy tracking-tight">
             Rekapitulasi Kehadiran Bermasalah
@@ -14,7 +14,7 @@
           </p>
         </div>
 
-        <div class="flex items-center space-x-2 shrink-0 no-print">
+        <div class="flex items-center space-x-2 shrink-0">
           <button
             @click="exportExcel"
             class="inline-flex items-center space-x-1.5 px-3 py-1.5 border border-neutral-border text-xs font-semibold text-navy bg-white hover:bg-neutral-50 transition-colors shadow-2xs"
@@ -146,10 +146,10 @@
       </div>
 
       <!-- Print-Only Official Report Header -->
-      <div class="hidden print-only mb-6 text-center border-b-2 border-navy pb-4">
-        <h1 class="text-xl font-bold uppercase tracking-wider text-navy">SIDISIPLIN - SISTEM INFORMASI DISIPLIN PEGAWAI</h1>
-        <h2 class="text-sm font-semibold text-neutral-800">KEMENTERIAN HUKUM KALIMANTAN SELATAN</h2>
-        <p class="text-xs text-neutral-600 mt-1">Laporan Rekapitulasi Kehadiran Bermasalah &bull; {{ rekapData?.filter?.periode_label }}</p>
+      <div class="hidden print-only mb-5 text-center border-b-2 border-navy pb-3">
+        <h1 class="text-base font-bold uppercase tracking-wider text-navy">SIDISIPLIN &bull; SISTEM INFORMASI DISIPLIN PEGAWAI</h1>
+        <h2 class="text-xs font-bold text-neutral-800 tracking-wide uppercase">KANTOR WILAYAH KEMENTERIAN HUKUM RI PROVINSI KALIMANTAN SELATAN</h2>
+        <p class="text-xs text-neutral-600 mt-1 font-medium">Laporan Rekapitulasi Kehadiran Bermasalah &bull; {{ rekapData?.filter?.periode_label }}</p>
       </div>
 
       <!-- Loading State: SKELETON LOADER -->
@@ -175,21 +175,21 @@
 
         <!-- Table View of Problematic Attendance: Appears immediately in view without vertical scrolling -->
         <div v-else class="space-y-3 min-w-0 max-w-full">
-          <div class="bg-white border border-neutral-border shadow-2xs max-w-full flex flex-col">
-            <div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh-300px)]">
-              <table class="w-full text-left border-separate border-spacing-0 text-xs">
+          <div class="bg-white border border-neutral-border shadow-2xs max-w-full flex flex-col print:border-none print:shadow-none">
+            <div class="overflow-x-auto overflow-y-auto max-h-[calc(100vh-300px)] print:overflow-visible print:max-h-none print:h-auto">
+              <table class="w-full text-left border-separate border-spacing-0 text-xs print:border-collapse">
                 <thead class="sticky top-0 z-20 bg-navy text-white">
                   <tr class="bg-navy text-white border-b border-navy">
-                    <th class="py-2.5 px-3 font-semibold text-center w-12 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy whitespace-nowrap">No</th>
-                    <th class="py-2.5 px-3 font-semibold w-28 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy whitespace-nowrap">Tanggal</th>
-                    <th class="py-2.5 px-3 font-semibold w-44 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy whitespace-nowrap">NIP</th>
-                    <th class="py-2.5 px-3 font-semibold border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy">Nama Pegawai</th>
-                    <th class="py-2.5 px-3 font-semibold w-40 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy">Divisi / Bagian</th>
-                    <th class="py-2.5 px-2 font-semibold text-center w-20 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy whitespace-nowrap">Masuk</th>
-                    <th class="py-2.5 px-2 font-semibold text-center w-20 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy whitespace-nowrap">Pulang</th>
-                    <th class="py-2.5 px-3 font-semibold w-40 whitespace-nowrap border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy">Status</th>
-                    <th class="py-2.5 px-3 font-semibold border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy">Alasan</th>
-                    <th class="py-2.5 px-3 font-semibold text-right w-36 border-b-2 border-navy-800 sticky top-0 z-20 bg-navy whitespace-nowrap">Kekurangan</th>
+                    <th class="py-2.5 px-3 font-semibold text-center w-12 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy whitespace-nowrap print:w-8 print:py-1 print:px-2">No</th>
+                    <th class="py-2.5 px-3 font-semibold w-28 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy whitespace-nowrap print:w-24 print:py-1 print:px-2">Tanggal</th>
+                    <th class="py-2.5 px-3 font-semibold w-44 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy whitespace-nowrap print:w-36 print:py-1 print:px-2">NIP</th>
+                    <th class="py-2.5 px-3 font-semibold border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy print:py-1 print:px-2">Nama Pegawai</th>
+                    <th class="py-2.5 px-3 font-semibold w-40 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy print:w-36 print:py-1 print:px-2">Divisi / Bagian</th>
+                    <th class="py-2.5 px-2 font-semibold text-center w-20 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy whitespace-nowrap print:w-16 print:py-1 print:px-1">Masuk</th>
+                    <th class="py-2.5 px-2 font-semibold text-center w-20 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy whitespace-nowrap print:w-16 print:py-1 print:px-1">Pulang</th>
+                    <th class="py-2.5 px-3 font-semibold w-40 whitespace-nowrap border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy print:w-28 print:py-1 print:px-2">Status</th>
+                    <th class="py-2.5 px-3 font-semibold border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy print:py-1 print:px-2">Alasan</th>
+                    <th class="py-2.5 px-3 font-semibold text-right w-36 border-b-2 border-navy-800 sticky top-0 z-20 bg-navy whitespace-nowrap print:w-28 print:py-1 print:px-2">Kekurangan</th>
                   </tr>
                 </thead>
               <tbody class="divide-y divide-neutral-border bg-white">
@@ -248,14 +248,30 @@
               </tbody>
             </table>
           </div>
+
+          <!-- Print-Only Official Signature Block -->
+          <div class="hidden print-only mt-6 pt-2">
+            <table class="w-full text-xs" style="border: none !important;">
+              <tr style="border: none !important;">
+                <td style="border: none !important; width: 65%; vertical-align: top; color: #64748B;">
+                  Dicetak secara otomatis melalui Sistem Informasi Disiplin Pegawai (SIDISIPLIN) pada {{ currentWitaTimestamp }} WITA.
+                </td>
+                <td style="border: none !important; width: 35%; text-align: center; vertical-align: top;">
+                  <p>Banjarmasin, {{ currentWitaDate }}</p>
+                  <p class="mt-12 font-bold underline text-navy">Administrator Disiplin</p>
+                  <p class="text-neutral-600">Kantor Wilayah Kementerian Hukum RI Provinsi Kalimantan Selatan</p>
+                </td>
+              </tr>
+            </table>
+          </div>
         </div>
       </div>
     </div>
   </main>
 
-    <!-- Footer: Dikembalikan seperti awal dan di-anchor di dasar layar -->
+    <!-- Footer: Full width aligned edge-to-edge -->
     <footer class="fixed bottom-0 left-0 right-0 bg-navy text-neutral-300 py-2.5 text-xs text-center border-t-2 border-accent no-print z-40">
-      <div class="max-w-7xl mx-auto px-4">
+      <div class="w-full px-4 sm:px-6 lg:px-8">
         <p class="font-medium text-white">SIDISIPLIN &bull; Sistem Informasi Disiplin Pegawai</p>
         <p class="mt-0.5 text-[11px] text-neutral-300">Kantor Wilayah Kementerian Hukum RI Provinsi Kalimantan Selatan</p>
       </div>
@@ -264,7 +280,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import Navbar from '@/components/Navbar.vue'
 import CustomDropdown from '@/components/CustomDropdown.vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
@@ -377,6 +393,27 @@ function exportPdf() {
 
   window.open(`/api/rekap/export-pdf?${params.toString()}`, '_blank')
 }
+
+const currentWitaTimestamp = computed(() => {
+  return new Intl.DateTimeFormat('id-ID', {
+    timeZone: 'Asia/Makassar',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(new Date()).replace('.', ':')
+})
+
+const currentWitaDate = computed(() => {
+  return new Intl.DateTimeFormat('id-ID', {
+    timeZone: 'Asia/Makassar',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date())
+})
 
 function printRekap() {
   window.print()

@@ -30,10 +30,22 @@
 
 /* Print Styles (PRD REK-12: cetak rekap sesuai filter aktif) */
 @media print {
-  body {
+  @page {
+    size: landscape;
+    margin: 10mm;
+  }
+
+  html, body {
     background: #FFFFFF !important;
     color: #000000 !important;
-    font-size: 10pt;
+    font-size: 8.5pt !important;
+    overflow: visible !important;
+    height: auto !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   .no-print {
@@ -44,16 +56,39 @@
     display: block !important;
   }
 
+  /* Reset container overflow and heights for seamless multi-page table printing */
+  .overflow-x-auto,
+  .overflow-y-auto,
+  [class*="max-h-"] {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
   table {
+    width: 100% !important;
+    border-collapse: collapse !important;
     page-break-inside: auto;
+    table-layout: auto !important;
   }
 
   tr {
-    page-break-inside: avoid;
+    page-break-inside: avoid !important;
     page-break-after: auto;
   }
 
   thead {
     display: table-header-group;
+  }
+
+  th, td {
+    border: 1px solid #CBD5E1 !important;
   }
 }

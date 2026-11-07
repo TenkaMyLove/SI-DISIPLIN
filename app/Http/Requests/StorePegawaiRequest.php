@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\DivisiBagian;
 use App\Models\Pegawai;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -15,6 +16,11 @@ class StorePegawaiRequest extends FormRequest
 
     public function rules(): array
     {
+        $validDivisi = DivisiBagian::pluck('nama')->toArray();
+        if (empty($validDivisi)) {
+            $validDivisi = Pegawai::DIVISI_LIST;
+        }
+
         return [
             'nip' => [
                 'required',
@@ -28,7 +34,11 @@ class StorePegawaiRequest extends FormRequest
             ],
             'divisi' => [
                 'required',
-                Rule::in(Pegawai::DIVISI_LIST),
+                Rule::in($validDivisi),
+            ],
+            'divisi_bagian_id' => [
+                'nullable',
+                'exists:divisi_bagian,id',
             ],
         ];
     }

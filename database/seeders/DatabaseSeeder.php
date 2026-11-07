@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Absensi;
+use App\Models\DivisiBagian;
 use App\Models\Pegawai;
 use App\Models\Pengaturan;
 use App\Models\User;
@@ -38,7 +39,20 @@ class DatabaseSeeder extends Seeder
         Pengaturan::set('jumat_pulang', '16:30', 'Jam Pulang Jumat');
         Pengaturan::set('jumat_flex', '0', 'Flex Jumat');
 
-        // 3. Sample Pegawai from Kemenkumham Kalsel (Pelayanan Hukum, P3H, Tata Usaha dan Umum)
+        // 3. Master Divisi / Bagian (Divisi_Bagian)
+        $defaultDivisi = [
+            ['nama' => 'Pelayanan Hukum', 'kode' => 'YANKUM', 'deskripsi' => 'Divisi Pelayanan Hukum'],
+            ['nama' => 'P3H', 'kode' => 'P3H', 'deskripsi' => 'Divisi Peraturan Perundang-undangan dan Pembudayaan Hukum'],
+            ['nama' => 'Tata Usaha dan Umum', 'kode' => 'TU_UMUM', 'deskripsi' => 'Bagian Tata Usaha dan Umum'],
+        ];
+
+        $divisiMap = [];
+        foreach ($defaultDivisi as $div) {
+            $record = DivisiBagian::firstOrCreate(['nama' => $div['nama']], $div);
+            $divisiMap[$div['nama']] = $record->id;
+        }
+
+        // 4. Sample Pegawai from Kemenkumham Kalsel (Pelayanan Hukum, P3H, Tata Usaha dan Umum)
         $samplePegawai = [
             [
                 'nip' => '198503152010121001',
@@ -103,6 +117,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($samplePegawai as $data) {
+            $data['divisi_bagian_id'] = $divisiMap[$data['divisi']] ?? null;
             Pegawai::firstOrCreate(['nip' => $data['nip']], $data);
         }
 

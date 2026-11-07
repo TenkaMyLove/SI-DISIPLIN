@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Absensi;
+use App\Models\DivisiBagian;
 use App\Models\Pegawai;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -18,12 +19,15 @@ class SidisipinTest extends TestCase
     {
         parent::setUp();
 
-        // Create single admin user
         $this->admin = User::create([
             'name' => 'Administrator',
             'username' => 'admin',
             'password' => 'admin123',
         ]);
+
+        DivisiBagian::firstOrCreate(['nama' => 'Pelayanan Hukum'], ['nama' => 'Pelayanan Hukum', 'kode' => 'YANKUM']);
+        DivisiBagian::firstOrCreate(['nama' => 'P3H'], ['nama' => 'P3H', 'kode' => 'P3H']);
+        DivisiBagian::firstOrCreate(['nama' => 'Tata Usaha dan Umum'], ['nama' => 'Tata Usaha dan Umum', 'kode' => 'TU_UMUM']);
     }
 
     /**
@@ -387,5 +391,30 @@ class SidisipinTest extends TestCase
             $pdfResponse->assertOk()
                 ->assertHeader('content-type', 'application/pdf');
         }
+    }
+
+    /**
+     * Test divisi_bagian table exists and associates with pegawai.
+     */
+    public function test_divisi_bagian_table_and_association(): void
+    {
+        $this->assertDatabaseHas('divisi_bagian', ['nama' => 'Pelayanan Hukum']);
+        $this->assertDatabaseHas('divisi_bagian', ['nama' => 'P3H']);
+        $this->assertDatabaseHas('divisi_bagian', ['nama' => 'Tata Usaha dan Umum']);
+
+        $token = $this->admin->createToken('test_token')->plainTextToken;
+        $response = $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson('/api/pegawai', [
+                'nip' => '199001012020011099',
+                'nama' => 'Pegawai Baru Divisi',
+                'divisi' => 'Pelayanan Hukum',
+            ]);
+
+        $response->assertCreated();
+        $this->assertDatabaseHas('pegawai', [
+            'nip' => '199001012020011099',
+            'divisi' => 'Pelayanan Hukum',
+            'divisi_bagian_id' => 1,
+        ]);
     }
 }

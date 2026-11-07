@@ -14,12 +14,14 @@ return new class extends Migration
         Schema::create('pegawai', function (Blueprint $table) {
             $table->unsignedBigInteger('nip')->primary();
             $table->string('nama');
-            $table->enum('divisi', [
-                'Pelayanan Hukum',
-                'P3H',
-                'Tata Usaha dan Umum',
-            ]);
+            $table->string('divisi');
+            $table->unsignedBigInteger('divisi_bagian_id')->nullable();
             $table->timestamps();
+
+            $table->foreign('divisi_bagian_id')
+                ->references('id')
+                ->on('divisi_bagian')
+                ->nullOnDelete();
         });
     }
 

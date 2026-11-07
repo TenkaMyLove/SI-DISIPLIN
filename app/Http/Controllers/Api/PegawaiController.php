@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePegawaiRequest;
 use App\Http\Requests\UpdatePegawaiRequest;
+use App\Models\DivisiBagian;
 use App\Models\Pegawai;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -85,11 +86,12 @@ class PegawaiController extends Controller
         }
 
         $list = $query->orderBy('nama', 'asc')->get();
+        $dbDivisi = DivisiBagian::pluck('nama')->toArray();
 
         return response()->json([
             'success' => true,
             'data' => $list,
-            'divisi_list' => Pegawai::DIVISI_LIST,
+            'divisi_list' => !empty($dbDivisi) ? $dbDivisi : Pegawai::DIVISI_LIST,
         ]);
     }
 
@@ -98,7 +100,12 @@ class PegawaiController extends Controller
      */
     public function store(StorePegawaiRequest $request): JsonResponse
     {
-        $pegawai = Pegawai::create($request->validated());
+        $data = $request->validated();
+        if (empty($data['divisi_bagian_id']) && !empty($data['divisi'])) {
+            $data['divisi_bagian_id'] = DivisiBagian::where('nama', $data['divisi'])->value('id');
+        }
+
+        $pegawai = Pegawai::create($data);
 
         return response()->json([
             'success' => true,
@@ -126,7 +133,12 @@ class PegawaiController extends Controller
     public function update(UpdatePegawaiRequest $request, string $nip): JsonResponse
     {
         $pegawai = Pegawai::where('nip', $nip)->firstOrFail();
-        $pegawai->update($request->validated());
+        $data = $request->validated();
+        if (empty($data['divisi_bagian_id']) && !empty($data['divisi'])) {
+            $data['divisi_bagian_id'] = DivisiBagian::where('nama', $data['divisi'])->value('id');
+        }
+
+        $pegawai->update($data);
 
         return response()->json([
             'success' => true,

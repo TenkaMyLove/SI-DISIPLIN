@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\DivisiBagian;
 use App\Models\Pegawai;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -20,6 +21,11 @@ class UpdatePegawaiRequest extends FormRequest
             $currentNip = $currentNip->nip;
         }
 
+        $validDivisi = DivisiBagian::pluck('nama')->toArray();
+        if (empty($validDivisi)) {
+            $validDivisi = Pegawai::DIVISI_LIST;
+        }
+
         return [
             'nama' => [
                 'required',
@@ -28,7 +34,11 @@ class UpdatePegawaiRequest extends FormRequest
             ],
             'divisi' => [
                 'required',
-                Rule::in(Pegawai::DIVISI_LIST),
+                Rule::in($validDivisi),
+            ],
+            'divisi_bagian_id' => [
+                'nullable',
+                'exists:divisi_bagian,id',
             ],
         ];
     }

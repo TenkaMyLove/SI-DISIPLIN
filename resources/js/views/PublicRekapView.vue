@@ -3,31 +3,39 @@
     <Navbar />
 
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col min-w-0 max-w-full">
-      <!-- Top Header & Live Metric Badges (Single Compact Line) -->
-      <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-neutral-border pb-2.5 mb-2.5 gap-2">
+      <!-- Header: Sama seperti Header Admin -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
         <div>
-          <h1 class="text-lg sm:text-xl font-bold text-navy tracking-tight">
+          <h1 class="text-xl sm:text-2xl font-bold text-navy tracking-tight">
             Rekapitulasi Kehadiran Bermasalah
           </h1>
-          <p class="text-xs text-neutral-muted">
-            Kementerian Hukum Kalimantan Selatan &bull; Zona Waktu WITA
+          <p class="text-xs sm:text-sm text-neutral-muted mt-0.5">
+            Tinjauan rekapitulasi data absensi bermasalah pegawai dan total akumulasi kekurangan jam kerja.
           </p>
         </div>
 
-        <!-- Inline Metric Summary Badges -->
-        <div v-if="!loading && rekapData?.ringkasan" class="flex items-center space-x-2 text-xs no-print flex-wrap gap-y-1">
-          <div class="px-2.5 py-1 bg-white border border-neutral-border text-navy flex items-center space-x-1.5 shadow-2xs">
-            <span class="text-neutral-muted text-[11px] uppercase tracking-wider">Pegawai:</span>
-            <span class="font-bold text-navy">{{ rekapData.ringkasan.total_pegawai_bermasalah || 0 }} orang</span>
-          </div>
-          <div class="px-2.5 py-1 bg-white border border-neutral-border text-navy flex items-center space-x-1.5 shadow-2xs">
-            <span class="text-neutral-muted text-[11px] uppercase tracking-wider">Pelanggaran:</span>
-            <span class="font-bold text-navy">{{ rekapData.ringkasan.total_catatan_absensi || 0 }} kali</span>
-          </div>
-          <div class="px-2.5 py-1 bg-red-50 border border-red-300 text-red-900 flex items-center space-x-1.5 shadow-2xs">
-            <span class="font-medium text-[11px] uppercase tracking-wider text-red-700">Akumulasi Kekurangan:</span>
-            <span class="font-bold text-red-900">{{ rekapData.ringkasan.grand_total_formatted || '0 menit' }}</span>
-          </div>
+        <div class="flex items-center space-x-2 shrink-0 no-print">
+          <button
+            @click="exportExcel"
+            class="inline-flex items-center space-x-1.5 px-3 py-1.5 border border-neutral-border text-xs font-semibold text-navy bg-white hover:bg-neutral-50 transition-colors shadow-2xs"
+          >
+            <FileSpreadsheet class="w-4 h-4 text-emerald-700" />
+            <span>Ekspor Excel</span>
+          </button>
+          <button
+            @click="exportPdf"
+            class="inline-flex items-center space-x-1.5 px-3 py-1.5 border border-neutral-border text-xs font-semibold text-navy bg-white hover:bg-neutral-50 transition-colors shadow-2xs"
+          >
+            <FileDown class="w-4 h-4 text-red-700" />
+            <span>Ekspor PDF</span>
+          </button>
+          <button
+            @click="printRekap"
+            class="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-navy text-white text-xs font-semibold hover:bg-navy-800 transition-colors shadow-2xs"
+          >
+            <Printer class="w-4 h-4" />
+            <span>Cetak</span>
+          </button>
         </div>
       </div>
 
@@ -189,38 +197,9 @@
             </button>
           </div>
 
-          <!-- Actions: Export Excel, PDF, Print -->
-          <div class="flex items-center space-x-1.5 flex-shrink-0 border-t lg:border-t-0 pt-2 lg:pt-0 border-neutral-border">
-            <span class="text-[11px] text-neutral-500 mr-1 hidden xl:inline">
-              {{ rekapData?.filter?.periode_label || '-' }}
-            </span>
-
-            <button
-              @click="exportExcel"
-              class="inline-flex items-center space-x-1 px-2.5 py-1 border border-neutral-border text-xs font-medium text-navy bg-white hover:bg-neutral-50 transition-colors"
-              title="Unduh format spreadsheet Excel"
-            >
-              <FileSpreadsheet class="w-3.5 h-3.5 text-emerald-700" />
-              <span>Excel</span>
-            </button>
-
-            <button
-              @click="exportPdf"
-              class="inline-flex items-center space-x-1 px-2.5 py-1 border border-neutral-border text-xs font-medium text-navy bg-white hover:bg-neutral-50 transition-colors"
-              title="Unduh format dokumen PDF"
-            >
-              <FileDown class="w-3.5 h-3.5 text-red-700" />
-              <span>PDF</span>
-            </button>
-
-            <button
-              @click="printRekap"
-              class="inline-flex items-center space-x-1 px-2.5 py-1 border border-neutral-border text-xs font-medium text-navy bg-white hover:bg-neutral-50 transition-colors"
-              title="Cetak halaman rekap"
-            >
-              <Printer class="w-3.5 h-3.5 text-navy" />
-              <span>Cetak</span>
-            </button>
+          <!-- Periode Label -->
+          <div v-if="rekapData?.filter?.periode_label" class="flex items-center text-xs text-neutral-500 font-medium shrink-0 pt-1 lg:pt-0">
+            <span>Periode: {{ rekapData.filter.periode_label }}</span>
           </div>
         </div>
       </div>
@@ -337,7 +316,7 @@
     <footer class="fixed bottom-0 left-0 right-0 bg-navy text-neutral-300 py-2.5 text-xs text-center border-t-2 border-accent no-print z-40">
       <div class="max-w-7xl mx-auto px-4">
         <p class="font-medium text-white">SIDISIPLIN &bull; Sistem Informasi Disiplin Pegawai</p>
-        <p class="mt-0.5 text-[11px] text-neutral-300">Kementerian Hukum Kalimantan Selatan &bull; Jam Kerja: 07:30 &ndash; 16:00 WITA (Jumat 16:30)</p>
+        <p class="mt-0.5 text-[11px] text-neutral-300">Kantor Wilayah Kementerian Hukum RI Provinsi Kalimantan Selatan</p>
       </div>
     </footer>
   </div>

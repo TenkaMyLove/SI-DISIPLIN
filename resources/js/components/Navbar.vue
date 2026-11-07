@@ -8,7 +8,6 @@
           <div>
             <div class="flex items-center space-x-2">
               <span class="text-xl font-bold tracking-wider text-white">SIDISIPLIN</span>
-              <span class="text-xs px-2 py-0.5 bg-neutral-800 text-neutral-300 font-medium tracking-wide">KALSEL</span>
             </div>
             <p class="text-xs text-neutral-300 tracking-wide font-normal">
               Sistem Informasi Disiplin Pegawai &bull; Kementerian Hukum Kalsel

@@ -75,13 +75,17 @@
           class="w-full text-xs border border-neutral-border px-3 py-1.5 bg-white focus:outline-none focus:border-navy"
           @change="fetchRekap"
         />
-        <input
-          v-else-if="filters.mode === 'minggu'"
-          v-model="filters.minggu"
-          type="date"
-          class="w-full text-xs border border-neutral-border px-3 py-1.5 bg-white focus:outline-none focus:border-navy"
-          @change="fetchRekap"
-        />
+        <div v-else-if="filters.mode === 'minggu'">
+          <input
+            v-model="filters.minggu"
+            type="date"
+            class="w-full text-xs border border-neutral-border px-3 py-1.5 bg-white focus:outline-none focus:border-navy"
+            @change="fetchRekap"
+          />
+          <p class="text-[11px] text-neutral-500 mt-1">
+            Rentang: <strong class="text-navy">{{ rekapData?.filter?.periode_label || 'Senin s/d Jumat' }}</strong>
+          </p>
+        </div>
         <input
           v-else
           v-model="filters.bulan"

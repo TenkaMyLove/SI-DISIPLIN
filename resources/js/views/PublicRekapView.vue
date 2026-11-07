@@ -39,168 +39,109 @@
         </div>
       </div>
 
-      <!-- Compact Unified Filter & Export Toolbar (Single Sleek Bar) -->
-      <div class="bg-white border border-neutral-border p-2.5 mb-3 shadow-2xs no-print">
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5">
-          <!-- Filters Group -->
-          <div class="flex flex-wrap items-center gap-2 flex-1">
-            <!-- Mode Selector (Harian / Mingguan / Bulanan) -->
-            <div class="inline-flex rounded-lg border border-neutral-300 p-0.5 bg-neutral-100 h-[38px] items-center shadow-2xs flex-shrink-0">
-              <button
-                type="button"
-                @click="setMode('tanggal')"
-                class="px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors"
-                :class="filters.mode === 'tanggal' ? 'bg-navy text-white font-semibold' : 'text-neutral-700 hover:bg-neutral-200'"
-              >
-                Harian
-              </button>
-              <button
-                type="button"
-                @click="setMode('minggu')"
-                class="px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors"
-                :class="filters.mode === 'minggu' ? 'bg-navy text-white font-semibold' : 'text-neutral-700 hover:bg-neutral-200'"
-              >
-                Mingguan
-              </button>
-              <button
-                type="button"
-                @click="setMode('bulan')"
-                class="px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors"
-                :class="filters.mode === 'bulan' ? 'bg-navy text-white font-semibold' : 'text-neutral-700 hover:bg-neutral-200'"
-              >
-                Bulanan
-              </button>
-            </div>
-
-            <!-- Date / Month Picker -->
-            <div class="w-36 flex-shrink-0">
-              <input
-                v-if="filters.mode === 'tanggal'"
-                v-model="filters.tanggal"
-                type="date"
-                class="w-full h-[38px] text-xs border border-neutral-300 rounded-lg px-2.5 bg-white focus:outline-none focus:border-navy focus:ring-1 focus:ring-navy shadow-2xs"
-                @change="fetchRekap"
-              />
-              <input
-                v-else-if="filters.mode === 'minggu'"
-                v-model="filters.minggu"
-                type="date"
-                class="w-full h-[38px] text-xs border border-neutral-300 rounded-lg px-2.5 bg-white focus:outline-none focus:border-navy focus:ring-1 focus:ring-navy shadow-2xs"
-                @change="fetchRekap"
-              />
-              <input
-                v-else
-                v-model="filters.bulan"
-                type="month"
-                class="w-full h-[38px] text-xs border border-neutral-300 rounded-lg px-2.5 bg-white focus:outline-none focus:border-navy focus:ring-1 focus:ring-navy shadow-2xs"
-                @change="fetchRekap"
-              />
-            </div>
-
-            <!-- Pegawai Search Autocomplete (Figma-styled with click-outside & Escape key support) -->
-            <div ref="pegawaiDropdownRef" class="relative w-64 flex-shrink-0">
-              <div class="relative">
-                <input
-                  v-model="pegawaiSearch"
-                  type="text"
-                  placeholder="Cari NIP / Nama Pegawai..."
-                  class="w-full h-[38px] text-xs border border-neutral-300 rounded-lg pl-8 pr-7 py-2 bg-white focus:outline-none focus:border-navy focus:ring-1 focus:ring-navy shadow-2xs transition-all placeholder:text-neutral-400"
-                  @focus="showPegawaiDropdown = true"
-                  @input="handlePegawaiSearchInput"
-                />
-                <Search class="w-3.5 h-3.5 text-neutral-400 absolute left-2.5 top-3 pointer-events-none" />
-                <button
-                  v-if="selectedPegawai || pegawaiSearch"
-                  @click="clearSelectedPegawai"
-                  type="button"
-                  class="w-5 h-5 absolute right-2 top-2.5 flex items-center justify-center text-neutral-400 hover:text-navy hover:bg-neutral-100 rounded transition-colors"
-                  title="Bersihkan pilihan"
-                >
-                  <X class="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              <!-- Dropdown List Styled like CustomDropdown -->
-              <transition
-                enter-active-class="transition duration-100 ease-out"
-                enter-from-class="transform scale-95 opacity-0"
-                enter-to-class="transform scale-100 opacity-100"
-                leave-active-class="transition duration-75 ease-in"
-                leave-from-class="transform scale-100 opacity-100"
-                leave-to-class="transform scale-95 opacity-0"
-              >
-                <div
-                  v-if="showPegawaiDropdown"
-                  class="absolute z-50 w-80 mt-1.5 bg-white rounded-lg border border-neutral-200 shadow-xl overflow-hidden py-1 max-h-60 overflow-y-auto left-0"
-                >
-                  <div
-                    @click="selectPegawai(null)"
-                    class="px-3 py-2 text-xs cursor-pointer flex items-center space-x-2.5 transition-colors select-none"
-                    :class="!filters.nip ? 'bg-neutral-100 text-navy font-semibold' : 'text-neutral-700 hover:bg-neutral-50'"
-                  >
-                    <span
-                      class="w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-colors"
-                      :class="!filters.nip ? 'border-navy bg-navy text-white' : 'border-neutral-300 bg-white'"
-                    >
-                      <Check v-if="!filters.nip" class="w-2.5 h-2.5 stroke-[3]" />
-                    </span>
-                    <span class="truncate font-medium">Tampilkan Semua Pegawai</span>
-                  </div>
-
-                  <div
-                    v-for="p in filteredPegawaiOptions"
-                    :key="p.nip"
-                    @click="selectPegawai(p)"
-                    class="px-3 py-2 text-xs cursor-pointer flex items-center space-x-2.5 transition-colors select-none"
-                    :class="filters.nip === p.nip ? 'bg-neutral-100 text-navy font-semibold' : 'text-neutral-700 hover:bg-neutral-50'"
-                  >
-                    <span
-                      class="w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-colors"
-                      :class="filters.nip === p.nip ? 'border-navy bg-navy text-white' : 'border-neutral-300 bg-white'"
-                    >
-                      <Check v-if="filters.nip === p.nip" class="w-2.5 h-2.5 stroke-[3]" />
-                    </span>
-                    <div class="truncate">
-                      <p class="font-medium text-navy truncate">{{ p.nama }}</p>
-                      <p class="text-[11px] text-neutral-500 truncate">NIP: {{ p.nip }} &bull; {{ p.divisi }}</p>
-                    </div>
-                  </div>
-
-                  <div v-if="filteredPegawaiOptions.length === 0" class="px-3 py-3 text-xs text-neutral-400 text-center">
-                    Pegawai tidak ditemukan.
-                  </div>
-                </div>
-              </transition>
-            </div>
-
-            <!-- Divisi Dropdown -->
-            <div class="w-52 flex-shrink-0">
-              <CustomDropdown
-                v-model="filters.divisi"
-                :options="[
-                  { value: '', label: 'Semua Divisi / Bagian' },
-                  ...divisiOptions.map(d => ({ value: d, label: d }))
-                ]"
-                placeholder="Semua Divisi / Bagian"
-                @change="fetchRekap"
-              />
-            </div>
-
-            <!-- Reset Button -->
+      <!-- Filter Panel: Compact (Sama persis dengan Panel Admin) -->
+      <div class="bg-white border border-neutral-border p-3 sm:px-4 sm:py-2.5 grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3 no-print shadow-2xs">
+        <div>
+          <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
+            Mode Periode
+          </label>
+          <div class="grid grid-cols-3 border border-neutral-border p-0.5 bg-neutral-50 gap-1 mb-1.5">
             <button
-              @click="resetFilter"
               type="button"
-              class="text-xs text-neutral-500 hover:text-navy px-1.5 py-1 underline whitespace-nowrap"
-              title="Reset semua filter ke default"
+              @click="setMode('tanggal')"
+              class="py-1 text-xs text-center font-medium"
+              :class="filters.mode === 'tanggal' ? 'bg-navy text-white font-semibold' : 'text-neutral-700 hover:bg-neutral-200'"
             >
-              Reset
+              Harian
+            </button>
+            <button
+              type="button"
+              @click="setMode('minggu')"
+              class="py-1 text-xs text-center font-medium"
+              :class="filters.mode === 'minggu' ? 'bg-navy text-white font-semibold' : 'text-neutral-700 hover:bg-neutral-200'"
+            >
+              Mingguan
+            </button>
+            <button
+              type="button"
+              @click="setMode('bulan')"
+              class="py-1 text-xs text-center font-medium"
+              :class="filters.mode === 'bulan' ? 'bg-navy text-white font-semibold' : 'text-neutral-700 hover:bg-neutral-200'"
+            >
+              Bulanan
             </button>
           </div>
-
-          <!-- Periode Label -->
-          <div v-if="rekapData?.filter?.periode_label" class="flex items-center text-xs text-neutral-500 font-medium shrink-0 pt-1 lg:pt-0">
-            <span>Periode: {{ rekapData.filter.periode_label }}</span>
+          <input
+            v-if="filters.mode === 'tanggal'"
+            v-model="filters.tanggal"
+            type="date"
+            class="w-full text-xs border border-neutral-border px-3 py-1.5 bg-white focus:outline-none focus:border-navy"
+            @change="fetchRekap"
+          />
+          <div v-else-if="filters.mode === 'minggu'">
+            <input
+              v-model="filters.minggu"
+              type="date"
+              class="w-full text-xs border border-neutral-border px-3 py-1.5 bg-white focus:outline-none focus:border-navy"
+              @change="fetchRekap"
+            />
+            <p class="text-[11px] text-neutral-500 mt-1">
+              Rentang: <strong class="text-navy">{{ rekapData?.filter?.periode_label || 'Senin s/d Jumat' }}</strong>
+            </p>
           </div>
+          <input
+            v-else
+            v-model="filters.bulan"
+            type="month"
+            class="w-full text-xs border border-neutral-border px-3 py-1.5 bg-white focus:outline-none focus:border-navy"
+            @change="fetchRekap"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
+            Pegawai
+          </label>
+          <div class="mt-7">
+            <CustomDropdown
+              v-model="filters.nip"
+              :options="[
+                { value: '', label: 'Tampilkan Semua Pegawai' },
+                ...pegawaiList.map(p => ({ value: p.nip, label: `${p.nama} (${p.nip})` }))
+              ]"
+              placeholder="Tampilkan Semua Pegawai"
+              @change="fetchRekap"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
+            Divisi / Bagian
+          </label>
+          <div class="mt-7">
+            <CustomDropdown
+              v-model="filters.divisi"
+              :options="[
+                { value: '', label: 'Semua Divisi / Bagian' },
+                ...divisiOptions.map(d => ({ value: d, label: d }))
+              ]"
+              placeholder="Semua Divisi / Bagian"
+              @change="fetchRekap"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Stat Cards: Sama persis seperti Panel Admin (Pegawai Terkena Rekap & Total Pelanggaran) -->
+      <div v-if="!loading && rekapData?.ringkasan" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3 no-print">
+        <div class="bg-white border border-neutral-border p-3 shadow-2xs">
+          <p class="text-[11px] font-semibold text-neutral-muted uppercase tracking-wider">Pegawai Terkena Rekap</p>
+          <p class="text-xl font-bold text-navy mt-0.5">{{ rekapData.ringkasan.total_pegawai_bermasalah || 0 }} orang</p>
+        </div>
+        <div class="bg-white border border-neutral-border p-3 shadow-2xs">
+          <p class="text-[11px] font-semibold text-neutral-muted uppercase tracking-wider">Total Pelanggaran</p>
+          <p class="text-xl font-bold text-navy mt-0.5">{{ rekapData.ringkasan.total_catatan_absensi || 0 }} kali</p>
         </div>
       </div>
 
@@ -323,16 +264,12 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import Navbar from '@/components/Navbar.vue'
 import CustomDropdown from '@/components/CustomDropdown.vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import api from '@/composables/useApi'
 import {
-  Filter,
-  Search,
-  X,
-  Check,
   FileSpreadsheet,
   FileDown,
   Printer,
@@ -341,6 +278,7 @@ import {
 
 const loading = ref(true)
 const rekapData = ref(null)
+const pegawaiList = ref([])
 
 const filters = reactive({
   mode: 'bulan',
@@ -351,77 +289,15 @@ const filters = reactive({
   divisi: '',
 })
 
-const pegawaiSearch = ref('')
-const selectedPegawai = ref(null)
-const showPegawaiDropdown = ref(false)
-const pegawaiDropdownRef = ref(null)
-const pegawaiOptions = ref([])
-
-function handleClickOutside(e) {
-  if (pegawaiDropdownRef.value && !pegawaiDropdownRef.value.contains(e.target)) {
-    showPegawaiDropdown.value = false
-  }
-}
-
-function handleKeyDown(e) {
-  if (e.key === 'Escape' && showPegawaiDropdown.value) {
-    showPegawaiDropdown.value = false
-  }
-}
-
 const divisiOptions = [
   'Pelayanan Hukum',
   'P3H',
   'Tata Usaha dan Umum',
 ]
 
-const filteredPegawaiOptions = computed(() => {
-  if (!pegawaiSearch.value) return pegawaiOptions.value
-  const q = pegawaiSearch.value.toLowerCase()
-  return pegawaiOptions.value.filter(
-    (p) => p.nama.toLowerCase().includes(q) || p.nip.includes(q)
-  )
-})
-
 function setMode(mode) {
   filters.mode = mode
   fetchRekap()
-}
-
-function handlePegawaiSearchInput() {
-  showPegawaiDropdown.value = true
-  if (selectedPegawai.value && selectedPegawai.value.nama !== pegawaiSearch.value) {
-    selectedPegawai.value = null
-    filters.nip = ''
-  }
-}
-
-function selectPegawai(p) {
-  if (p) {
-    selectedPegawai.value = p
-    filters.nip = p.nip
-    pegawaiSearch.value = `${p.nama} (${p.nip})`
-  } else {
-    clearSelectedPegawai()
-  }
-  showPegawaiDropdown.value = false
-  fetchRekap()
-}
-
-function clearSelectedPegawai() {
-  selectedPegawai.value = null
-  filters.nip = ''
-  pegawaiSearch.value = ''
-  fetchRekap()
-}
-
-function resetFilter() {
-  filters.mode = 'bulan'
-  filters.tanggal = new Date().toISOString().substring(0, 10)
-  filters.minggu = new Date().toISOString().substring(0, 10)
-  filters.bulan = new Date().toISOString().substring(0, 7)
-  filters.divisi = ''
-  clearSelectedPegawai()
 }
 
 function getStatusBadgeClass(status) {
@@ -445,10 +321,10 @@ function getGlobalRowNumber(pIdx, rIdx) {
   return count + rIdx + 1
 }
 
-async function fetchPegawaiOptions() {
+async function fetchPegawaiList() {
   try {
     const res = await api.get('/pegawai/options')
-    pegawaiOptions.value = res.data.data
+    pegawaiList.value = res.data.data
   } catch (err) {
     console.error('Gagal memuat daftar pegawai:', err)
   }
@@ -507,14 +383,7 @@ function printRekap() {
 }
 
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
-  document.addEventListener('keydown', handleKeyDown)
-  fetchPegawaiOptions()
+  fetchPegawaiList()
   fetchRekap()
-})
-
-onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside)
-  document.removeEventListener('keydown', handleKeyDown)
 })
 </script>

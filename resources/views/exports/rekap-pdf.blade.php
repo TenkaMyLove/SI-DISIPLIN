@@ -164,12 +164,12 @@
     <table class="footer-table">
         <tr>
             <td style="width: 70%;">
-                <small style="color: #6B7280;">Dicetak secara otomatis melalui Sistem Informasi Disiplin Pegawai (SIDISIPLIN) pada {{ now()->translatedFormat('d F Y H:i') }} WITA.</small>
+                <small style="color: #6B7280;">Dicetak secara otomatis melalui Sistem Informasi Disiplin Pegawai (SIDISIPLIN) pada {{ now('Asia/Makassar')->translatedFormat('d F Y H:i') }} WITA.</small>
             </td>
             <td style="width: 30%; text-align: center;">
-                <p>Banjarmasin, {{ now()->translatedFormat('d F Y') }}</p>
+                <p>Banjarmasin, {{ now('Asia/Makassar')->translatedFormat('d F Y') }}</p>
                 <p style="margin-top: 40px; font-weight: bold; text-decoration: underline;">Administrator Disiplin</p>
-                <p style="margin: 0; color: #4B5563;">Kementerian Hukum Kalimantan Selatan</p>
+                <p style="margin: 0; color: #4B5563;">Kantor Wilayah Kementerian Hukum RI Provinsi Kalimantan Selatan</p>
             </td>
         </tr>
     </table>

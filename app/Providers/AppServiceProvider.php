@@ -19,6 +19,25 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Auto-initialize SQLite database file and tables if missing
+        if (config('database.default') === 'sqlite') {
+            $dbPath = config('database.connections.sqlite.database');
+            if ($dbPath && $dbPath !== ':memory:' && ! file_exists($dbPath)) {
+                $dir = dirname($dbPath);
+                if (! is_dir($dir)) {
+                    mkdir($dir, 0755, true);
+                }
+                touch($dbPath);
+
+                try {
+                    \Illuminate\Support\Facades\Artisan::call('migrate', [
+                        '--force' => true,
+                        '--seed' => true,
+                    ]);
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning('Auto database initialization failed: ' . $e->getMessage());
+                }
+            }
+        }
     }
 }

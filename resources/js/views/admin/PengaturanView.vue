@@ -6,9 +6,6 @@
         <Clock class="w-6 h-6 text-navy" />
         <h1 class="text-2xl font-bold text-navy tracking-tight">Pengaturan Jam Kerja</h1>
       </div>
-      <p class="text-sm text-neutral-muted mt-1">
-        Jadwal operasional kehadiran kantor sebagai acuan perhitungan otomatis kekurangan jam kerja.
-      </p>
     </div>
 
     <!-- Alert Message -->

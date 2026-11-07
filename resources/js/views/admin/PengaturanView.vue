@@ -7,7 +7,7 @@
         <h1 class="text-2xl font-bold text-navy tracking-tight">Pengaturan Jam Kerja</h1>
       </div>
       <p class="text-sm text-neutral-muted mt-1">
-        Jadwal operasional kehadiran kantor dan konfigurasi ketentuan Jam Kerja Fleksibel (Flex) sebagai acuan perhitungan otomatis kekurangan jam kerja.
+        Jadwal operasional kehadiran kantor sebagai acuan perhitungan otomatis kekurangan jam kerja.
       </p>
     </div>
 
@@ -37,14 +37,8 @@
           <div class="space-y-4">
             <!-- 1. SENIN -->
             <div class="p-4 bg-neutral-50 border border-neutral-border transition-colors hover:border-neutral-400">
-              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
-                <div class="flex items-center space-x-2">
-                  <span class="text-sm font-bold text-navy">Senin</span>
-                  <span class="px-2 py-0.5 text-[11px] font-semibold bg-neutral-200 text-neutral-800 border border-neutral-300">
-                    Non Flex
-                  </span>
-                </div>
-                <span class="text-[11px] text-neutral-500">Keterlambatan langsung dihitung kekurangan</span>
+              <div class="mb-3">
+                <span class="text-sm font-bold text-navy">Senin</span>
               </div>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -74,22 +68,15 @@
               </div>
             </div>
 
-            <!-- 2. SELASA - KAMIS (FLEX) -->
-            <div class="p-4 bg-emerald-50/50 border border-emerald-300 transition-colors">
-              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
-                <div class="flex items-center space-x-2">
-                  <span class="text-sm font-bold text-navy">Selasa &ndash; Kamis</span>
-                  <span class="px-2 py-0.5 text-[11px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center space-x-1">
-                    <Zap class="w-3 h-3 text-emerald-700 inline" />
-                    <span>Flex Time</span>
-                  </span>
-                </div>
-                <span class="text-[11px] text-emerald-800 font-medium">Bisa kompensasi jam pulang jika datang terlambat</span>
+            <!-- 2. SELASA - KAMIS -->
+            <div class="p-4 bg-neutral-50 border border-neutral-border transition-colors hover:border-neutral-400">
+              <div class="mb-3">
+                <span class="text-sm font-bold text-navy">Selasa &ndash; Kamis</span>
               </div>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 mb-1">
-                    Jam Masuk Standar <span class="text-red-500">*</span>
+                    Jam Masuk <span class="text-red-500">*</span>
                   </label>
                   <input
                     v-model="form.selasa_kamis_masuk"
@@ -101,7 +88,7 @@
                 </div>
                 <div>
                   <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 mb-1">
-                    Jam Pulang Standar <span class="text-red-500">*</span>
+                    Jam Pulang <span class="text-red-500">*</span>
                   </label>
                   <input
                     v-model="form.selasa_kamis_pulang"
@@ -109,21 +96,15 @@
                     required
                     class="w-full text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy text-neutral-900"
                   />
-                  <p class="text-[11px] text-neutral-500 mt-1">Standar: 16:00 WITA (510 menit / 8,5 jam kehadiran)</p>
+                  <p class="text-[11px] text-neutral-500 mt-1">Standar: 16:00 WITA</p>
                 </div>
               </div>
             </div>
 
             <!-- 3. JUMAT -->
             <div class="p-4 bg-neutral-50 border border-neutral-border transition-colors hover:border-neutral-400">
-              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
-                <div class="flex items-center space-x-2">
-                  <span class="text-sm font-bold text-navy">Jumat</span>
-                  <span class="px-2 py-0.5 text-[11px] font-semibold bg-neutral-200 text-neutral-800 border border-neutral-300">
-                    Non Flex
-                  </span>
-                </div>
-                <span class="text-[11px] text-neutral-500">Waktu istirahat ibadah Jumat (11:30 - 13:00)</span>
+              <div class="mb-3">
+                <span class="text-sm font-bold text-navy">Jumat</span>
               </div>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -164,57 +145,6 @@
             </button>
           </div>
         </div>
-
-        <!-- Ketentuan & Panduan Perhitungan Jam Kerja -->
-        <div class="bg-white border border-neutral-border p-6 shadow-sm space-y-4">
-          <div class="flex items-center space-x-2 border-b border-neutral-border pb-3">
-            <Info class="w-4 h-4 text-navy" />
-            <h2 class="text-sm font-bold text-navy uppercase tracking-wider">Ketentuan &amp; Rumus Perhitungan</h2>
-          </div>
-
-          <!-- Flex Rule Callout -->
-          <div class="p-4 bg-emerald-50 border-l-4 border-emerald-600 text-xs text-neutral-700 space-y-2">
-            <div class="flex items-center space-x-1.5 font-bold text-emerald-900">
-              <Zap class="w-4 h-4 text-emerald-600" />
-              <span>Ketentuan Jam Kerja Fleksibel (Flex Time - Selasa s.d. Kamis):</span>
-            </div>
-            <p>
-              Pada hari <strong>Selasa sampai dengan Kamis</strong>, sistem menerapkan sistem <strong>Flex</strong>:
-            </p>
-            <div class="p-3 bg-white border border-emerald-200 text-xs font-mono space-y-1.5 rounded">
-              <p class="font-sans font-semibold text-emerald-900">&bull; Contoh Penerapan Flex:</p>
-              <p class="text-neutral-800">
-                Jika pegawai datang pukul <strong class="text-navy">07:36</strong> (terlambat 6 menit), maka pegawai tersebut harus pulang minimal pada pukul <strong class="text-navy">16:06</strong> agar memenuhi jam kerja wajib (510 menit / 8,5 jam kehadiran).
-              </p>
-              <p class="text-neutral-600 text-[11px]">
-                &rarr; Bila pulang pada pukul <strong>16:06</strong>: Kekurangan jam kerja = <strong>0 menit</strong> (terpenuhi).<br />
-                &rarr; Bila pulang pada pukul <strong>16:00</strong>: Kekurangan jam kerja = <strong>6 menit</strong>.
-              </p>
-            </div>
-          </div>
-
-          <!-- Non Flex Rule Callout -->
-          <div class="p-4 bg-neutral-50 border-l-4 border-navy text-xs text-neutral-700 space-y-1.5">
-            <div class="flex items-center space-x-1.5 font-bold text-navy">
-              <Clock class="w-4 h-4 text-navy" />
-              <span>Ketentuan Jam Kerja Reguler (Non-Flex - Senin &amp; Jumat):</span>
-            </div>
-            <p>
-              Pada hari <strong>Senin</strong> dan <strong>Jumat</strong>, jam kerja bersifat <strong>Non-Flex</strong>. Keterlambatan saat masuk kantor (melebihi 07:30) langsung diperhitungkan sebagai kekurangan jam kerja tanpa kompensasi kepulangan lebih lambat.
-            </p>
-            <p class="text-[11px] text-neutral-500">
-              Rumus: <em>(Jam Masuk &minus; Jam Masuk Standar) + (Jam Pulang Standar &minus; Jam Pulang)</em>, masing-masing bernilai minimal 0.
-            </p>
-          </div>
-
-          <!-- Sanksi Tanpa Keterangan -->
-          <div class="p-3 bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-1">
-            <p class="font-semibold">&bull; Sanksi Tanpa Keterangan:</p>
-            <p class="text-[11px] text-amber-800">
-              Pegawai dengan status <strong>Tanpa Keterangan</strong> otomatis dikenakan sanksi tetap sebesar <strong>7,5 jam kerja (450 menit)</strong>.
-            </p>
-          </div>
-        </div>
       </form>
     </div>
 
@@ -233,7 +163,7 @@ import { reactive, ref, onMounted } from 'vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import Toast from '@/components/Toast.vue'
 import api from '@/composables/useApi'
-import { Clock, Zap, Info } from 'lucide-vue-next'
+import { Clock } from 'lucide-vue-next'
 
 const loading = ref(true)
 const saving = ref(false)

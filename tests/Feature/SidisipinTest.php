@@ -147,8 +147,8 @@ class SidisipinTest extends TestCase
         $response->assertStatus(422)->assertJsonValidationErrors(['divisi']);
 
         // Valid categories
-        foreach (['Pelayanan Hukum', 'P3H', 'Tata Usaha dan Umum'] as $validDivisi) {
-            $nip = '19900101202001108' . rand(1, 9);
+        foreach (['Pelayanan Hukum', 'P3H', 'Tata Usaha dan Umum'] as $idx => $validDivisi) {
+            $nip = '19900101202001109' . ($idx + 1);
             $res = $this->withHeader('Authorization', "Bearer {$token}")
                 ->postJson('/api/pegawai', [
                     'nip' => $nip,

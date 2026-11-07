@@ -5,7 +5,7 @@
       <div>
         <h1 class="text-2xl font-bold text-navy tracking-tight">Manajemen Data Pegawai</h1>
         <p class="text-sm text-neutral-muted mt-0.5">
-          Kelola master data pegawai Kementerian Hukum Kalimantan Selatan (NIP 18 Digit, Nama, Divisi / Bagian).
+          Kelola master data pegawai Kementerian Hukum Kalimantan Selatan.
         </p>
       </div>
 

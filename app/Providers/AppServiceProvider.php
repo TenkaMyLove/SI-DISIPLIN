@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +20,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if ($this->app->environment('production') || str_contains(config('app.url', ''), 'https://')) {
+            URL::forceScheme('https');
+        }
         // Auto-initialize SQLite database file and tables if missing
         if (config('database.default') === 'sqlite') {
             $dbPath = config('database.connections.sqlite.database');

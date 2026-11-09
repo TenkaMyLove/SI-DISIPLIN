@@ -109,6 +109,9 @@
               ...pegawaiList.map(p => ({ value: p.nip, label: `${p.nama} (${p.nip})` }))
             ]"
             placeholder="Tampilkan Semua Pegawai"
+            :searchable="true"
+            :clearable="true"
+            search-placeholder="Cari NIP / Nama Pegawai..."
             @change="fetchRekap"
           />
         </div>

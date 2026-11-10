@@ -488,8 +488,8 @@ const filteredPegawai = computed(() => {
 const computedDurasiHuman = computed(() => {
   const m = Number(form.durasi_menit) || 0
   if (m <= 0) return '0 menit'
-  const hari = Math.floor(m / 1440)
-  const remM = m % 1440
+  const hari = Math.floor(m / 450) // 7.5 jam * 60 menit = 450 menit (1 hari kerja)
+  const remM = m % 450
   const jam = Math.floor(remM / 60)
   const menit = remM % 60
 

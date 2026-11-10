@@ -320,14 +320,16 @@ class SidisipinTest extends TestCase
 
     /**
      * REK-8 & REK-9: Format akumulasi dikonversi bertingkat tanpa satuan bernilai nol.
-     * PRD Contoh:
-     * 1.472 menit -> "1 hari 32 menit"
-     * 1.647 menit -> "1 hari 3 jam 27 menit"
+     * Konversi hari kerja: 7,5 jam (450 menit) = 1 hari.
      */
     public function test_duration_formatting_matches_prd_examples(): void
     {
-        $this->assertEquals('1 hari 32 menit', Absensi::formatMenit(1472));
-        $this->assertEquals('1 hari 3 jam 27 menit', Absensi::formatMenit(1647));
+        $this->assertEquals('1 hari', Absensi::formatMenit(450));
+        $this->assertEquals('1 hari 30 menit', Absensi::formatMenit(480));
+        $this->assertEquals('1 hari 1 jam', Absensi::formatMenit(510));
+        $this->assertEquals('2 hari', Absensi::formatMenit(900));
+        $this->assertEquals('3 hari 2 jam 2 menit', Absensi::formatMenit(1472));
+        $this->assertEquals('3 hari 4 jam 57 menit', Absensi::formatMenit(1647));
         $this->assertEquals('2 jam', Absensi::formatMenit(120));
         $this->assertEquals('45 menit', Absensi::formatMenit(45));
         $this->assertEquals('0 menit', Absensi::formatMenit(0));

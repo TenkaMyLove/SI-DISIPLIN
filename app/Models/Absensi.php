@@ -53,6 +53,7 @@ class Absensi extends Model
 
     /**
      * Format minutes to human readable "X hari Y jam Z menit" without 0 units (REK-8 & REK-9).
+     * 1 hari kerja = 7,5 jam = 450 menit.
      */
     public static function formatMenit(int $totalMenit): string
     {
@@ -60,8 +61,8 @@ class Absensi extends Model
             return '0 menit';
         }
 
-        $hari = intdiv($totalMenit, 1440); // 24 * 60 = 1440 menit
-        $sisaMenitSetelahHari = $totalMenit % 1440;
+        $hari = intdiv($totalMenit, 450); // 7.5 jam * 60 menit = 450 menit (1 hari kerja)
+        $sisaMenitSetelahHari = $totalMenit % 450;
 
         $jam = intdiv($sisaMenitSetelahHari, 60);
         $menit = $sisaMenitSetelahHari % 60;

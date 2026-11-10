@@ -26,7 +26,7 @@
         <div class="bg-white border border-neutral-border p-6 shadow-sm space-y-6">
           <div class="border-b border-neutral-border pb-3">
             <h2 class="text-sm font-bold text-navy uppercase tracking-wider">Jadwal Jam Kerja Operasional</h2>
-            <p class="text-xs text-neutral-500 mt-0.5">Atur jam masuk dan pulang kerja standar untuk setiap kelompok hari kerja.</p>
+            <p class="text-xs text-neutral-500 mt-0.5">Atur jam masuk dan pulang kerja standar untuk setiap hari kerja.</p>
           </div>
 
           <div class="space-y-4">
@@ -63,10 +63,10 @@
               </div>
             </div>
 
-            <!-- 2. SELASA - KAMIS -->
+            <!-- 2. SELASA -->
             <div class="p-4 bg-neutral-50 border border-neutral-border transition-colors hover:border-neutral-400">
               <div class="mb-3">
-                <span class="text-sm font-bold text-navy">Selasa &ndash; Kamis</span>
+                <span class="text-sm font-bold text-navy">Selasa</span>
               </div>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -74,7 +74,7 @@
                     Jam Masuk <span class="text-red-500">*</span>
                   </label>
                   <input
-                    v-model="form.selasa_kamis_masuk"
+                    v-model="form.selasa_masuk"
                     type="time"
                     required
                     class="w-full text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy text-neutral-900"
@@ -86,7 +86,7 @@
                     Jam Pulang <span class="text-red-500">*</span>
                   </label>
                   <input
-                    v-model="form.selasa_kamis_pulang"
+                    v-model="form.selasa_pulang"
                     type="time"
                     required
                     class="w-full text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy text-neutral-900"
@@ -96,7 +96,73 @@
               </div>
             </div>
 
-            <!-- 3. JUMAT -->
+            <!-- 3. RABU -->
+            <div class="p-4 bg-neutral-50 border border-neutral-border transition-colors hover:border-neutral-400">
+              <div class="mb-3">
+                <span class="text-sm font-bold text-navy">Rabu</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 mb-1">
+                    Jam Masuk <span class="text-red-500">*</span>
+                  </label>
+                  <input
+                    v-model="form.rabu_masuk"
+                    type="time"
+                    required
+                    class="w-full text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy text-neutral-900"
+                  />
+                  <p class="text-[11px] text-neutral-500 mt-1">Standar: 07:30 WITA</p>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 mb-1">
+                    Jam Pulang <span class="text-red-500">*</span>
+                  </label>
+                  <input
+                    v-model="form.rabu_pulang"
+                    type="time"
+                    required
+                    class="w-full text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy text-neutral-900"
+                  />
+                  <p class="text-[11px] text-neutral-500 mt-1">Standar: 16:00 WITA</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4. KAMIS -->
+            <div class="p-4 bg-neutral-50 border border-neutral-border transition-colors hover:border-neutral-400">
+              <div class="mb-3">
+                <span class="text-sm font-bold text-navy">Kamis</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 mb-1">
+                    Jam Masuk <span class="text-red-500">*</span>
+                  </label>
+                  <input
+                    v-model="form.kamis_masuk"
+                    type="time"
+                    required
+                    class="w-full text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy text-neutral-900"
+                  />
+                  <p class="text-[11px] text-neutral-500 mt-1">Standar: 07:30 WITA</p>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 mb-1">
+                    Jam Pulang <span class="text-red-500">*</span>
+                  </label>
+                  <input
+                    v-model="form.kamis_pulang"
+                    type="time"
+                    required
+                    class="w-full text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy text-neutral-900"
+                  />
+                  <p class="text-[11px] text-neutral-500 mt-1">Standar: 16:00 WITA</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 5. JUMAT -->
             <div class="p-4 bg-neutral-50 border border-neutral-border transition-colors hover:border-neutral-400">
               <div class="mb-3">
                 <span class="text-sm font-bold text-navy">Jumat</span>
@@ -168,8 +234,12 @@ const isError = ref(false)
 const form = reactive({
   senin_masuk: '07:30',
   senin_pulang: '16:00',
-  selasa_kamis_masuk: '07:30',
-  selasa_kamis_pulang: '16:00',
+  selasa_masuk: '07:30',
+  selasa_pulang: '16:00',
+  rabu_masuk: '07:30',
+  rabu_pulang: '16:00',
+  kamis_masuk: '07:30',
+  kamis_pulang: '16:00',
   jumat_masuk: '07:30',
   jumat_pulang: '16:30',
 })
@@ -190,17 +260,34 @@ async function fetchPengaturan() {
         form.senin_masuk = jadwal.senin.masuk
         form.senin_pulang = jadwal.senin.pulang
       }
-      if (jadwal.selasa_kamis) {
-        form.selasa_kamis_masuk = jadwal.selasa_kamis.masuk
-        form.selasa_kamis_pulang = jadwal.selasa_kamis.pulang
+      if (jadwal.selasa) {
+        form.selasa_masuk = jadwal.selasa.masuk
+        form.selasa_pulang = jadwal.selasa.pulang
+      } else if (jadwal.selasa_kamis) {
+        form.selasa_masuk = jadwal.selasa_kamis.masuk
+        form.selasa_pulang = jadwal.selasa_kamis.pulang
+      }
+      if (jadwal.rabu) {
+        form.rabu_masuk = jadwal.rabu.masuk
+        form.rabu_pulang = jadwal.rabu.pulang
+      } else if (jadwal.selasa_kamis) {
+        form.rabu_masuk = jadwal.selasa_kamis.masuk
+        form.rabu_pulang = jadwal.selasa_kamis.pulang
+      }
+      if (jadwal.kamis) {
+        form.kamis_masuk = jadwal.kamis.masuk
+        form.kamis_pulang = jadwal.kamis.pulang
+      } else if (jadwal.selasa_kamis) {
+        form.kamis_masuk = jadwal.selasa_kamis.masuk
+        form.kamis_pulang = jadwal.selasa_kamis.pulang
       }
       if (jadwal.jumat) {
         form.jumat_masuk = jadwal.jumat.masuk
         form.jumat_pulang = jadwal.jumat.pulang
       }
     } else {
-      form.senin_masuk = res.data.data.jam_masuk_standar || '07:30'
-      form.senin_pulang = res.data.data.jam_pulang_standar || '16:00'
+      form.senin_masuk = res.data?.data?.jam_masuk_standar || '07:30'
+      form.senin_pulang = res.data?.data?.jam_pulang_standar || '16:00'
     }
   } catch (err) {
     console.error('Gagal mengambil pengaturan:', err)

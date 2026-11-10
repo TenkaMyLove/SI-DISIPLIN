@@ -239,7 +239,7 @@
                   <!-- Employee Subtotal Row (Merged into 1 column to eliminate excessive gap) -->
                   <tr class="bg-neutral-100 font-semibold border-b border-neutral-300">
                     <td colspan="10" class="py-2.5 px-4 text-right text-xs">
-                      <span class="text-navy font-semibold mr-1.5">Total Kekurangan Jam Kerja:</span>
+                      <span class="text-navy font-semibold mr-1.5">Total :</span>
                       <span class="text-red-800 font-bold whitespace-nowrap">{{ p.total_durasi_formatted }}</span>
                     </td>
                   </tr>

@@ -26,18 +26,34 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // 2. Default standard working hours & schedule
+        // 2. Default standard working hours & schedule (Per Hari)
         Pengaturan::set('jam_masuk_standar', '07:30', 'Jam Masuk Standar');
         Pengaturan::set('jam_pulang_standar', '16:00', 'Jam Pulang Standar');
+
         Pengaturan::set('senin_masuk', '07:30', 'Jam Masuk Senin');
         Pengaturan::set('senin_pulang', '16:00', 'Jam Pulang Senin');
         Pengaturan::set('senin_flex', '0', 'Flex Senin');
-        Pengaturan::set('selasa_kamis_masuk', '07:30', 'Jam Masuk Selasa-Kamis');
-        Pengaturan::set('selasa_kamis_pulang', '16:00', 'Jam Pulang Selasa-Kamis');
-        Pengaturan::set('selasa_kamis_flex', '1', 'Flex Selasa-Kamis');
+
+        Pengaturan::set('selasa_masuk', '07:30', 'Jam Masuk Selasa');
+        Pengaturan::set('selasa_pulang', '16:00', 'Jam Pulang Selasa');
+        Pengaturan::set('selasa_flex', '1', 'Flex Selasa');
+
+        Pengaturan::set('rabu_masuk', '07:30', 'Jam Masuk Rabu');
+        Pengaturan::set('rabu_pulang', '16:00', 'Jam Pulang Rabu');
+        Pengaturan::set('rabu_flex', '1', 'Flex Rabu');
+
+        Pengaturan::set('kamis_masuk', '07:30', 'Jam Masuk Kamis');
+        Pengaturan::set('kamis_pulang', '16:00', 'Jam Pulang Kamis');
+        Pengaturan::set('kamis_flex', '1', 'Flex Kamis');
+
         Pengaturan::set('jumat_masuk', '07:30', 'Jam Masuk Jumat');
         Pengaturan::set('jumat_pulang', '16:30', 'Jam Pulang Jumat');
         Pengaturan::set('jumat_flex', '0', 'Flex Jumat');
+
+        // Backward compatibility
+        Pengaturan::set('selasa_kamis_masuk', '07:30', 'Jam Masuk Selasa-Kamis');
+        Pengaturan::set('selasa_kamis_pulang', '16:00', 'Jam Pulang Selasa-Kamis');
+        Pengaturan::set('selasa_kamis_flex', '1', 'Flex Selasa-Kamis');
 
         // 3. Master Divisi / Bagian (Divisi_Bagian)
         $defaultDivisi = [

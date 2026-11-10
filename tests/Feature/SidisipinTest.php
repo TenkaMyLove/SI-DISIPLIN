@@ -476,4 +476,40 @@ class SidisipinTest extends TestCase
 
         $this->assertDatabaseMissing('divisi_bagian', ['id' => $divisiId]);
     }
+
+    /**
+     * Test pengaturan jam kerja per hari (Senin, Selasa, Rabu, Kamis, Jumat).
+     */
+    public function test_pengaturan_per_hari_can_be_updated_and_retrieved(): void
+    {
+        $token = $this->admin->createToken('test_token')->plainTextToken;
+
+        $response = $this->withHeader('Authorization', "Bearer {$token}")
+            ->putJson('/api/pengaturan', [
+                'senin_masuk' => '07:30',
+                'senin_pulang' => '16:00',
+                'selasa_masuk' => '08:00',
+                'selasa_pulang' => '16:30',
+                'rabu_masuk' => '07:45',
+                'rabu_pulang' => '16:15',
+                'kamis_masuk' => '07:30',
+                'kamis_pulang' => '16:00',
+                'jumat_masuk' => '07:30',
+                'jumat_pulang' => '17:00',
+            ]);
+
+        $response->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.jadwal.selasa.masuk', '08:00')
+            ->assertJsonPath('data.jadwal.selasa.pulang', '16:30')
+            ->assertJsonPath('data.jadwal.rabu.masuk', '07:45')
+            ->assertJsonPath('data.jadwal.kamis.pulang', '16:00')
+            ->assertJsonPath('data.jadwal.jumat.pulang', '17:00');
+
+        $getRes = $this->getJson('/api/pengaturan');
+        $getRes->assertOk()
+            ->assertJsonPath('data.jadwal.selasa.masuk', '08:00')
+            ->assertJsonPath('data.jadwal.rabu.masuk', '07:45')
+            ->assertJsonPath('data.jadwal.jumat.pulang', '17:00');
+    }
 }

@@ -224,7 +224,7 @@ class RekapController extends Controller
 
             // Subtotal row per employee
             $sheet->mergeCells("A{$row}:I{$row}");
-            $sheet->setCellValue("A{$row}", "Total Kekurangan: {$p['nama']} ({$p['nip']})");
+            $sheet->setCellValue("A{$row}", "Total : {$p['nama']} ({$p['nip']})");
             $sheet->setCellValue("J{$row}", $p['total_durasi_formatted']);
             $sheet->getStyle("A{$row}:J{$row}")->applyFromArray([
                 'font' => ['bold' => true],
@@ -262,14 +262,43 @@ class RekapController extends Controller
      */
     public function exportPdf(Request $request)
     {
-        $data = $this->getRekapData($request);
+        try {
+            ini_set('memory_limit', '256M');
+            set_time_limit(120);
 
-        $pdf = Pdf::loadView('exports.rekap-pdf', [
-            'data' => $data,
-        ])->setPaper('a4', 'landscape');
+            $data = $this->getRekapData($request);
 
-        $filename = 'Rekap_Absensi_SIDISIPLIN_' . date('Ymd_His') . '.pdf';
+            $logoBase64 = null;
+            $logoPath = public_path('images/logo-pengayoman.png');
+            if (file_exists($logoPath)) {
+                $imgData = @file_get_contents($logoPath);
+                if ($imgData !== false) {
+                    $logoBase64 = 'data:image/png;base64,' . base64_encode($imgData);
+                }
+            }
 
-        return $pdf->download($filename);
+            $pdf = Pdf::loadView('exports.rekap-pdf', [
+                'data' => $data,
+                'logoBase64' => $logoBase64,
+            ])->setPaper('a4', 'landscape')
+              ->setOption('isRemoteEnabled', true)
+              ->setOption('isHtml5ParserEnabled', true);
+
+            $filename = 'Rekap_Absensi_SIDISIPLIN_' . date('Ymd_His') . '.pdf';
+
+            return $pdf->download($filename);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('PDF Export Error: ' . $e->getMessage(), [
+                'exception' => $e,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'request' => $request->all(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengunduh file PDF: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }

@@ -97,7 +97,18 @@
         <table style="width: 100%; border: none; margin-bottom: 0;">
             <tr>
                 <td style="width: 60px; border: none; vertical-align: middle; padding: 0;">
-                    <img src="{{ public_path('images/logo-pengayoman.png') }}" style="height: 52px;" alt="Logo Pengayoman" />
+                    @php
+                        $renderedLogo = $logoBase64 ?? null;
+                        if (!$renderedLogo && file_exists(public_path('images/logo-pengayoman.png'))) {
+                            $imgData = @file_get_contents(public_path('images/logo-pengayoman.png'));
+                            if ($imgData !== false) {
+                                $renderedLogo = 'data:image/png;base64,' . base64_encode($imgData);
+                            }
+                        }
+                    @endphp
+                    @if($renderedLogo)
+                        <img src="{{ $renderedLogo }}" style="height: 52px;" alt="Logo Pengayoman" />
+                    @endif
                 </td>
                 <td style="border: none; vertical-align: middle; padding-left: 14px; text-align: left;">
                     <h1>SIDISIPLIN &mdash; Sistem Informasi Disiplin Pegawai</h1>
@@ -150,7 +161,7 @@
                     </tr>
                 @endforeach
                 <tr class="subtotal-row">
-                    <td colspan="9" class="text-right">Total Kekurangan Jam Kerja &mdash; {{ $p['nama'] }}:</td>
+                    <td colspan="9" class="text-right">Total :</td>
                     <td class="text-right">{{ $p['total_durasi_formatted'] }}</td>
                 </tr>
             @empty

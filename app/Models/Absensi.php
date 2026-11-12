@@ -97,10 +97,20 @@ class Absensi extends Model
         return $this->periode ? $this->periode->format('d-m-Y') : '';
     }
 
+    private static function timeToSeconds(string $time): int
+    {
+        $parts = explode(':', $time);
+        $hours = (int) ($parts[0] ?? 0);
+        $minutes = (int) ($parts[1] ?? 0);
+        $seconds = (int) ($parts[2] ?? 0);
+
+        return ($hours * 3600) + ($minutes * 60) + $seconds;
+    }
+
     /**
      * Calculate automatic duration based on working hours and flexitime rules.
-     * Flex (Selasa - Kamis): If employee comes late (e.g. 07:36), they must leave at 16:06 to fulfill working hours.
-     * Non-Flex (Senin & Jumat): Late arrival directly adds to deficit.
+     * Flex: Arrivals within the flex window shift the target departure time to fulfill daily working hours.
+     * Arrivals past flex_masuk_akhir incur uncompensated lateness; Non-Flex directly adds arrival + early-leave deficits.
      */
     public static function hitungOtomatisDurasi(
         string $status,
@@ -126,29 +136,33 @@ class Absensi extends Model
         $stdPulang = $jamPulangStandar ?? ($jadwal ? $jadwal['pulang'] : Pengaturan::get('jam_pulang_standar', '16:00'));
         $isFlex = $forceFlex !== null ? $forceFlex : ($jadwal ? $jadwal['is_flex'] : false);
 
-        $masukSec = strtotime($jamMasuk);
-        $pulangSec = strtotime($jamPulang);
-        $stdMasukSec = strtotime($stdMasuk);
-        $stdPulangSec = strtotime($stdPulang);
+        $masukSec = self::timeToSeconds($jamMasuk);
+        $pulangSec = self::timeToSeconds($jamPulang);
+        $stdMasukSec = self::timeToSeconds($stdMasuk);
+        $stdPulangSec = self::timeToSeconds($stdPulang);
 
         if ($isFlex) {
-            // Standar durasi kehadiran yang harus dipenuhi (misal 07:30 s.d 16:00 = 510 menit / 8,5 jam)
             $stdDurationSec = max(0, $stdPulangSec - $stdMasukSec);
-            // Pegawai yang datang lebih awal dari jam masuk standar dihitung mulai jam masuk standar
-            $effectiveMasukSec = max($stdMasukSec, $masukSec);
-            // Target jam pulang agar jam kerja terpenuhi (misal datang 07:36 -> target pulang 16:06)
+            $flexMulaiSec = $jadwal && isset($jadwal['flex_masuk_mulai'])
+                ? self::timeToSeconds($jadwal['flex_masuk_mulai'])
+                : $stdMasukSec;
+            $flexAkhirSec = $jadwal && isset($jadwal['flex_masuk_akhir'])
+                ? self::timeToSeconds($jadwal['flex_masuk_akhir'])
+                : $stdPulangSec;
+
+            // Keterlambatan melewati batas akhir flexi tidak bisa dikompensasi pada jam pulang
+            $keterlambatanLuarFlexSec = max(0, $masukSec - $flexAkhirSec);
+            $effectiveMasukSec = max($flexMulaiSec, min($masukSec, $flexAkhirSec));
             $targetPulangSec = $effectiveMasukSec + $stdDurationSec;
+            $kekuranganPulangSec = max(0, $targetPulangSec - $pulangSec);
 
-            // Jika jam pulang sebelum target jam pulang, selisihnya adalah kekurangan jam kerja
-            $kekuranganSec = max(0, $targetPulangSec - $pulangSec);
-
-            return intval(round($kekuranganSec / 60));
-        } else {
-            // Non-Flex: keterlambatan masuk + pulang lebih awal
-            $selisihMasukMenit = max(0, intval(round(($masukSec - $stdMasukSec) / 60)));
-            $selisihPulangMenit = max(0, intval(round(($stdPulangSec - $pulangSec) / 60)));
-
-            return $selisihMasukMenit + $selisihPulangMenit;
+            return intval(round(($keterlambatanLuarFlexSec + $kekuranganPulangSec) / 60));
         }
+
+        // Non-Flex: keterlambatan masuk + pulang lebih awal
+        $selisihMasukMenit = max(0, intval(round(($masukSec - $stdMasukSec) / 60)));
+        $selisihPulangMenit = max(0, intval(round(($stdPulangSec - $pulangSec) / 60)));
+
+        return $selisihMasukMenit + $selisihPulangMenit;
     }
 }

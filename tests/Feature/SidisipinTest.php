@@ -514,4 +514,181 @@ class SidisipinTest extends TestCase
             ->assertJsonPath('data.jadwal.rabu.masuk', '07:45')
             ->assertJsonPath('data.jadwal.jumat.pulang', '17:00');
     }
+
+    /**
+     * Test flexi time configuration per hari and automatic duration calculation with flex limits.
+     */
+    public function test_pengaturan_flexi_time_per_hari_and_calculation(): void
+    {
+        $token = $this->admin->createToken('test_token')->plainTextToken;
+
+        $updateRes = $this->withHeader('Authorization', "Bearer {$token}")
+            ->putJson('/api/pengaturan', [
+                'senin_masuk' => '07:30',
+                'senin_pulang' => '16:00',
+                'senin_flex' => true,
+                'senin_flex_masuk_mulai' => '07:00',
+                'senin_flex_masuk_akhir' => '08:00',
+                'selasa_masuk' => '07:30',
+                'selasa_pulang' => '16:00',
+                'selasa_flex' => false,
+                'rabu_masuk' => '07:30',
+                'rabu_pulang' => '16:00',
+                'rabu_flex' => true,
+                'rabu_flex_masuk_mulai' => '07:30',
+                'rabu_flex_masuk_akhir' => '08:00',
+                'kamis_masuk' => '07:30',
+                'kamis_pulang' => '16:00',
+                'kamis_flex' => true,
+                'kamis_flex_masuk_mulai' => '07:30',
+                'kamis_flex_masuk_akhir' => '08:00',
+                'jumat_masuk' => '07:30',
+                'jumat_pulang' => '16:30',
+                'jumat_flex' => false,
+            ]);
+
+        $updateRes->assertOk()
+            ->assertJsonPath('data.jadwal.senin.is_flex', true)
+            ->assertJsonPath('data.jadwal.senin.flex_masuk_mulai', '07:00')
+            ->assertJsonPath('data.jadwal.senin.flex_masuk_akhir', '08:00')
+            ->assertJsonPath('data.jadwal.senin.flex_pulang_mulai', '15:30')
+            ->assertJsonPath('data.jadwal.senin.flex_pulang_akhir', '16:30')
+            ->assertJsonPath('data.jadwal.senin.flex_toleransi_menit', 30)
+            ->assertJsonPath('data.jadwal.selasa.is_flex', false);
+
+        // Invalid flex bounds should fail validation (flex_masuk_mulai > masuk)
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->putJson('/api/pengaturan', [
+                'senin_masuk' => '07:30',
+                'senin_pulang' => '16:00',
+                'senin_flex' => true,
+                'senin_flex_masuk_mulai' => '07:45',
+                'senin_flex_masuk_akhir' => '08:00',
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['senin_flex_masuk_mulai']);
+
+        $pegawai = Pegawai::create([
+            'nip' => '199001012020011050',
+            'nama' => 'Flexi Pegawai',
+            'divisi' => 'Pelayanan Hukum',
+        ]);
+
+        // Senin (2026-11-02) now has flex 07:00 - 08:00
+        // Early flex: datang 07:15, pulang 15:45 -> 0 menit
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson('/api/absensi', [
+                'nip' => $pegawai->nip,
+                'periode' => '2026-11-02',
+                'jam_masuk' => '07:15',
+                'jam_pulang' => '15:45',
+                'status' => 'Terlambat',
+            ])
+            ->assertCreated()
+            ->assertJsonPath('data.durasi_menit', 0);
+
+        // Past flex limit: datang 08:15, pulang 16:30 -> 15 menit (08:15 - 08:00)
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson('/api/absensi', [
+                'nip' => $pegawai->nip,
+                'periode' => '2026-11-02',
+                'jam_masuk' => '08:15',
+                'jam_pulang' => '16:30',
+                'status' => 'Terlambat',
+            ])
+            ->assertCreated()
+            ->assertJsonPath('data.durasi_menit', 15);
+
+        // Past flex limit & early departure: datang 08:15, pulang 16:00 -> 15 + 30 = 45 menit
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson('/api/absensi', [
+                'nip' => $pegawai->nip,
+                'periode' => '2026-11-02',
+                'jam_masuk' => '08:15',
+                'jam_pulang' => '16:00',
+                'status' => 'Terlambat',
+            ])
+            ->assertCreated()
+            ->assertJsonPath('data.durasi_menit', 45);
+
+        // Selasa (2026-11-03) now has flex=false -> datang 07:36, pulang 16:06 => 6 menit
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson('/api/absensi', [
+                'nip' => $pegawai->nip,
+                'periode' => '2026-11-03',
+                'jam_masuk' => '07:36',
+                'jam_pulang' => '16:06',
+                'status' => 'Terlambat',
+            ])
+            ->assertCreated()
+            ->assertJsonPath('data.durasi_menit', 6);
+    }
+
+    /**
+     * Test yearly filter (Tahunan) in Rekap API and exports, plus removal of Alasan column in exports.
+     */
+    public function test_rekap_tahunan_filter_and_exports_exclude_alasan(): void
+    {
+        $pegawai = Pegawai::create([
+            'nip' => '199001012020011060',
+            'nama' => 'Tahunan Pegawai',
+            'divisi' => 'P3H',
+        ]);
+
+        Absensi::create([
+            'nip' => $pegawai->nip,
+            'periode' => '2026-02-10',
+            'jam_masuk' => '08:00:00',
+            'jam_pulang' => '16:00:00',
+            'status' => 'Terlambat',
+            'durasi_menit' => 30,
+        ]);
+
+        Absensi::create([
+            'nip' => $pegawai->nip,
+            'periode' => '2026-11-05',
+            'jam_masuk' => '07:30:00',
+            'jam_pulang' => '15:30:00',
+            'status' => 'Pulang Duluan',
+            'durasi_menit' => 30,
+        ]);
+
+        // Different year record should be excluded
+        Absensi::create([
+            'nip' => $pegawai->nip,
+            'periode' => '2025-12-01',
+            'jam_masuk' => '08:00:00',
+            'jam_pulang' => '16:00:00',
+            'status' => 'Terlambat',
+            'durasi_menit' => 30,
+        ]);
+
+        $rekapRes = $this->getJson('/api/rekap?mode=tahun&tahun=2026');
+        $rekapRes->assertOk()
+            ->assertJsonPath('data.filter.mode', 'tahun')
+            ->assertJsonPath('data.filter.periode_label', 'Tahun 2026')
+            ->assertJsonPath('data.ringkasan.total_catatan_absensi', 2)
+            ->assertJsonPath('data.pegawai.0.total_durasi_formatted', '1 jam');
+
+        // Verify Excel export headers do not include Alasan
+        $excelResponse = $this->get('/api/rekap/export-excel?mode=tahun&tahun=2026');
+        $excelResponse->assertOk();
+        $xlsxBinary = $excelResponse->streamedContent();
+        $tmpFile = tempnam(sys_get_temp_dir(), 'rekap_test_');
+        file_put_contents($tmpFile, $xlsxBinary);
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($tmpFile);
+        @unlink($tmpFile);
+        $headerRow = $spreadsheet->getActiveSheet()->rangeToArray('A5:I5')[0];
+        $this->assertEquals(
+            ['No', 'Tanggal', 'NIP', 'Nama Pegawai', 'Divisi / Bagian', 'Jam Masuk', 'Jam Pulang', 'Status', 'Kekurangan'],
+            $headerRow
+        );
+
+        // Verify PDF Blade view does not contain Alasan column
+        $renderedPdfHtml = view('exports.rekap-pdf', [
+            'data' => $rekapRes->json('data'),
+            'logoBase64' => null,
+        ])->render();
+        $this->assertStringNotContainsString('<th>Alasan</th>', $renderedPdfHtml);
+    }
 }

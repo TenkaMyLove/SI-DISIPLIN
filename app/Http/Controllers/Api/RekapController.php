@@ -43,6 +43,14 @@ class RekapController extends Controller
             $startDate = $start->format('Y-m-d');
             $endDate = $end->format('Y-m-d');
             $label = 'Minggu (' . $start->format('d-m-Y') . ' s/d ' . $end->format('d-m-Y') . ')';
+        } elseif ($mode === 'tahun') {
+            $tahun = (int) $request->input('tahun', now()->format('Y'));
+            if ($tahun < 1900 || $tahun > 2100) {
+                $tahun = (int) now()->format('Y');
+            }
+            $startDate = sprintf('%04d-01-01', $tahun);
+            $endDate = sprintf('%04d-12-31', $tahun);
+            $label = 'Tahun ' . $tahun;
         } else {
             // Mode 'bulan'
             $bulanStr = $request->input('bulan', now()->format('Y-m')); // 'YYYY-MM'
@@ -182,14 +190,12 @@ class RekapController extends Controller
         $sheet->getStyle('A3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         $row = 5;
-        $headers = ['No', 'Tanggal', 'NIP', 'Nama Pegawai', 'Divisi / Bagian', 'Jam Masuk', 'Jam Pulang', 'Status', 'Alasan', 'Kekurangan'];
-        // Let's output columns A to J
-        $cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
-
+        $headers = ['No', 'Tanggal', 'NIP', 'Nama Pegawai', 'Divisi / Bagian', 'Jam Masuk', 'Jam Pulang', 'Status', 'Kekurangan'];
+        // Output columns A to I
         $sheet->fromArray($headers, null, "A{$row}");
 
         // Table Header Styling (Solid #031833 background, white text)
-        $sheet->getStyle("A{$row}:J{$row}")->applyFromArray([
+        $sheet->getStyle("A{$row}:I{$row}")->applyFromArray([
             'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
             'fill' => [
                 'fillType' => Fill::FILL_SOLID,
@@ -214,19 +220,18 @@ class RekapController extends Controller
                 $sheet->setCellValue("F{$row}", $r['jam_masuk']);
                 $sheet->setCellValue("G{$row}", $r['jam_pulang']);
                 $sheet->setCellValue("H{$row}", $r['status']);
-                $sheet->setCellValue("I{$row}", $r['alasan']);
-                $sheet->setCellValue("J{$row}", $r['durasi_formatted']);
+                $sheet->setCellValue("I{$row}", $r['durasi_formatted']);
 
                 // Border
-                $sheet->getStyle("A{$row}:J{$row}")->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+                $sheet->getStyle("A{$row}:I{$row}")->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
                 $row++;
             }
 
             // Subtotal row per employee
-            $sheet->mergeCells("A{$row}:I{$row}");
+            $sheet->mergeCells("A{$row}:H{$row}");
             $sheet->setCellValue("A{$row}", "Total : {$p['nama']} ({$p['nip']})");
-            $sheet->setCellValue("J{$row}", $p['total_durasi_formatted']);
-            $sheet->getStyle("A{$row}:J{$row}")->applyFromArray([
+            $sheet->setCellValue("I{$row}", $p['total_durasi_formatted']);
+            $sheet->getStyle("A{$row}:I{$row}")->applyFromArray([
                 'font' => ['bold' => true],
                 'fill' => [
                     'fillType' => Fill::FILL_SOLID,
@@ -241,7 +246,7 @@ class RekapController extends Controller
         }
 
         // Auto width
-        foreach (range('A', 'J') as $col) {
+        foreach (range('A', 'I') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 

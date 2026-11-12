@@ -72,7 +72,6 @@
               <th class="py-2.5 px-3 font-semibold border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white">Nama Pegawai</th>
               <th class="py-2.5 px-2 font-semibold text-center w-28 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white whitespace-nowrap">Masuk - Pulang</th>
               <th class="py-2.5 px-3 font-semibold w-40 whitespace-nowrap border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white">Status</th>
-              <th class="py-2.5 px-3 font-semibold border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white">Alasan</th>
               <th class="py-2.5 px-3 font-semibold text-right w-32 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white whitespace-nowrap">Kekurangan</th>
               <th class="py-2.5 px-3 font-semibold text-center w-24 border-b-2 border-navy-800 sticky top-0 z-20 bg-navy text-white whitespace-nowrap">Aksi</th>
             </tr>
@@ -106,9 +105,6 @@
                   {{ rec.status }}
                 </span>
               </td>
-              <td class="py-2.5 px-3 text-neutral-700 border-b border-r border-neutral-border bg-inherit">
-                {{ rec.alasan || '-' }}
-              </td>
               <td class="py-2.5 px-3 text-right font-medium text-red-700 border-b border-r border-neutral-border whitespace-nowrap bg-inherit">
                 {{ rec.durasi_formatted }}
                 <span class="text-[10px] text-neutral-400 block">({{ rec.durasi_menit }} mnt)</span>
@@ -131,7 +127,7 @@
               </td>
             </tr>
             <tr v-if="absensiList.length === 0">
-              <td colspan="9" class="py-10 text-center text-neutral-muted border-b border-neutral-border bg-inherit">
+              <td colspan="8" class="py-10 text-center text-neutral-muted border-b border-neutral-border bg-inherit">
                 Tidak ada catatan absensi yang sesuai filter.
               </td>
             </tr>
@@ -273,7 +269,9 @@
               class="w-full text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy text-neutral-900"
               @change="triggerAutoCalculate"
             />
-            <p class="text-[10px] text-neutral-muted mt-0.5">Standar: 07:30 WITA</p>
+            <p class="text-[10px] text-neutral-muted mt-0.5">
+              {{ activeJadwal.is_flex ? `Flexi ${activeJadwal.hari}: ${activeJadwal.flex_masuk_mulai}\u2013${activeJadwal.flex_masuk_akhir} WITA` : `Jadwal ${activeJadwal.hari}: ${activeJadwal.masuk} WITA` }}
+            </p>
           </div>
 
           <div>
@@ -288,7 +286,7 @@
               @change="triggerAutoCalculate"
             />
             <p class="text-[10px] text-neutral-muted mt-0.5">
-              Standar: {{ isFriday ? '16:30' : '16:00' }} WITA
+              {{ activeJadwal.is_flex ? `Target pulang: ${activeJadwal.flex_pulang_mulai}\u2013${activeJadwal.flex_pulang_akhir} WITA` : `Jadwal ${activeJadwal.hari}: ${activeJadwal.pulang} WITA` }}
             </p>
           </div>
         </div>
@@ -315,7 +313,7 @@
               type="button"
               @click="recalculateDuration"
               class="px-2.5 py-2 border border-neutral-border bg-white text-[11px] font-medium text-navy hover:bg-neutral-100 whitespace-nowrap"
-              title="Hitung ulang otomatis berdasarkan jam standar"
+              title="Hitung ulang otomatis berdasarkan jadwal hari tersebut"
             >
               Hitung Ulang
             </button>
@@ -323,19 +321,6 @@
           <p class="text-[11px] text-neutral-muted">
             * Dihitung otomatis oleh sistem namun dapat diubah secara manual oleh Admin bila diperlukan.
           </p>
-        </div>
-
-        <!-- Alasan (ABS-8: Free text typed manually) -->
-        <div>
-          <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
-            Alasan Keterlambatan / Keterangan (Teks Bebas)
-          </label>
-          <textarea
-            v-model="form.alasan"
-            rows="2"
-            placeholder="Ketik keterangan atau alasan izin bila ada (misal: Ban bocor, urusan keluarga mendesak, dll)..."
-            class="w-full text-xs border border-neutral-border p-3 bg-white focus:outline-none focus:border-navy text-neutral-900"
-          ></textarea>
         </div>
 
         <div class="pt-4 border-t border-neutral-border flex justify-end space-x-2">
@@ -414,11 +399,13 @@ import Modal from '@/components/Modal.vue'
 import CustomDropdown from '@/components/CustomDropdown.vue'
 import Toast from '@/components/Toast.vue'
 import api from '@/composables/useApi'
+import { getScheduleForDate, computeAttendanceDeficit } from '@/utils/workingHours'
 import { Plus, Search, Edit3, Trash2, X, Check } from 'lucide-vue-next'
 
 const loading = ref(true)
 const absensiList = ref([])
 const pegawaiOptions = ref([])
+const jadwalSettings = ref(null)
 
 const searchQuery = ref('')
 const filterStatus = ref('')
@@ -444,16 +431,10 @@ const form = reactive({
   jam_masuk: '07:30',
   jam_pulang: '16:00',
   status: 'Tanpa Keterangan',
-  alasan: '',
   durasi_menit: 450,
 })
 
-const isFriday = computed(() => {
-  if (!form.periode) return false
-  const parts = form.periode.split('-').map(Number)
-  const dateObj = new Date(parts[0], parts[1] - 1, parts[2])
-  return dateObj.getDay() === 5
-})
+const activeJadwal = computed(() => getScheduleForDate(jadwalSettings.value, form.periode))
 
 // Autocomplete State
 const pegawaiInputText = ref('')
@@ -521,6 +502,15 @@ function handleSearch() {
   }, 300)
 }
 
+async function fetchPengaturan() {
+  try {
+    const res = await api.get('/pengaturan')
+    jadwalSettings.value = res.data?.data?.jadwal || null
+  } catch (err) {
+    console.error('Gagal mengambil pengaturan jam kerja:', err)
+  }
+}
+
 async function fetchPegawaiOptions() {
   try {
     const res = await api.get('/pegawai/options')
@@ -568,10 +558,9 @@ function clearSelectedPegawai() {
 }
 
 function handlePeriodeChange() {
-  if (isFriday.value && form.jam_pulang === '16:00') {
-    form.jam_pulang = '16:30'
-  } else if (!isFriday.value && form.jam_pulang === '16:30') {
-    form.jam_pulang = '16:00'
+  if (!isEditing.value) {
+    form.jam_masuk = activeJadwal.value.masuk
+    form.jam_pulang = activeJadwal.value.pulang
   }
   triggerAutoCalculate()
 }
@@ -581,59 +570,13 @@ function triggerAutoCalculate() {
 }
 
 function recalculateDuration() {
-  if (form.status === 'Tanpa Keterangan') {
-    form.durasi_menit = 450 // 7.5 jam
-    return
-  }
-
-  if (!form.periode) return
-
-  // Determine day of week
-  const parts = form.periode.split('-').map(Number)
-  const dateObj = new Date(parts[0], parts[1] - 1, parts[2])
-  const dayOfWeek = dateObj.getDay() // 0 = Sun, 1 = Mon, 2 = Tue, 3 = Wed, 4 = Thu, 5 = Fri, 6 = Sat
-
-  const [masukH, masukM] = (form.jam_masuk || '07:30').split(':').map(Number)
-  const [pulangH, pulangM] = (form.jam_pulang || '16:00').split(':').map(Number)
-
-  const masukTotalMin = masukH * 60 + masukM
-  const pulangTotalMin = pulangH * 60 + pulangM
-
-  let stdMasukTotalMin = 7 * 60 + 30 // 07:30
-  let stdPulangTotalMin = 16 * 60 // 16:00
-  let isFlex = false
-
-  if (dayOfWeek === 1) {
-    // Senin
-    stdMasukTotalMin = 7 * 60 + 30
-    stdPulangTotalMin = 16 * 60
-    isFlex = false
-  } else if (dayOfWeek >= 2 && dayOfWeek <= 4) {
-    // Selasa - Kamis (Flex)
-    stdMasukTotalMin = 7 * 60 + 30
-    stdPulangTotalMin = 16 * 60
-    isFlex = true
-  } else if (dayOfWeek === 5) {
-    // Jumat
-    stdMasukTotalMin = 7 * 60 + 30
-    stdPulangTotalMin = 16 * 60 + 30
-    isFlex = false
-  }
-
-  if (isFlex) {
-    // Flex: Required total presence
-    const stdDurationMin = Math.max(0, stdPulangTotalMin - stdMasukTotalMin) // 510 minutes
-    const effectiveMasukMin = Math.max(stdMasukTotalMin, masukTotalMin)
-    const targetPulangMin = effectiveMasukMin + stdDurationMin
-
-    const kekuranganMin = Math.max(0, targetPulangMin - pulangTotalMin)
-    form.durasi_menit = kekuranganMin
-  } else {
-    // Non-Flex
-    const selisihMasuk = Math.max(0, masukTotalMin - stdMasukTotalMin)
-    const selisihPulang = Math.max(0, stdPulangTotalMin - pulangTotalMin)
-    form.durasi_menit = selisihMasuk + selisihPulang
-  }
+  if (!form.periode && form.status !== 'Tanpa Keterangan') return
+  form.durasi_menit = computeAttendanceDeficit({
+    status: form.status,
+    jamMasuk: form.jam_masuk,
+    jamPulang: form.jam_pulang,
+    schedule: activeJadwal.value,
+  })
 }
 
 function openAddModal() {
@@ -643,14 +586,9 @@ function openAddModal() {
   form.nip = ''
   pegawaiInputText.value = ''
   form.periode = new Date().toISOString().substring(0, 10)
-  form.jam_masuk = '07:30'
-
-  const parts = form.periode.split('-').map(Number)
-  const dateObj = new Date(parts[0], parts[1] - 1, parts[2])
-  form.jam_pulang = dateObj.getDay() === 5 ? '16:30' : '16:00'
-
+  form.jam_masuk = activeJadwal.value.masuk
+  form.jam_pulang = activeJadwal.value.pulang
   form.status = 'Tanpa Keterangan'
-  form.alasan = ''
   form.durasi_menit = 450
   showModal.value = true
 }
@@ -665,7 +603,6 @@ function openEditModal(rec) {
   form.jam_masuk = rec.jam_masuk?.substring(0, 5) || '07:30'
   form.jam_pulang = rec.jam_pulang?.substring(0, 5) || '16:00'
   form.status = rec.status
-  form.alasan = rec.alasan || ''
   form.durasi_menit = rec.durasi_menit
   showModal.value = true
 }
@@ -691,7 +628,6 @@ async function saveAbsensi() {
       jam_masuk: form.jam_masuk,
       jam_pulang: form.jam_pulang,
       status: form.status,
-      alasan: form.alasan,
       durasi_menit: form.durasi_menit,
     }
 
@@ -738,6 +674,7 @@ async function executeDelete() {
 }
 
 onMounted(() => {
+  fetchPengaturan()
   fetchPegawaiOptions()
   fetchAbsensi()
 })

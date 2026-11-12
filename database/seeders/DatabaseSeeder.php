@@ -30,25 +30,14 @@ class DatabaseSeeder extends Seeder
         Pengaturan::set('jam_masuk_standar', '07:30', 'Jam Masuk Standar');
         Pengaturan::set('jam_pulang_standar', '16:00', 'Jam Pulang Standar');
 
-        Pengaturan::set('senin_masuk', '07:30', 'Jam Masuk Senin');
-        Pengaturan::set('senin_pulang', '16:00', 'Jam Pulang Senin');
-        Pengaturan::set('senin_flex', '0', 'Flex Senin');
-
-        Pengaturan::set('selasa_masuk', '07:30', 'Jam Masuk Selasa');
-        Pengaturan::set('selasa_pulang', '16:00', 'Jam Pulang Selasa');
-        Pengaturan::set('selasa_flex', '1', 'Flex Selasa');
-
-        Pengaturan::set('rabu_masuk', '07:30', 'Jam Masuk Rabu');
-        Pengaturan::set('rabu_pulang', '16:00', 'Jam Pulang Rabu');
-        Pengaturan::set('rabu_flex', '1', 'Flex Rabu');
-
-        Pengaturan::set('kamis_masuk', '07:30', 'Jam Masuk Kamis');
-        Pengaturan::set('kamis_pulang', '16:00', 'Jam Pulang Kamis');
-        Pengaturan::set('kamis_flex', '1', 'Flex Kamis');
-
-        Pengaturan::set('jumat_masuk', '07:30', 'Jam Masuk Jumat');
-        Pengaturan::set('jumat_pulang', '16:30', 'Jam Pulang Jumat');
-        Pengaturan::set('jumat_flex', '0', 'Flex Jumat');
+        foreach (Pengaturan::DAYS as $dayKey => $meta) {
+            $label = $meta['label'];
+            Pengaturan::set("{$dayKey}_masuk", $meta['masuk'], "Jam Masuk {$label}");
+            Pengaturan::set("{$dayKey}_pulang", $meta['pulang'], "Jam Pulang {$label}");
+            Pengaturan::set("{$dayKey}_flex", $meta['flex'], "Flex {$label}");
+            Pengaturan::set("{$dayKey}_flex_masuk_mulai", $meta['masuk'], "Batas Awal Masuk Flex {$label}");
+            Pengaturan::set("{$dayKey}_flex_masuk_akhir", '08:00', "Batas Akhir Masuk Flex {$label}");
+        }
 
         // Backward compatibility
         Pengaturan::set('selasa_kamis_masuk', '07:30', 'Jam Masuk Selasa-Kamis');

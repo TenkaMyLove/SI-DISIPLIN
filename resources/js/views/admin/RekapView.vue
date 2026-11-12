@@ -42,7 +42,7 @@
         <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
           Mode Periode
         </label>
-        <div class="grid grid-cols-3 border border-neutral-border p-0.5 bg-neutral-50 gap-1 mb-1.5">
+        <div class="grid grid-cols-2 sm:grid-cols-4 border border-neutral-border p-0.5 bg-neutral-50 gap-1 mb-1.5">
           <button
             type="button"
             @click="setMode('tanggal')"
@@ -67,6 +67,14 @@
           >
             Bulanan
           </button>
+          <button
+            type="button"
+            @click="setMode('tahun')"
+            class="py-1 text-xs text-center font-medium"
+            :class="filters.mode === 'tahun' ? 'bg-navy text-white font-semibold' : 'text-neutral-700 hover:bg-neutral-200'"
+          >
+            Tahunan
+          </button>
         </div>
         <input
           v-if="filters.mode === 'tanggal'"
@@ -86,6 +94,13 @@
             Rentang: <strong class="text-navy">{{ rekapData?.filter?.periode_label || 'Senin s/d Jumat' }}</strong>
           </p>
         </div>
+        <CustomDropdown
+          v-else-if="filters.mode === 'tahun'"
+          v-model="filters.tahun"
+          :options="tahunOptions"
+          placeholder="Pilih Tahun"
+          @change="fetchRekap"
+        />
         <input
           v-else
           v-model="filters.bulan"
@@ -172,7 +187,6 @@
                 <th class="py-2.5 px-3 font-semibold w-40 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white">Divisi / Bagian</th>
                 <th class="py-2.5 px-2 font-semibold text-center w-24 border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white whitespace-nowrap">Masuk-Pulang</th>
                 <th class="py-2.5 px-3 font-semibold w-40 whitespace-nowrap border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white">Status</th>
-                <th class="py-2.5 px-3 font-semibold border-b-2 border-r border-navy-800 sticky top-0 z-20 bg-navy text-white">Alasan</th>
                 <th class="py-2.5 px-3 font-semibold text-right w-32 border-b-2 border-navy-800 sticky top-0 z-20 bg-navy text-white whitespace-nowrap">Kekurangan</th>
               </tr>
             </thead>
@@ -194,12 +208,11 @@
                     {{ r.status }}
                   </span>
                 </td>
-                <td class="py-2 px-3 text-neutral-700 border-b border-r border-neutral-border bg-inherit">{{ r.alasan }}</td>
                 <td class="py-2 px-3 text-right font-medium text-red-700 border-b border-neutral-border bg-inherit">{{ r.durasi_formatted }}</td>
               </tr>
               <!-- Employee Subtotal Row: Merged into 1 column to eliminate excessive gap -->
               <tr class="bg-neutral-100 font-semibold border-b border-neutral-300">
-                <td colspan="9" class="py-2 px-4 text-right text-xs">
+                <td colspan="8" class="py-2 px-4 text-right text-xs">
                   <span class="text-navy font-semibold mr-1.5">Total :</span>
                   <span class="text-red-800 font-bold whitespace-nowrap">{{ p.total_durasi_formatted }}</span>
                 </td>
@@ -246,11 +259,18 @@ const divisiOptions = ref([
   'Tata Usaha dan Umum',
 ])
 
+const currentYear = new Date().getFullYear()
+const tahunOptions = Array.from({ length: Math.max(8, currentYear - 2019 + 1) }, (_, idx) => {
+  const year = String(currentYear + 1 - idx)
+  return { value: year, label: `Tahun ${year}` }
+})
+
 const filters = reactive({
   mode: 'bulan',
   tanggal: new Date().toISOString().substring(0, 10),
   minggu: new Date().toISOString().substring(0, 10),
   bulan: new Date().toISOString().substring(0, 7),
+  tahun: String(currentYear),
   nip: '',
   divisi: '',
 })
@@ -300,6 +320,7 @@ async function fetchRekap() {
     if (filters.mode === 'tanggal') params.tanggal = filters.tanggal
     else if (filters.mode === 'minggu') params.minggu = filters.minggu
     else if (filters.mode === 'bulan') params.bulan = filters.bulan
+    else if (filters.mode === 'tahun') params.tahun = filters.tahun
 
     const res = await api.get('/rekap', { params })
     rekapData.value = res.data.data
@@ -310,24 +331,23 @@ async function fetchRekap() {
   }
 }
 
-function exportExcel() {
+function buildExportParams() {
   const params = new URLSearchParams({ mode: filters.mode })
   if (filters.mode === 'tanggal') params.append('tanggal', filters.tanggal)
-  if (filters.mode === 'minggu') params.append('minggu', filters.minggu)
-  if (filters.mode === 'bulan') params.append('bulan', filters.bulan)
+  else if (filters.mode === 'minggu') params.append('minggu', filters.minggu)
+  else if (filters.mode === 'bulan') params.append('bulan', filters.bulan)
+  else if (filters.mode === 'tahun') params.append('tahun', filters.tahun)
   if (filters.nip) params.append('nip', filters.nip)
   if (filters.divisi) params.append('divisi', filters.divisi)
-  window.open(`/api/rekap/export-excel?${params.toString()}`, '_blank')
+  return params.toString()
+}
+
+function exportExcel() {
+  window.open(`/api/rekap/export-excel?${buildExportParams()}`, '_blank')
 }
 
 function exportPdf() {
-  const params = new URLSearchParams({ mode: filters.mode })
-  if (filters.mode === 'tanggal') params.append('tanggal', filters.tanggal)
-  if (filters.mode === 'minggu') params.append('minggu', filters.minggu)
-  if (filters.mode === 'bulan') params.append('bulan', filters.bulan)
-  if (filters.nip) params.append('nip', filters.nip)
-  if (filters.divisi) params.append('divisi', filters.divisi)
-  window.open(`/api/rekap/export-pdf?${params.toString()}`, '_blank')
+  window.open(`/api/rekap/export-pdf?${buildExportParams()}`, '_blank')
 }
 
 const currentWitaTimestamp = computed(() => {

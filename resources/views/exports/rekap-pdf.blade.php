@@ -139,7 +139,6 @@
                 <th class="text-center" style="width: 50px;">Masuk</th>
                 <th class="text-center" style="width: 50px;">Pulang</th>
                 <th style="width: 90px;">Status</th>
-                <th>Alasan</th>
                 <th class="text-right" style="width: 85px;">Kekurangan</th>
             </tr>
         </thead>
@@ -156,17 +155,16 @@
                         <td class="text-center">{{ $r['jam_masuk'] }}</td>
                         <td class="text-center">{{ $r['jam_pulang'] }}</td>
                         <td>{{ $r['status'] }}</td>
-                        <td>{{ $r['alasan'] }}</td>
                         <td class="text-right">{{ $r['durasi_formatted'] }}</td>
                     </tr>
                 @endforeach
                 <tr class="subtotal-row">
-                    <td colspan="9" class="text-right">Total :</td>
+                    <td colspan="8" class="text-right">Total :</td>
                     <td class="text-right">{{ $p['total_durasi_formatted'] }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="10" class="text-center" style="padding: 24px;">Tidak ada catatan absensi bermasalah pada periode dan filter yang dipilih.</td>
+                    <td colspan="9" class="text-center" style="padding: 24px;">Tidak ada catatan absensi bermasalah pada periode dan filter yang dipilih.</td>
                 </tr>
             @endforelse
         </tbody>

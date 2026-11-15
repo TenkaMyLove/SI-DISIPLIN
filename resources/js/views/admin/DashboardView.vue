@@ -60,9 +60,9 @@
             <Settings class="w-4 h-4 text-navy" />
           </div>
           <p class="text-base font-bold text-navy mt-1">
-            {{ settings.jam_masuk_standar }} &ndash; {{ settings.jam_pulang_standar }}
+            {{ todayWorkingHours.hoursText }}
           </p>
-          <p class="text-[11px] text-neutral-muted mt-0.5">WITA &bull; Senin &ndash; Jumat</p>
+          <p class="text-[11px] text-neutral-muted mt-0.5">{{ todayWorkingHours.subtitleText }}</p>
         </div>
       </div>
 
@@ -104,7 +104,7 @@
                 <td class="py-2.5 px-3 font-semibold text-navy border-b border-r border-neutral-border bg-inherit">{{ rec.pegawai?.nama }}</td>
                 <td class="py-2.5 px-3 font-mono text-neutral-600 border-b border-r border-neutral-border whitespace-nowrap bg-inherit">{{ rec.nip }}</td>
                 <td class="py-2.5 px-3 text-center text-neutral-800 border-b border-r border-neutral-border whitespace-nowrap bg-inherit">
-                  {{ rec.jam_masuk?.substring(0, 5) }} &ndash; {{ rec.jam_pulang?.substring(0, 5) }}
+                  {{ rec.jam_masuk?.substring(0, 5) || '-' }} &ndash; {{ rec.jam_pulang?.substring(0, 5) || '-' }}
                 </td>
                 <td class="py-2.5 px-3 whitespace-nowrap border-b border-r border-neutral-border bg-inherit">
                   <span
@@ -127,10 +127,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import api from '@/composables/useApi'
+import { getTodayWorkingHours, getStatusBadgeClass } from '@/utils/workingHours'
 import {
   Users,
   CalendarX2,
@@ -149,24 +150,14 @@ const stats = ref({
 })
 
 const settings = ref({
-  jam_masuk_standar: '08:00',
+  jadwal: null,
+  jam_masuk_standar: '07:30',
   jam_pulang_standar: '16:00',
 })
 
-const recentRecords = ref([])
+const todayWorkingHours = computed(() => getTodayWorkingHours(settings.value))
 
-function getStatusBadgeClass(status) {
-  switch (status) {
-    case 'Tanpa Keterangan':
-      return 'bg-red-50 text-red-800 border-red-300'
-    case 'Terlambat':
-      return 'bg-amber-50 text-amber-800 border-amber-300'
-    case 'Pulang Duluan':
-      return 'bg-blue-50 text-blue-800 border-blue-300'
-    default:
-      return 'bg-neutral-100 text-neutral-800 border-neutral-300'
-  }
-}
+const recentRecords = ref([])
 
 async function fetchDashboardData() {
   loading.value = true
@@ -181,7 +172,7 @@ async function fetchDashboardData() {
     stats.value.totalAbsensi = absensiRes.data.meta?.total || 0
 
     recentRecords.value = absensiRes.data.data || []
-    settings.value = settingRes.data.data
+    settings.value = settingRes.data.data || settings.value
   } catch (err) {
     console.error('Gagal memuat data dashboard:', err)
   } finally {

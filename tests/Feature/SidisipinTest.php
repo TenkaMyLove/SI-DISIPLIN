@@ -691,4 +691,96 @@ class SidisipinTest extends TestCase
         ])->render();
         $this->assertStringNotContainsString('<th>Alasan</th>', $renderedPdfHtml);
     }
+
+    /**
+     * Test status "Hanya Absen Masuk / Pulang":
+     * - Admin hanya mengisi salah satu antara jam_masuk atau jam_pulang
+     * - Durasi kekurangan jam kerja otomatis 90 menit (1 jam 30 menit)
+     */
+    public function test_hanya_absen_masuk_atau_pulang_validation_and_90_minutes_duration(): void
+    {
+        $token = $this->admin->createToken('test_token')->plainTextToken;
+
+        $pegawai = Pegawai::create([
+            'nip' => '199001012020011070',
+            'nama' => 'Pegawai Lupa Absen',
+            'divisi' => 'Pelayanan Hukum',
+        ]);
+
+        // 1. Hanya absen pulang -> jam_masuk null, jam_pulang terisi, durasi 90 menit
+        $resPulangOnly = $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson('/api/absensi', [
+                'nip' => $pegawai->nip,
+                'periode' => '2026-11-10',
+                'jam_masuk' => null,
+                'jam_pulang' => '16:00',
+                'status' => Absensi::STATUS_HANYA_ABSEN,
+            ]);
+
+        $resPulangOnly->assertCreated()
+            ->assertJsonPath('data.jam_masuk', null)
+            ->assertJsonPath('data.jam_pulang', '16:00')
+            ->assertJsonPath('data.durasi_menit', 90)
+            ->assertJsonPath('data.durasi_formatted', '1 jam 30 menit');
+
+        $recordId = $resPulangOnly->json('data.id');
+
+        // 2. Hanya absen masuk -> jam_masuk terisi, jam_pulang null, durasi 90 menit
+        $resMasukOnly = $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson('/api/absensi', [
+                'nip' => $pegawai->nip,
+                'periode' => '2026-11-11',
+                'jam_masuk' => '07:30',
+                'jam_pulang' => null,
+                'status' => Absensi::STATUS_HANYA_ABSEN,
+            ]);
+
+        $resMasukOnly->assertCreated()
+            ->assertJsonPath('data.jam_masuk', '07:30')
+            ->assertJsonPath('data.jam_pulang', null)
+            ->assertJsonPath('data.durasi_menit', 90);
+
+        // 3. Validasi gagal jika keduanya diisi atau keduanya kosong
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson('/api/absensi', [
+                'nip' => $pegawai->nip,
+                'periode' => '2026-11-12',
+                'jam_masuk' => '07:30',
+                'jam_pulang' => '16:00',
+                'status' => Absensi::STATUS_HANYA_ABSEN,
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['jam_pulang']);
+
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->postJson('/api/absensi', [
+                'nip' => $pegawai->nip,
+                'periode' => '2026-11-12',
+                'jam_masuk' => null,
+                'jam_pulang' => null,
+                'status' => Absensi::STATUS_HANYA_ABSEN,
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['jam_masuk']);
+
+        // 4. Update ke hanya absen masuk
+        $this->withHeader('Authorization', "Bearer {$token}")
+            ->putJson("/api/absensi/{$recordId}", [
+                'nip' => $pegawai->nip,
+                'periode' => '2026-11-10',
+                'jam_masuk' => '07:45',
+                'jam_pulang' => null,
+                'status' => Absensi::STATUS_HANYA_ABSEN,
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.jam_masuk', '07:45')
+            ->assertJsonPath('data.jam_pulang', null)
+            ->assertJsonPath('data.durasi_menit', 90);
+
+        // 5. Rekap menampilkan '-' untuk jam yang kosong
+        $this->getJson('/api/rekap?mode=tanggal&tanggal=2026-11-10')
+            ->assertOk()
+            ->assertJsonPath('data.pegawai.0.rincian.0.jam_masuk', '07:45')
+            ->assertJsonPath('data.pegawai.0.rincian.0.jam_pulang', '-');
+    }
 }

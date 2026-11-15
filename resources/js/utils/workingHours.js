@@ -14,6 +14,56 @@ const JS_DAY_TO_KEY = {
   5: 'jumat',
 }
 
+const DAY_LABELS = {
+  0: 'Minggu',
+  1: 'Senin',
+  2: 'Selasa',
+  3: 'Rabu',
+  4: 'Kamis',
+  5: 'Jumat',
+  6: 'Sabtu',
+}
+
+export function getWitaDayIndex(date = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Makassar',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date)
+
+  const getPart = (type) => Number(parts.find((part) => part.type === type)?.value)
+  const witaDate = new Date(getPart('year'), getPart('month') - 1, getPart('day'))
+  return witaDate.getDay()
+}
+
+export function getTodayWorkingHours(settings, date = new Date()) {
+  const dayIndex = getWitaDayIndex(date)
+  const dayLabel = DAY_LABELS[dayIndex] || 'Senin'
+  const dayKey = JS_DAY_TO_KEY[dayIndex]
+
+  if (!dayKey) {
+    return {
+      isHoliday: true,
+      dayLabel,
+      hoursText: 'Libur',
+      subtitleText: `WITA \u2022 ${dayLabel}`,
+    }
+  }
+
+  const daySchedule = settings?.jadwal?.[dayKey]
+  const fallbackMeta = WEEKDAYS.find((day) => day.key === dayKey)
+  const masuk = daySchedule?.masuk || fallbackMeta?.defaultMasuk || settings?.jam_masuk_standar || '07:30'
+  const pulang = daySchedule?.pulang || fallbackMeta?.defaultPulang || settings?.jam_pulang_standar || '16:00'
+
+  return {
+    isHoliday: false,
+    dayLabel,
+    hoursText: `${masuk} \u2013 ${pulang}`,
+    subtitleText: `WITA \u2022 ${dayLabel}`,
+  }
+}
+
 export function timeToMinutes(timeStr) {
   if (!timeStr) return 0
   const [h, m] = String(timeStr).split(':').map(Number)
@@ -87,9 +137,37 @@ export function getScheduleForDate(jadwal, dateStr) {
   return fallback
 }
 
+export const STATUS_HANYA_ABSEN = 'Hanya Absen Masuk / Pulang'
+
+export const ABSENSI_STATUS_OPTIONS = [
+  { value: 'Tanpa Keterangan', label: 'Tanpa Keterangan' },
+  { value: 'Terlambat', label: 'Terlambat' },
+  { value: 'Pulang Duluan', label: 'Pulang Duluan' },
+  { value: STATUS_HANYA_ABSEN, label: STATUS_HANYA_ABSEN },
+]
+
+export function getStatusBadgeClass(status) {
+  switch (status) {
+    case 'Tanpa Keterangan':
+      return 'bg-red-50 text-red-800 border-red-300'
+    case 'Terlambat':
+      return 'bg-amber-50 text-amber-800 border-amber-300'
+    case 'Pulang Duluan':
+      return 'bg-blue-50 text-blue-800 border-blue-300'
+    case STATUS_HANYA_ABSEN:
+      return 'bg-purple-50 text-purple-800 border-purple-300'
+    default:
+      return 'bg-neutral-100 text-neutral-800 border-neutral-300'
+  }
+}
+
 export function computeAttendanceDeficit({ status, jamMasuk, jamPulang, schedule }) {
   if (status === 'Tanpa Keterangan') {
     return 450 // 7.5 jam kerja
+  }
+
+  if (status === STATUS_HANYA_ABSEN) {
+    return 90
   }
 
   const masukMin = timeToMinutes(jamMasuk || schedule.masuk || '07:30')

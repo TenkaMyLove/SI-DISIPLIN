@@ -71,8 +71,12 @@ class AbsensiController extends Controller
     public function hitungDurasi(Request $request): JsonResponse
     {
         $status = $request->input('status', Absensi::STATUS_TERLAMBAT);
-        $jamMasuk = $request->input('jam_masuk', '07:30');
-        $jamPulang = $request->input('jam_pulang', '16:00');
+        $jamMasuk = $request->input('jam_masuk');
+        $jamPulang = $request->input('jam_pulang');
+        if ($status !== Absensi::STATUS_HANYA_ABSEN) {
+            $jamMasuk ??= '07:30';
+            $jamPulang ??= '16:00';
+        }
         $periode = $request->input('periode') ?? $request->input('tanggal') ?? date('Y-m-d');
 
         $durasiMenit = Absensi::hitungOtomatisDurasi($status, $jamMasuk, $jamPulang, $periode);
@@ -87,21 +91,36 @@ class AbsensiController extends Controller
     }
 
     /**
+     * Normalize single-punch fields and compute automatic duration when omitted.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    private function prepareAbsensiPayload(array $data): array
+    {
+        if ($data['status'] === Absensi::STATUS_HANYA_ABSEN) {
+            $data['jam_masuk'] = ! empty($data['jam_masuk']) ? $data['jam_masuk'] : null;
+            $data['jam_pulang'] = ! empty($data['jam_pulang']) ? $data['jam_pulang'] : null;
+        }
+
+        if (! isset($data['durasi_menit']) || $data['durasi_menit'] === null) {
+            $data['durasi_menit'] = Absensi::hitungOtomatisDurasi(
+                $data['status'],
+                $data['jam_masuk'] ?? null,
+                $data['jam_pulang'] ?? null,
+                $data['periode']
+            );
+        }
+
+        return $data;
+    }
+
+    /**
      * Store a newly created absensi record.
      */
     public function store(StoreAbsensiRequest $request): JsonResponse
     {
-        $data = $request->validated();
-
-        // If manual duration is not provided or null, calculate automatically
-        if (! isset($data['durasi_menit']) || $data['durasi_menit'] === null) {
-            $data['durasi_menit'] = Absensi::hitungOtomatisDurasi(
-                $data['status'],
-                $data['jam_masuk'],
-                $data['jam_pulang'],
-                $data['periode']
-            );
-        }
+        $data = $this->prepareAbsensiPayload($request->validated());
 
         $absensi = Absensi::create($data);
         $absensi->load('pegawai');
@@ -132,17 +151,7 @@ class AbsensiController extends Controller
     public function update(UpdateAbsensiRequest $request, int $id): JsonResponse
     {
         $absensi = Absensi::findOrFail($id);
-        $data = $request->validated();
-
-        // If duration is not explicitly provided, recalculate
-        if (! isset($data['durasi_menit']) || $data['durasi_menit'] === null) {
-            $data['durasi_menit'] = Absensi::hitungOtomatisDurasi(
-                $data['status'],
-                $data['jam_masuk'],
-                $data['jam_pulang'],
-                $data['periode']
-            );
-        }
+        $data = $this->prepareAbsensiPayload($request->validated());
 
         $absensi->update($data);
         $absensi->load('pegawai');

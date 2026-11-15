@@ -295,6 +295,7 @@ import Navbar from '@/components/Navbar.vue'
 import CustomDropdown from '@/components/CustomDropdown.vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import api from '@/composables/useApi'
+import { getStatusBadgeClass } from '@/utils/workingHours'
 import {
   FileSpreadsheet,
   FileDown,
@@ -331,19 +332,6 @@ const divisiOptions = ref([
 function setMode(mode) {
   filters.mode = mode
   fetchRekap()
-}
-
-function getStatusBadgeClass(status) {
-  switch (status) {
-    case 'Tanpa Keterangan':
-      return 'bg-red-50 text-red-800 border-red-300'
-    case 'Terlambat':
-      return 'bg-amber-50 text-amber-800 border-amber-300'
-    case 'Pulang Duluan':
-      return 'bg-blue-50 text-blue-800 border-blue-300'
-    default:
-      return 'bg-neutral-100 text-neutral-800 border-neutral-300'
-  }
 }
 
 function getGlobalRowNumber(pIdx, rIdx) {

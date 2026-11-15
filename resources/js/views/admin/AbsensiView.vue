@@ -34,12 +34,7 @@
       <div>
         <CustomDropdown
           v-model="filterStatus"
-          :options="[
-            { value: '', label: 'Semua Status' },
-            { value: 'Tanpa Keterangan', label: 'Tanpa Keterangan' },
-            { value: 'Terlambat', label: 'Terlambat' },
-            { value: 'Pulang Duluan', label: 'Pulang Duluan' }
-          ]"
+          :options="[{ value: '', label: 'Semua Status' }, ...ABSENSI_STATUS_OPTIONS]"
           placeholder="Semua Status"
           @change="fetchAbsensi(1)"
         />
@@ -95,7 +90,7 @@
                 {{ rec.pegawai?.nama }}
               </td>
               <td class="py-2.5 px-2 text-center text-neutral-800 border-b border-r border-neutral-border whitespace-nowrap bg-inherit">
-                {{ rec.jam_masuk?.substring(0, 5) }} &ndash; {{ rec.jam_pulang?.substring(0, 5) }}
+                {{ rec.jam_masuk?.substring(0, 5) || '-' }} &ndash; {{ rec.jam_pulang?.substring(0, 5) || '-' }}
               </td>
               <td class="py-2.5 px-3 border-b border-r border-neutral-border whitespace-nowrap bg-inherit">
                 <span
@@ -246,47 +241,78 @@
           </label>
           <CustomDropdown
             v-model="form.status"
-            :options="[
-              { value: 'Tanpa Keterangan', label: 'Tanpa Keterangan' },
-              { value: 'Terlambat', label: 'Terlambat' },
-              { value: 'Pulang Duluan', label: 'Pulang Duluan' }
-            ]"
+            :options="ABSENSI_STATUS_OPTIONS"
             placeholder="Pilih Status"
-            @change="triggerAutoCalculate"
+            @change="handleStatusChange"
           />
         </div>
 
-        <!-- Jam Masuk & Jam Pulang (ABS-14: Mandatory on all statuses including Tanpa Keterangan) -->
+        <!-- Pilihan Jenis Absen untuk status Hanya Absen Masuk / Pulang -->
+        <div v-if="isHanyaAbsen">
+          <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
+            Jenis Absen yang Tercatat <span class="text-red-500">*</span>
+          </label>
+          <div class="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              @click="setHanyaAbsenType('masuk')"
+              class="px-3 py-2 text-xs font-semibold border transition-colors"
+              :class="hanyaAbsenType === 'masuk'
+                ? 'bg-navy text-white border-navy'
+                : 'bg-white text-neutral-700 border-neutral-border hover:bg-neutral-50'"
+            >
+              Hanya Absen Masuk
+            </button>
+            <button
+              type="button"
+              @click="setHanyaAbsenType('pulang')"
+              class="px-3 py-2 text-xs font-semibold border transition-colors"
+              :class="hanyaAbsenType === 'pulang'
+                ? 'bg-navy text-white border-navy'
+                : 'bg-white text-neutral-700 border-neutral-border hover:bg-neutral-50'"
+            >
+              Hanya Absen Pulang
+            </button>
+          </div>
+        </div>
+
+        <!-- Jam Masuk & Jam Pulang (ABS-14) -->
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
-              Jam Masuk <span class="text-red-500">*</span>
+              Jam Masuk <span v-if="!isMasukDisabled" class="text-red-500">*</span>
             </label>
             <input
               v-model="form.jam_masuk"
               type="time"
-              required
-              class="w-full text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy text-neutral-900"
+              :required="!isMasukDisabled"
+              :disabled="isMasukDisabled"
+              class="w-full text-xs border border-neutral-border px-3 py-2 focus:outline-none focus:border-navy"
+              :class="isMasukDisabled ? 'bg-neutral-100 text-neutral-400 cursor-not-allowed' : 'bg-white text-neutral-900'"
               @change="triggerAutoCalculate"
             />
             <p class="text-[10px] text-neutral-muted mt-0.5">
-              {{ activeJadwal.is_flex ? `Flexi ${activeJadwal.hari}: ${activeJadwal.flex_masuk_mulai}\u2013${activeJadwal.flex_masuk_akhir} WITA` : `Jadwal ${activeJadwal.hari}: ${activeJadwal.masuk} WITA` }}
+              <template v-if="isMasukDisabled">Tidak absen masuk (tidak perlu diisi)</template>
+              <template v-else>{{ activeJadwal.is_flex ? `Flexi ${activeJadwal.hari}: ${activeJadwal.flex_masuk_mulai}\u2013${activeJadwal.flex_masuk_akhir} WITA` : `Jadwal ${activeJadwal.hari}: ${activeJadwal.masuk} WITA` }}</template>
             </p>
           </div>
 
           <div>
             <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider mb-1">
-              Jam Pulang <span class="text-red-500">*</span>
+              Jam Pulang <span v-if="!isPulangDisabled" class="text-red-500">*</span>
             </label>
             <input
               v-model="form.jam_pulang"
               type="time"
-              required
-              class="w-full text-xs border border-neutral-border px-3 py-2 bg-white focus:outline-none focus:border-navy text-neutral-900"
+              :required="!isPulangDisabled"
+              :disabled="isPulangDisabled"
+              class="w-full text-xs border border-neutral-border px-3 py-2 focus:outline-none focus:border-navy"
+              :class="isPulangDisabled ? 'bg-neutral-100 text-neutral-400 cursor-not-allowed' : 'bg-white text-neutral-900'"
               @change="triggerAutoCalculate"
             />
             <p class="text-[10px] text-neutral-muted mt-0.5">
-              {{ activeJadwal.is_flex ? `Target pulang: ${activeJadwal.flex_pulang_mulai}\u2013${activeJadwal.flex_pulang_akhir} WITA` : `Jadwal ${activeJadwal.hari}: ${activeJadwal.pulang} WITA` }}
+              <template v-if="isPulangDisabled">Tidak absen pulang (tidak perlu diisi)</template>
+              <template v-else>{{ activeJadwal.is_flex ? `Target pulang: ${activeJadwal.flex_pulang_mulai}\u2013${activeJadwal.flex_pulang_akhir} WITA` : `Jadwal ${activeJadwal.hari}: ${activeJadwal.pulang} WITA` }}</template>
             </p>
           </div>
         </div>
@@ -295,7 +321,7 @@
         <div class="p-3 bg-neutral-50 border border-neutral-border space-y-2">
           <div class="flex items-center justify-between">
             <label class="block text-xs font-semibold text-neutral-700 uppercase tracking-wider">
-              Durasi Kekurangan Jam Kerja (Menit) <span class="text-red-500">*</span>
+              Durasi Keterlambatan (Menit) <span class="text-red-500">*</span>
             </label>
             <span class="text-xs font-bold text-red-700">
               {{ computedDurasiHuman }}
@@ -399,7 +425,13 @@ import Modal from '@/components/Modal.vue'
 import CustomDropdown from '@/components/CustomDropdown.vue'
 import Toast from '@/components/Toast.vue'
 import api from '@/composables/useApi'
-import { getScheduleForDate, computeAttendanceDeficit } from '@/utils/workingHours'
+import {
+  STATUS_HANYA_ABSEN,
+  ABSENSI_STATUS_OPTIONS,
+  getStatusBadgeClass,
+  getScheduleForDate,
+  computeAttendanceDeficit,
+} from '@/utils/workingHours'
 import { Plus, Search, Edit3, Trash2, X, Check } from 'lucide-vue-next'
 
 const loading = ref(true)
@@ -434,7 +466,11 @@ const form = reactive({
   durasi_menit: 450,
 })
 
+const hanyaAbsenType = ref('masuk')
 const activeJadwal = computed(() => getScheduleForDate(jadwalSettings.value, form.periode))
+const isHanyaAbsen = computed(() => form.status === STATUS_HANYA_ABSEN)
+const isMasukDisabled = computed(() => isHanyaAbsen.value && hanyaAbsenType.value === 'pulang')
+const isPulangDisabled = computed(() => isHanyaAbsen.value && hanyaAbsenType.value === 'masuk')
 
 // Autocomplete State
 const pegawaiInputText = ref('')
@@ -480,19 +516,6 @@ const computedDurasiHuman = computed(() => {
   if (menit > 0) parts.push(`${menit} menit`)
   return parts.join(' ') || '0 menit'
 })
-
-function getStatusBadgeClass(status) {
-  switch (status) {
-    case 'Tanpa Keterangan':
-      return 'bg-red-50 text-red-800 border-red-300'
-    case 'Terlambat':
-      return 'bg-amber-50 text-amber-800 border-amber-300'
-    case 'Pulang Duluan':
-      return 'bg-blue-50 text-blue-800 border-blue-300'
-    default:
-      return 'bg-neutral-100 text-neutral-800 border-neutral-300'
-  }
-}
 
 let searchTimer = null
 function handleSearch() {
@@ -557,10 +580,39 @@ function clearSelectedPegawai() {
   pegawaiInputText.value = ''
 }
 
+function setHanyaAbsenType(type) {
+  hanyaAbsenType.value = type
+  if (type === 'masuk') {
+    form.jam_masuk = form.jam_masuk || activeJadwal.value.masuk
+    form.jam_pulang = ''
+  } else {
+    form.jam_pulang = form.jam_pulang || activeJadwal.value.pulang
+    form.jam_masuk = ''
+  }
+  triggerAutoCalculate()
+}
+
+function handleStatusChange() {
+  if (isHanyaAbsen.value) {
+    const inferredType = form.jam_pulang && !form.jam_masuk ? 'pulang' : hanyaAbsenType.value
+    setHanyaAbsenType(inferredType)
+    return
+  }
+
+  if (!form.jam_masuk) form.jam_masuk = activeJadwal.value.masuk
+  if (!form.jam_pulang) form.jam_pulang = activeJadwal.value.pulang
+  triggerAutoCalculate()
+}
+
 function handlePeriodeChange() {
   if (!isEditing.value) {
-    form.jam_masuk = activeJadwal.value.masuk
-    form.jam_pulang = activeJadwal.value.pulang
+    if (isHanyaAbsen.value) {
+      form.jam_masuk = hanyaAbsenType.value === 'masuk' ? activeJadwal.value.masuk : ''
+      form.jam_pulang = hanyaAbsenType.value === 'pulang' ? activeJadwal.value.pulang : ''
+    } else {
+      form.jam_masuk = activeJadwal.value.masuk
+      form.jam_pulang = activeJadwal.value.pulang
+    }
   }
   triggerAutoCalculate()
 }
@@ -570,7 +622,7 @@ function triggerAutoCalculate() {
 }
 
 function recalculateDuration() {
-  if (!form.periode && form.status !== 'Tanpa Keterangan') return
+  if (!form.periode && form.status !== 'Tanpa Keterangan' && !isHanyaAbsen.value) return
   form.durasi_menit = computeAttendanceDeficit({
     status: form.status,
     jamMasuk: form.jam_masuk,
@@ -588,6 +640,7 @@ function openAddModal() {
   form.periode = new Date().toISOString().substring(0, 10)
   form.jam_masuk = activeJadwal.value.masuk
   form.jam_pulang = activeJadwal.value.pulang
+  hanyaAbsenType.value = 'masuk'
   form.status = 'Tanpa Keterangan'
   form.durasi_menit = 450
   showModal.value = true
@@ -600,9 +653,16 @@ function openEditModal(rec) {
   form.nip = rec.nip
   pegawaiInputText.value = `${rec.pegawai?.nama || ''} (${rec.nip})`
   form.periode = rec.periode
-  form.jam_masuk = rec.jam_masuk?.substring(0, 5) || '07:30'
-  form.jam_pulang = rec.jam_pulang?.substring(0, 5) || '16:00'
   form.status = rec.status
+  if (rec.status === STATUS_HANYA_ABSEN) {
+    form.jam_masuk = rec.jam_masuk ? rec.jam_masuk.substring(0, 5) : ''
+    form.jam_pulang = rec.jam_pulang ? rec.jam_pulang.substring(0, 5) : ''
+    hanyaAbsenType.value = form.jam_pulang && !form.jam_masuk ? 'pulang' : 'masuk'
+  } else {
+    form.jam_masuk = rec.jam_masuk?.substring(0, 5) || '07:30'
+    form.jam_pulang = rec.jam_pulang?.substring(0, 5) || '16:00'
+    hanyaAbsenType.value = 'masuk'
+  }
   form.durasi_menit = rec.durasi_menit
   showModal.value = true
 }
@@ -620,13 +680,24 @@ async function saveAbsensi() {
     return
   }
 
+  if (isHanyaAbsen.value) {
+    if (hanyaAbsenType.value === 'masuk' && !form.jam_masuk) {
+      formError.value = 'Jam Masuk wajib diisi.'
+      return
+    }
+    if (hanyaAbsenType.value === 'pulang' && !form.jam_pulang) {
+      formError.value = 'Jam Pulang wajib diisi.'
+      return
+    }
+  }
+
   saving.value = true
   try {
     const payload = {
       nip: form.nip,
       periode: form.periode,
-      jam_masuk: form.jam_masuk,
-      jam_pulang: form.jam_pulang,
+      jam_masuk: isMasukDisabled.value ? null : (form.jam_masuk || null),
+      jam_pulang: isPulangDisabled.value ? null : (form.jam_pulang || null),
       status: form.status,
       durasi_menit: form.durasi_menit,
     }

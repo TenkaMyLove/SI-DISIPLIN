@@ -15,11 +15,13 @@ class Absensi extends Model
     public const STATUS_TANPA_KETERANGAN = 'Tanpa Keterangan';
     public const STATUS_TERLAMBAT = 'Terlambat';
     public const STATUS_PULANG_DULUAN = 'Pulang Duluan';
+    public const STATUS_HANYA_ABSEN = 'Hanya Absen Masuk / Pulang';
 
     public const STATUS_LIST = [
         self::STATUS_TANPA_KETERANGAN,
         self::STATUS_TERLAMBAT,
         self::STATUS_PULANG_DULUAN,
+        self::STATUS_HANYA_ABSEN,
     ];
 
     protected $fillable = [
@@ -114,8 +116,8 @@ class Absensi extends Model
      */
     public static function hitungOtomatisDurasi(
         string $status,
-        string $jamMasuk,
-        string $jamPulang,
+        ?string $jamMasuk,
+        ?string $jamPulang,
         ?string $tanggal = null,
         ?string $jamMasukStandar = null,
         ?string $jamPulangStandar = null,
@@ -123,6 +125,10 @@ class Absensi extends Model
     ): int {
         if ($status === self::STATUS_TANPA_KETERANGAN) {
             return 450; // 7.5 jam * 60 menit
+        }
+
+        if ($status === self::STATUS_HANYA_ABSEN) {
+            return 90; // 1.5 jam * 60 menit
         }
 
         // Backward compatibility: if 4th param is a time string (e.g. "08:00")
@@ -136,8 +142,8 @@ class Absensi extends Model
         $stdPulang = $jamPulangStandar ?? ($jadwal ? $jadwal['pulang'] : Pengaturan::get('jam_pulang_standar', '16:00'));
         $isFlex = $forceFlex !== null ? $forceFlex : ($jadwal ? $jadwal['is_flex'] : false);
 
-        $masukSec = self::timeToSeconds($jamMasuk);
-        $pulangSec = self::timeToSeconds($jamPulang);
+        $masukSec = self::timeToSeconds($jamMasuk ?? $stdMasuk);
+        $pulangSec = self::timeToSeconds($jamPulang ?? $stdPulang);
         $stdMasukSec = self::timeToSeconds($stdMasuk);
         $stdPulangSec = self::timeToSeconds($stdPulang);
 

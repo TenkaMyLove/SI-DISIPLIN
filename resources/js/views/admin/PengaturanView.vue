@@ -17,7 +17,7 @@
     </div>
 
     <div v-if="loading" class="space-y-4">
-      <SkeletonLoader type="form" :rows="3" />
+      <SkeletonLoader type="pengaturan" />
     </div>
 
     <div v-else class="space-y-6">

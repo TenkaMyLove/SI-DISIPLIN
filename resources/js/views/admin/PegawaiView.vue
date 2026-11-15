@@ -48,8 +48,8 @@
     </div>
 
     <!-- Skeleton Loader -->
-    <div v-if="loading" class="space-y-4">
-      <SkeletonLoader type="table" :rows="8" :cols="5" />
+    <div v-if="loading" class="space-y-3.5">
+      <SkeletonLoader type="table" :rows="8" :cols="6" :has-pagination="true" />
     </div>
 
     <!-- Pegawai Table Card Container -->

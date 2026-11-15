@@ -145,8 +145,8 @@
     </div>
 
     <!-- Skeleton Loader -->
-    <div v-if="loading" class="space-y-4">
-      <SkeletonLoader type="stat" :rows="3" />
+    <div v-if="loading" class="space-y-3.5">
+      <SkeletonLoader type="stat" :rows="2" :cols="2" :compact="true" />
       <SkeletonLoader type="table" :rows="6" :cols="8" />
     </div>
 

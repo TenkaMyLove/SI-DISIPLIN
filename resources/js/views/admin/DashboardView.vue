@@ -28,9 +28,9 @@
     </div>
 
     <!-- Skeleton during loading -->
-    <div v-if="loading" class="space-y-4">
-      <SkeletonLoader type="stat" :rows="3" />
-      <SkeletonLoader type="table" :rows="5" :cols="6" />
+    <div v-if="loading" class="space-y-3.5">
+      <SkeletonLoader type="stat" :rows="3" :cols="3" :show-subtitle="true" :show-icon="true" />
+      <SkeletonLoader type="table" :rows="5" :cols="6" :has-section-header="true" />
     </div>
 
     <div v-else class="space-y-3.5">
